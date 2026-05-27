@@ -66,6 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     { name: "Research Timeline", href: "/timeline", icon: Clock, color: "text-indigo-400" },
     { name: "Evidence Auditor", href: "/verification", icon: ShieldCheck, color: "text-emerald-400" },
     { name: "System Operator", href: "/admin", icon: Cpu, color: "text-purple-400" },
+    { name: "Clinical Hub (Brutalist)", href: "/neobrutalism", icon: Sparkles, color: "text-amber-400" },
   ];
 
   return (
