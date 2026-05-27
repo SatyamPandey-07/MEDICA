@@ -417,7 +417,9 @@ code, pre, pre *, code * {
 
 /* Welcome screen title "Welcome to MEDICA Intelligence" inline text override */
 h1[style*="WebkitTextFillColor"],
-div[style*="textAlign: 'center'"] h1 {
+div[style*="textAlign: 'center'"] h1,
+div[style*="text-align: center"] h1,
+div[style*="text-align"] h1 {
   background: none !important;
   -webkit-text-fill-color: #000000 !important;
   color: #000000 !important;
@@ -425,7 +427,11 @@ div[style*="textAlign: 'center'"] h1 {
 
 /* Welcome screen subtitle inline text override */
 div[style*="textAlign: 'center'"] p,
+div[style*="text-align: center"] p,
+div[style*="text-align"] p,
 p[style*="color: \"hsl(220 8% 45%)\""],
+p[style*="color: hsl(220 8% 45%)"],
+p[style*="color: hsl(220"],
 p[style*="hsl(220 8% 45%"] {
   color: #000000 !important;
   font-weight: 600 !important;
@@ -433,28 +439,36 @@ p[style*="hsl(220 8% 45%"] {
 
 /* "Llama 3.3 70B on Groq" inline span override */
 div[style*="textAlign: 'center'"] p span,
+div[style*="text-align"] p span,
 span[style*="color: \"hsl(262 83% 70%)\""],
+span[style*="color: hsl(262 83% 70%)"],
 span[style*="hsl(262 83% 70%"] {
   color: #004D40 !important; /* Deep clinical teal */
   font-weight: 800 !important;
 }
 
 /* Force all span texts in the chat copilot suggestions buttons to be black */
-div[style*="gridTemplateColumns"] button span {
+div[style*="gridTemplateColumns"] button span,
+div[style*="grid-template-columns"] button span {
   color: #000000 !important;
   font-weight: 700 !important;
 }
 
 /* "Submit Query ->" inline text override inside suggestion buttons */
 div[style*="gridTemplateColumns"] button span[style*="color: \"hsl(262"],
-div[style*="gridTemplateColumns"] button span[style*="hsl(262"] {
+div[style*="grid-template-columns"] button span[style*="hsl(262"],
+div[style*="gridTemplateColumns"] button span[style*="hsl(262"],
+span[style*="color: hsl(262"] {
   color: #004D40 !important; /* Deep clinical teal */
   font-weight: 800 !important;
 }
 
 /* Sidebar header v1.0 and state details */
 aside div[style*="letterSpacing: \"0.12em\""],
-aside div[style*="background: \"linear-gradient(90deg, hsl(262"] {
+aside div[style*="letter-spacing: 0.12em"],
+aside div[style*="letter-spacing"],
+aside div[style*="background: \"linear-gradient(90deg, hsl(262"],
+aside div[style*="background"] {
   background: none !important;
   -webkit-text-fill-color: #004D40 !important;
   color: #004D40 !important;
@@ -462,19 +476,22 @@ aside div[style*="background: \"linear-gradient(90deg, hsl(262"] {
 }
 
 /* Sidebar Node State detail footer */
-aside div[style*="borderTop"] * {
+aside div[style*="borderTop"] *,
+aside div[style*="border-top"] * {
   color: #000000 !important;
 }
 
 /* Header dynamic descriptions contrast */
 header.page-header div[style*="fontFamily: 'JetBrains Mono'"],
-header.page-header div[style*="fontFamily: 'JetBrains Mono'"] * {
+header.page-header div[style*="font-family"],
+header.page-header div[style*="font-family"] * {
   color: #212121 !important;
   font-weight: 700 !important;
 }
 
 /* "AGENTIC RUNTIME ACTIVE" text description */
 header.page-header span[style*="color: \"hsl(150 76% 55%)\""],
+header.page-header span[style*="color: hsl(150 76% 55%)"],
 header.page-header span[style*="hsl(150 76% 55%"] {
   color: #004D40 !important;
   font-weight: 800 !important;
@@ -488,6 +505,7 @@ header.page-header span[style*="hsl(150 76% 55%"] {
 /* Main Title "Comprehensive Memory Store" inline color override */
 h1[style*="linear-gradient"],
 div[style*="overflowY"] h1,
+div[style*="overflow-y"] h1,
 main h1 {
   background: none !important;
   -webkit-text-fill-color: #000000 !important;
@@ -496,7 +514,8 @@ main h1 {
 }
 
 /* Description text "Structured markdown files..." contrast override */
-div[style*="overflowY"] p {
+div[style*="overflowY"] p,
+div[style*="overflow-y"] p {
   color: #212121 !important;
   font-weight: 600 !important;
 }
@@ -504,6 +523,7 @@ div[style*="overflowY"] p {
 /* Explorer "files indexed" header status badge (resolves unreadable dark purple) */
 header div[style*="background: \"hsl(262 50% 15%)\""],
 header div[style*="background: hsl(262 50% 15%)"],
+header div[style*="background: hsl(262"],
 header div[style*="hsl(262 50% 15%"] {
   background: #E0F2F1 !important; /* Soft clinical mint */
   border: 3px solid #000000 !important;
@@ -514,14 +534,19 @@ header div[style*="hsl(262 50% 15%"] {
 
 /* Explorer left navigation/directory browser panel background (resolves dark black panel) */
 div[style*="flexShrink: 0"],
-div[style*="width: 220"][style*="flexShrink: 0"] {
+div[style*="flex-shrink: 0"],
+div[style*="flex-shrink"],
+div[style*="width: 220"],
+div[style*="width: 220px"] {
   background: #FFFFFF !important;
   border-right: 4px solid #000000 !important;
 }
 
 /* Inactive folder button links in directory panel (stark white with black borders) */
 div[style*="flexShrink: 0"] button,
-div[style*="width: 220"] button {
+div[style*="flex-shrink"] button,
+div[style*="width: 220"] button,
+div[style*="width: 220px"] button {
   background: #FFFFFF !important;
   border: 3px solid #000000 !important;
   border-radius: 9999px !important; /* Pill shaped folder buttons */
@@ -532,7 +557,9 @@ div[style*="width: 220"] button {
   transition: all 0.15s ease !important;
 }
 div[style*="flexShrink: 0"] button:hover,
-div[style*="width: 220"] button:hover {
+div[style*="flex-shrink"] button:hover,
+div[style*="width: 220"] button:hover,
+div[style*="width: 220px"] button:hover {
   background: #FFE57F !important; /* Bright Yellow Hover */
   transform: translate(-2px, -2px) !important;
   box-shadow: 6px 6px 0px #000000 !important;
@@ -540,17 +567,25 @@ div[style*="width: 220"] button:hover {
 
 /* Active folder button link (vibrant mint green fill) */
 div[style*="flexShrink: 0"] button[style*="background: hsl(262"],
+div[style*="flex-shrink"] button[style*="background: hsl(262"],
+div[style*="flex-shrink"] button[style*="hsl(262"],
 div[style*="flexShrink: 0"] button[class*="bg-"],
+div[style*="flex-shrink"] button[class*="bg-"],
 div[style*="width: 220"] button[style*="hsl(262"],
+div[style*="width: 220px"] button[style*="hsl(262"],
 div[style*="width: 220"] button[style*="background: hsl(262"] {
   background: #2EE59D !important; /* Bright clinical green active */
   box-shadow: 4px 4px 0px #000000 !important;
   font-weight: 800 !important;
+  color: #000000 !important;
+  border: 3px solid #000000 !important;
 }
 
 /* "CANCER DIRECTORIES" title header contrast override */
 div[style*="flexShrink: 0"] div[style*="color: hsl(220 8% 28%)"],
-div[style*="width: 220"] div[style*="color: hsl(220 8% 28%)"],
+div[style*="flex-shrink"] div[style*="color: hsl(220"],
+div[style*="width: 220"] div[style*="color: hsl(220"],
+div[style*="width: 220px"] div[style*="color: hsl(220"],
 div[style*="color: hsl(220 8% 28%)"] {
   color: #000000 !important;
   font-weight: 800 !important;
