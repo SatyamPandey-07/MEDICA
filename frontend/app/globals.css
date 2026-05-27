@@ -2,347 +2,291 @@
 
 @layer base {
   :root {
-    /* Core palette */
-    --background: 240 12% 2%;
-    --surface-1: 240 10% 4%;
-    --surface-2: 240 8% 6%;
-    --surface-3: 240 6% 9%;
-    --foreground: 220 20% 97%;
-    --foreground-muted: 220 10% 55%;
-    --foreground-subtle: 220 8% 35%;
+    /* Core palette: Stark white & off-white clinical background */
+    --background: 192 10% 96%; /* #F4F6F6 */
+    --surface-1: 0 0% 100%;    /* #FFFFFF pure white */
+    --surface-2: 174 80% 96%;  /* #E0F2F1 soft mint green */
+    --surface-3: 0 0% 100%;    /* #FFFFFF pure white */
+    
+    --foreground: 0 0% 0%;       /* Stark black #000000 */
+    --foreground-muted: 0 0% 15%;/* High contrast dark charcoal */
+    --foreground-subtle: 0 0% 30%;/* Highly readable dark grey */
 
-    /* Brand */
-    --primary: 262 83% 62%;
-    --primary-glow: 262 83% 72%;
-    --primary-dim: 262 50% 30%;
-    --accent-teal: 174 80% 46%;
-    --accent-indigo: 234 89% 65%;
+    /* Brand Accent: Deep Clinical Teal HSL(174 100% 15%) => #004D40 */
+    --primary: 174 100% 15%;      
+    --primary-glow: 174 100% 15%; 
+    --primary-dim: 174 80% 90%;   
+    --accent-teal: 174 100% 15%;  
+    --accent-indigo: 174 100% 15%;
 
-    /* Semantic */
-    --verified: 150 76% 42%;
-    --verified-dim: 150 60% 15%;
-    --disputed: 24 90% 55%;
-    --disputed-dim: 24 70% 12%;
-    --unverified: 220 8% 45%;
-    --pending: 217 91% 62%;
+    /* Semantic badges */
+    --verified: 174 100% 15%;     /* Deep Clinical Teal */
+    --verified-dim: 174 80% 90%;  /* Soft Mint */
+    --disputed: 24 90% 40%;       
+    --disputed-dim: 24 90% 92%;   
+    --unverified: 0 0% 40%;
+    --pending: 217 91% 35%;
 
-    /* Borders */
-    --border-subtle: 240 8% 10%;
-    --border-normal: 240 6% 14%;
-    --border-accent: 262 50% 25%;
+    /* Borders: Pure Stark Black, thick! */
+    --border-subtle: 0 0% 0%;
+    --border-normal: 0 0% 0%;
+    --border-accent: 0 0% 0%;
 
-    --radius-sm: 0.5rem;
-    --radius-md: 0.75rem;
-    --radius-lg: 1rem;
-    --radius-xl: 1.25rem;
+    /* Sharp corners enforced globally! */
+    --radius-sm: 0px !important;
+    --radius-md: 0px !important;
+    --radius-lg: 0px !important;
+    --radius-xl: 0px !important;
   }
 }
 
 /* ============================================================
-   RESET
+   RESET & GLOBAL OVERRIDES FOR NEOBRUTALISM
    ============================================================ */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  border-radius: 0px !important; /* Forces 0px rounded corners on EVERY element! */
 }
 
-/* ============================================================
-   BODY
-   ============================================================ */
 body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif;
+  background-color: #F4F6F6 !important;
+  color: #000000 !important;
+  font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
   overflow-x: hidden;
   letter-spacing: -0.01em;
 }
 
-/* ============================================================
-   SCROLLBAR
-   ============================================================ */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--border-normal));
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary) / 0.4);
+/* Force layout backgrounds to stark off-white/pure white */
+main {
+  background-color: #F4F6F6 !important;
+  background-image: none !important;
 }
 
-/* ============================================================
-   GLASSMORPHISM
-   ============================================================ */
-.glass {
-  background: linear-gradient(135deg,
-    hsl(240 10% 5% / 0.9) 0%,
-    hsl(240 8% 7% / 0.75) 100%
-  );
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border: 1px solid hsl(var(--border-subtle));
+/* Sidebar navigation */
+aside {
+  background: #FFFFFF !important;
+  border-right: 4px solid #000000 !important;
+}
+aside * {
+  border-radius: 0px !important;
 }
 
-.glass-card {
-  background: linear-gradient(135deg,
-    hsl(240 8% 6% / 0.8) 0%,
-    hsl(240 6% 8% / 0.6) 100%
-  );
-  backdrop-filter: blur(12px);
-  border: 1px solid hsl(var(--border-subtle));
+/* Sidebar Links */
+aside nav a {
+  border: 3px solid transparent !important;
+  transition: all 0.15s ease !important;
+  margin-bottom: 4px !important;
+  color: #000000 !important;
+}
+aside nav a:hover {
+  background: #E0F2F1 !important;
+  border-color: #000000 !important;
+  box-shadow: 4px 4px 0px #000000 !important;
+  transform: translate(-2px, -2px) !important;
 }
 
-.glass-elevated {
-  background: linear-gradient(135deg,
-    hsl(240 10% 8% / 0.95) 0%,
-    hsl(240 8% 10% / 0.85) 100%
-  );
-  backdrop-filter: blur(24px);
-  border: 1px solid hsl(var(--border-normal));
-  box-shadow: 0 4px 24px hsl(0 0% 0% / 0.4), 0 1px 0 hsl(255 255% 100% / 0.04) inset;
+/* Active links inside sidebar */
+aside nav a[class*="bg-"] {
+  background: #A7FFEB !important;
+  border: 3px solid #000000 !important;
+  box-shadow: 4px 4px 0px #000000 !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
 }
 
-/* ============================================================
-   GRADIENT UTILITIES
-   ============================================================ */
-.gradient-violet {
-  background: linear-gradient(135deg, hsl(262 83% 62%) 0%, hsl(234 89% 65%) 100%);
+/* Sidebar Header / Logo */
+aside div[class*="py-5"] {
+  border-bottom: 3px solid #000000 !important;
+}
+aside div[class*="bg-linear-"] {
+  background: #004D40 !important;
+  border: 2px solid #000000 !important;
+  box-shadow: 2px 2px 0px #000000 !important;
 }
 
-.gradient-text-violet {
-  background: linear-gradient(135deg, hsl(262 83% 72%) 0%, hsl(196 80% 72%) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Dynamic Research Streams list */
+aside div[class*="cursor-pointer"] {
+  background: #FFFFFF !important;
+  border: 2px solid #000000 !important;
+  color: #000000 !important;
+  margin-bottom: 6px !important;
+  font-weight: 600 !important;
+}
+aside div[class*="cursor-pointer"]:hover {
+  background: #E0F2F1 !important;
+  box-shadow: 3px 3px 0px #000000 !important;
+  transform: translate(-1px, -1px) !important;
+}
+aside div[class*="cursor-pointer"][class*="bg-"] {
+  background: #A7FFEB !important;
+  box-shadow: 3px 3px 0px #000000 !important;
 }
 
-.gradient-text-emerald {
-  background: linear-gradient(135deg, hsl(150 76% 56%) 0%, hsl(174 80% 56%) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Core grid panels */
+.glass, .glass-card, .glass-elevated, div[class*="glass-card"] {
+  background: #FFFFFF !important;
+  border: 3px solid #000000 !important;
+  box-shadow: 8px 8px 0px #000000 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  color: #000000 !important;
 }
 
-/* ============================================================
-   AMBIENT GLOW SPHERES
-   ============================================================ */
-@keyframes pulse-ambient {
-  0%, 100% { opacity: 0.12; transform: scale(1); }
-  50%       { opacity: 0.22; transform: scale(1.08); }
-}
-
-.glow-sphere {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(90px);
-  pointer-events: none;
-  animation: pulse-ambient 12s infinite ease-in-out;
-  will-change: transform, opacity;
-}
-
-.glow-sphere--violet {
-  background: radial-gradient(circle, hsl(262 83% 62% / 0.18) 0%, transparent 70%);
-}
-.glow-sphere--indigo {
-  background: radial-gradient(circle, hsl(234 89% 65% / 0.12) 0%, transparent 70%);
-  animation-delay: -6s;
-}
-.glow-sphere--teal {
-  background: radial-gradient(circle, hsl(174 80% 46% / 0.1) 0%, transparent 70%);
-  animation-delay: -3s;
-}
-
-/* ============================================================
-   CARD HOVER EFFECTS
-   ============================================================ */
-.card-hover {
-  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.card-hover:hover {
-  transform: translateY(-2px);
-  border-color: hsl(var(--primary) / 0.3) !important;
-  box-shadow: 0 8px 32px hsl(262 83% 30% / 0.15), 0 0 0 1px hsl(262 83% 62% / 0.08);
-}
-
-.card-active-left {
-  position: relative;
-  overflow: hidden;
-}
-.card-active-left::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
-  background: linear-gradient(180deg, hsl(var(--primary)) 0%, hsl(var(--accent-teal)) 100%);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  border-radius: 0 2px 2px 0;
-}
-.card-active-left:hover::before { opacity: 1; }
-
-/* ============================================================
-   SHIMMER LOADING SKELETON
-   ============================================================ */
-@keyframes shimmer {
-  0%   { background-position: -1000px 0; }
-  100% { background-position: 1000px 0; }
-}
-
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    hsl(240 8% 8%) 25%,
-    hsl(240 6% 12%) 50%,
-    hsl(240 8% 8%) 75%
-  );
-  background-size: 1000px 100%;
-  animation: shimmer 2s infinite linear;
-  border-radius: var(--radius-md);
-}
-
-/* ============================================================
-   BADGE VARIANTS
-   ============================================================ */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  border: 1px solid transparent;
-}
-
-.badge--verified {
-  color: hsl(var(--verified));
-  background: hsl(var(--verified-dim));
-  border-color: hsl(var(--verified) / 0.2);
-}
-.badge--disputed {
-  color: hsl(var(--disputed));
-  background: hsl(var(--disputed-dim));
-  border-color: hsl(var(--disputed) / 0.2);
-}
-.badge--unverified {
-  color: hsl(220 8% 55%);
-  background: hsl(220 8% 12%);
-  border-color: hsl(220 8% 18%);
-}
-.badge--rct {
-  color: hsl(var(--primary-glow));
-  background: hsl(262 50% 18%);
-  border-color: hsl(var(--primary) / 0.25);
-}
-.badge--meta {
-  color: hsl(var(--accent-teal));
-  background: hsl(174 80% 10%);
-  border-color: hsl(174 80% 20%);
-}
-
-/* ============================================================
-   TYPING INDICATOR
-   ============================================================ */
-@keyframes bounce-dot {
-  0%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
-  50%       { transform: translateY(-5px) scale(1.2); opacity: 1; }
-}
-
-.dot-bounce { animation: bounce-dot 1.4s infinite ease-in-out; }
-.dot-bounce:nth-child(2) { animation-delay: 0.18s; }
-.dot-bounce:nth-child(3) { animation-delay: 0.36s; }
-
-/* ============================================================
-   PROGRESS BAR
-   ============================================================ */
-.progress-bar {
-  height: 3px;
-  background: hsl(var(--surface-3));
-  border-radius: 999px;
-  overflow: hidden;
-}
-.progress-bar__fill {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--accent-teal)) 100%);
-  transition: width 0.4s ease;
-}
-
-/* ============================================================
-   FOCUS / INPUTS
-   ============================================================ */
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.25);
-}
-
-/* ============================================================
-   TIMELINE NODE
-   ============================================================ */
-@keyframes node-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4); }
-  50%       { box-shadow: 0 0 0 6px hsl(var(--primary) / 0); }
-}
-
-.timeline-node {
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  background: hsl(var(--surface-1));
-  border: 2px solid hsl(var(--primary));
-  transition: all 0.2s ease;
-}
-.timeline-node:hover,
-.timeline-node--active {
-  background: hsl(var(--primary));
-  animation: node-pulse 2s infinite;
-}
-
-/* ============================================================
-   STAT CARD  
-   ============================================================ */
-.stat-card {
-  position: relative;
-  overflow: hidden;
-  padding: 20px 24px;
-  border-radius: var(--radius-lg);
-  border: 1px solid hsl(var(--border-subtle));
-  background: linear-gradient(135deg, hsl(var(--surface-1)) 0%, hsl(var(--surface-2)) 100%);
-  transition: all 0.2s ease;
-}
-.stat-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, hsl(255 255% 100% / 0.025) 0%, transparent 60%);
-  pointer-events: none;
+/* Stat Cards */
+.stat-card, div[class*="stat-card"] {
+  background: #E0F2F1 !important;
+  border: 3px solid #000000 !important;
+  box-shadow: 6px 6px 0px #000000 !important;
+  color: #000000 !important;
 }
 .stat-card:hover {
-  border-color: hsl(var(--border-accent));
+  transform: translateY(-2px);
+  box-shadow: 8px 8px 0px #000000 !important;
 }
 
-/* ============================================================
-   PAGE HEADER
-   ============================================================ */
-.page-header {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 32px;
-  border-bottom: 1px solid hsl(var(--border-subtle));
-  background: linear-gradient(180deg,
-    hsl(240 10% 4% / 0.9) 0%,
-    hsl(240 10% 4% / 0.6) 100%
-  );
-  backdrop-filter: blur(12px);
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  flex-shrink: 0;
+/* Page headers sticky at the top */
+.page-header, header.page-header {
+  background: #FFFFFF !important;
+  border-bottom: 4px solid #000000 !important;
+  color: #000000 !important;
+}
+.page-header * {
+  color: #000000 !important;
+}
+
+/* Chat bubble logs user & assistant */
+div[class*="m.role === 'user'"], div[class*="user"], div[style*="m.role === 'user'"] {
+  background: #FFFFFF !important;
+  border: 3px solid #000000 !important;
+  box-shadow: 6px 6px 0px #000000 !important;
+  color: #000000 !important;
+}
+div[class*="assistant"], div[style*="m.role === 'assistant'"] {
+  background: #E0F2F1 !important; /* Soft mint assistant */
+  border: 3px solid #000000 !important;
+  box-shadow: 6px 6px 0px #000000 !important;
+  color: #000000 !important;
+}
+
+/* Text Input & Controls */
+input, select, textarea {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+  border: 3px solid #000000 !important;
+  box-shadow: 4px 4px 0px #000000 !important;
+  outline: none !important;
+  font-weight: 600 !important;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: #004D40 !important;
+  box-shadow: 4px 4px 0px #000000 !important;
+}
+
+/* Overriding Tailwind Text Colors for High Contrast scannability */
+.text-white, .text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500, .text-slate-600 {
+  color: #000000 !important;
+}
+.text-slate-400, .text-slate-500, .text-slate-600, .text-slate-700 {
+  color: #263238 !important; /* rich dark grey for muteds */
+}
+.text-violet-400, .text-indigo-400, .text-purple-400, .text-cyan-400, .text-emerald-400 {
+  color: #004D40 !important; /* Replace brand colors with Deep Teal */
+}
+
+/* Ingestion panel scheduler queue buttons */
+button {
+  background: #FFFFFF;
+  color: #000000;
+  border: 3px solid #000000 !important;
+  box-shadow: 4px 4px 0px #000000 !important;
+  font-weight: 800 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.1s ease;
+  cursor: pointer;
+}
+button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #000000 !important;
+}
+
+/* Collapsible trace logger boxes */
+pre {
+  background: #FFFFFF !important;
+  border: 2px solid #000000 !important;
+  color: #000000 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important;
+  box-shadow: 3px 3px 0px #000000 !important;
+}
+
+/* Hide all background glowing dots & spheres to make layout uncluttered */
+.glow-sphere, .glow-sphere--violet, .glow-sphere--indigo, .glow-sphere--teal {
+  display: none !important;
+}
+
+/* Force Table Gridlines */
+table {
+  border-collapse: collapse !important;
+}
+th, td {
+  border: 2px solid #000000 !important;
+  padding: 12px 16px !important;
+  color: #000000 !important;
+  background: #FFFFFF;
+}
+th {
+  background: #E0F2F1 !important;
+  font-weight: 800 !important;
+  text-transform: uppercase;
+}
+
+/* Badges Neobrutalist design */
+.badge, span[class*="badge"] {
+  border: 2px solid #000000 !important;
+  background: #E0F2F1 !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+}
+.badge--verified, span[class*="verified"] {
+  background: #004D40 !important;
+  color: #FFFFFF !important;
+}
+
+/* Explorer list papers links and cards */
+a.card-hover, a[class*="card-hover"] {
+  background: #FFFFFF !important;
+  border: 3px solid #000000 !important;
+  box-shadow: 4px 4px 0px #000000 !important;
+  color: #000000 !important;
+  margin-bottom: 12px !important;
+}
+a.card-hover:hover, a[class*="card-hover"]:hover {
+  background: #E0F2F1 !important;
+  box-shadow: 8px 8px 0px #000000 !important;
+  transform: translate(-3px, -3px) !important;
+}
+
+/* Main chat suggest button cards */
+div[style*="gridTemplateColumns"] button {
+  background: #FFFFFF !important;
+  border: 3px solid #000000 !important;
+  box-shadow: 6px 6px 0px #000000 !important;
+  color: #000000 !important;
+}
+div[style*="gridTemplateColumns"] button:hover {
+  background: #E0F2F1 !important;
+  box-shadow: 8px 8px 0px #000000 !important;
+  transform: translate(-2px, -2px) !important;
+}
+
+/* Interactive force graph elements */
+div[class*="graph"] {
+  background: #FFFFFF !important;
+  border: 3px solid #000000 !important;
 }
