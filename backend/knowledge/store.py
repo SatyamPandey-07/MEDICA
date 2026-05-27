@@ -98,6 +98,7 @@ class KnowledgeStore:
     def _build_frontmatter(self, paper: PaperMetadata) -> dict:
         """Build YAML frontmatter dict from paper metadata."""
         return {
+            "id": str(paper.id),
             "title": paper.title,
             "pmid": paper.pmid,
             "doi": paper.doi,

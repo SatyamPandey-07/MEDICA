@@ -102,6 +102,23 @@ class MetadataIndex:
             )
             return result.scalar_one_or_none()
 
+    async def get_id_mappings(self) -> tuple[dict[str, str], dict[str, str]]:
+        """Return mappings of {pmid: id} and {doi: id} as strings."""
+        async with get_session() as session:
+            result = await session.execute(
+                select(PaperRecord.id, PaperRecord.pmid, PaperRecord.doi)
+            )
+            rows = result.all()
+            pmid_to_id = {}
+            doi_to_id = {}
+            for row in rows:
+                paper_id = str(row[0])
+                if row[1]:
+                    pmid_to_id[str(row[1])] = paper_id
+                if row[2]:
+                    doi_to_id[str(row[2])] = paper_id
+            return pmid_to_id, doi_to_id
+
     async def get_by_id(self, paper_id: UUID) -> PaperRecord | None:
         """Fetch paper record by UUID."""
         async with get_session() as session:
