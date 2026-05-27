@@ -94,7 +94,7 @@ export default function ResearchTimelinePage() {
       </header>
 
       {/* Body */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "40px 52px" }}>
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
 
           {/* Hero heading */}
@@ -198,8 +198,8 @@ export default function ResearchTimelinePage() {
                             className="card-hover card-active-left"
                             style={{
                               display: "block",
-                              padding: "18px 20px",
-                              borderRadius: 14,
+                              padding: "24px 28px",
+                              borderRadius: 20,
                               border: "1px solid hsl(240 8% 10%)",
                               background: "linear-gradient(135deg, hsl(240 8% 5%) 0%, hsl(240 6% 6%) 100%)",
                               textDecoration: "none",

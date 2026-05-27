@@ -125,7 +125,7 @@ export default function AdminDashboardPage() {
         </div>
       </header>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "40px 52px" }}>
         {/* Hero heading */}
         <div style={{ marginBottom: 32 }}>
           <h1 style={{
@@ -165,7 +165,7 @@ export default function AdminDashboardPage() {
         <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 20, marginBottom: 28 }}>
           {/* Scraper form */}
           <div style={{
-            padding: 24, borderRadius: 16,
+            padding: "32px 36px", borderRadius: 20,
             border: "1px solid hsl(240 8% 10%)",
             background: "linear-gradient(135deg, hsl(240 8% 5%) 0%, hsl(240 6% 6%) 100%)",
           }}>
@@ -263,7 +263,7 @@ export default function AdminDashboardPage() {
 
           {/* Optimizer card */}
           <div style={{
-            padding: 24, borderRadius: 16, display: "flex", flexDirection: "column", justifyContent: "space-between",
+            padding: "32px 36px", borderRadius: 20, display: "flex", flexDirection: "column", justifyContent: "space-between",
             border: "1px solid hsl(240 8% 10%)",
             background: "linear-gradient(135deg, hsl(240 8% 5%) 0%, hsl(240 6% 6%) 100%)",
           }}>
@@ -304,7 +304,7 @@ export default function AdminDashboardPage() {
           background: "hsl(240 8% 4%)", overflow: "hidden",
         }}>
           <div style={{
-            padding: "16px 24px", borderBottom: "1px solid hsl(240 8% 8%)",
+            padding: "20px 28px", borderBottom: "1px solid hsl(240 8% 8%)",
             background: "hsl(240 10% 5%)",
             display: "flex", alignItems: "center", justifyContent: "space-between",
           }}>
@@ -366,13 +366,13 @@ export default function AdminDashboardPage() {
                         onMouseEnter={(e) => (e.currentTarget.style.background = "hsl(240 8% 6%)")}
                         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                       >
-                        <td style={{ padding: "13px 20px", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "hsl(220 8% 38%)" }} title={j.id}>
+                        <td style={{ padding: "16px 22px", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "hsl(220 8% 38%)" }} title={j.id}>
                           {j.id.substring(0, 8)}…
                         </td>
-                        <td style={{ padding: "13px 20px", fontSize: 12, fontWeight: 500, color: "hsl(220 15% 82%)", maxWidth: 220, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={j.query}>
+                        <td style={{ padding: "16px 22px", fontSize: 12, fontWeight: 500, color: "hsl(220 15% 82%)", maxWidth: 220, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={j.query}>
                           {j.query}
                         </td>
-                        <td style={{ padding: "13px 20px" }}>
+                        <td style={{ padding: "16px 22px" }}>
                           {statusBadge(j.status)}
                         </td>
                         <td style={{ padding: "13px 20px", fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>

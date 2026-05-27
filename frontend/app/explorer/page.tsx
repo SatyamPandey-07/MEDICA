@@ -102,16 +102,16 @@ export default function KnowledgeExplorerPage() {
       <div style={{ flex: 1, display: "flex", minHeight: 0, overflow: "hidden" }}>
         {/* ── Left panel: folder tree ── */}
         <div style={{
-          width: 220, flexShrink: 0,
+          width: 240, flexShrink: 0,
           borderRight: "1px solid hsl(240 8% 9%)",
           background: "hsl(240 10% 3%)",
           overflowY: "auto",
-          padding: "20px 12px",
+          padding: "28px 16px",
         }}>
           <div style={{
             fontSize: 9, fontFamily: "'JetBrains Mono', monospace",
             letterSpacing: "0.15em", color: "hsl(220 8% 28%)",
-            textTransform: "uppercase", padding: "0 8px", marginBottom: 12,
+            textTransform: "uppercase", padding: "0 10px", marginBottom: 18,
           }}>
             Cancer Directories
           </div>
@@ -122,14 +122,14 @@ export default function KnowledgeExplorerPage() {
               onClick={() => setSelectedCancer(null)}
               style={{
                 display: "flex", alignItems: "center", gap: 10,
-                padding: "8px 10px", borderRadius: 8, cursor: "pointer",
+                padding: "12px 14px", borderRadius: 12, cursor: "pointer",
                 border: "1px solid",
                 background: selectedCancer === null ? "hsl(262 50% 20% / 0.6)" : "transparent",
                 borderColor: selectedCancer === null ? "hsl(262 50% 35% / 0.4)" : "transparent",
                 color: selectedCancer === null ? "hsl(220 20% 95%)" : "hsl(220 8% 45%)",
                 fontSize: 12, fontWeight: selectedCancer === null ? 500 : 400,
                 textAlign: "left", transition: "all 0.15s ease",
-                width: "100%",
+                width: "100%", marginBottom: 4,
               }}
             >
               <Folder style={{
@@ -147,14 +147,14 @@ export default function KnowledgeExplorerPage() {
                   onClick={() => setSelectedCancer(type)}
                   style={{
                     display: "flex", alignItems: "center", gap: 10,
-                    padding: "8px 10px", borderRadius: 8, cursor: "pointer",
+                    padding: "12px 14px", borderRadius: 12, cursor: "pointer",
                     border: "1px solid",
                     background: active ? "hsl(262 50% 20% / 0.6)" : "transparent",
                     borderColor: active ? "hsl(262 50% 35% / 0.4)" : "transparent",
                     color: active ? "hsl(220 20% 95%)" : "hsl(220 8% 42%)",
                     fontSize: 12, fontWeight: active ? 500 : 400,
                     textAlign: "left", transition: "all 0.15s ease",
-                    width: "100%",
+                    width: "100%", marginBottom: 4,
                   }}
                 >
                   <Folder style={{
@@ -171,7 +171,7 @@ export default function KnowledgeExplorerPage() {
         </div>
 
         {/* ── Right panel: papers ── */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "28px 36px" }}>
+        <div style={{ flex: 1, overflowY: "auto", padding: "40px 48px" }}>
           {/* Heading row + search */}
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 24, gap: 16 }}>
             <div>
@@ -246,7 +246,7 @@ export default function KnowledgeExplorerPage() {
                     className="card-hover card-active-left"
                     style={{
                       display: "block", textDecoration: "none",
-                      padding: "18px 20px", borderRadius: 14,
+                      padding: "24px 28px", borderRadius: 20,
                       border: "1px solid hsl(240 8% 10%)",
                       background: "linear-gradient(135deg, hsl(240 8% 5%) 0%, hsl(240 6% 6%) 100%)",
                     }}

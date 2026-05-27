@@ -463,8 +463,8 @@ export default function CitationGraphPage() {
               background: "radial-gradient(ellipse at 40% 40%, hsl(262 50% 6%) 0%, hsl(240 12% 2%) 100%)" }}>
               {/* Legend HUD */}
               <div style={{
-                position: "absolute", top: 20, left: 20, zIndex: 10,
-                padding: "14px 16px", borderRadius: 12,
+                position: "absolute", top: 24, left: 24, zIndex: 10,
+                padding: "18px 22px", borderRadius: 16,
                 background: "hsl(240 10% 5% / 0.9)", backdropFilter: "blur(16px)",
                 border: "1px solid hsl(240 8% 12%)",
                 pointerEvents: "none",
@@ -501,10 +501,10 @@ export default function CitationGraphPage() {
             {/* Node detail drawer */}
             {selectedNode && (
               <div style={{
-                width: 300, flexShrink: 0, zIndex: 10,
+                width: 320, flexShrink: 0, zIndex: 10,
                 borderLeft: "1px solid hsl(240 8% 10%)",
                 background: "hsl(240 10% 4%)",
-                overflowY: "auto", padding: 24,
+                overflowY: "auto", padding: 32,
               }}>
                 <div style={{ marginBottom: 20, paddingBottom: 16, borderBottom: "1px solid hsl(240 8% 9%)" }}>
                   <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.12em", color: "hsl(262 83% 65%)", textTransform: "uppercase", marginBottom: 8 }}>
@@ -524,7 +524,7 @@ export default function CitationGraphPage() {
                     Associated Knowledge
                   </div>
                   <div style={{
-                    padding: 14, borderRadius: 10,
+                    padding: "18px 20px", borderRadius: 14,
                     border: "1px solid hsl(240 8% 12%)",
                     background: "hsl(240 8% 7%)",
                     fontSize: 12, color: "hsl(220 8% 50%)", lineHeight: 1.6,

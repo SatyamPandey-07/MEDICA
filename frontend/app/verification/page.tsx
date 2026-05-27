@@ -136,7 +136,7 @@ export default function VerificationDashboardPage() {
         </div>
       </header>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "40px 52px" }}>
         {/* Hero heading */}
         <div style={{ marginBottom: 32 }}>
           <h1 style={{
@@ -194,7 +194,7 @@ export default function VerificationDashboardPage() {
             }}>
               {/* Toolbar */}
               <div style={{
-                padding: "16px 24px",
+                padding: "20px 28px",
                 borderBottom: "1px solid hsl(240 8% 8%)",
                 background: "hsl(240 10% 5%)",
                 display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
@@ -253,7 +253,7 @@ export default function VerificationDashboardPage() {
                       }}>
                         {["Trial ID / PMID", "Clinical Study", "Evidence Level", "Confidence", "Quality Flags", ""].map((h) => (
                           <th key={h} style={{
-                            padding: "12px 20px", textAlign: "left",
+                            padding: "16px 24px", textAlign: "left",
                             fontSize: 9, fontFamily: "'JetBrains Mono', monospace",
                             letterSpacing: "0.1em", color: "hsl(220 8% 30%)", textTransform: "uppercase",
                             fontWeight: 600,
@@ -278,7 +278,7 @@ export default function VerificationDashboardPage() {
                             onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                           >
                             {/* PMID */}
-                            <td style={{ padding: "14px 20px" }}>
+                            <td style={{ padding: "18px 24px" }}>
                               {p.pmid ? (
                                 <a
                                   href={`https://pubmed.ncbi.nlm.nih.gov/${p.pmid}/`}
@@ -300,7 +300,7 @@ export default function VerificationDashboardPage() {
                             </td>
 
                             {/* Title */}
-                            <td style={{ padding: "14px 20px", maxWidth: 320 }}>
+                            <td style={{ padding: "18px 24px", maxWidth: 320 }}>
                               <div style={{
                                 fontSize: 12, fontWeight: 500, color: "hsl(220 15% 85%)",
                                 overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
@@ -323,7 +323,7 @@ export default function VerificationDashboardPage() {
                             </td>
 
                             {/* Confidence */}
-                            <td style={{ padding: "14px 20px" }}>
+                            <td style={{ padding: "18px 24px" }}>
                               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                                 <span style={{
                                   fontFamily: "'JetBrains Mono', monospace", fontSize: 12,
@@ -344,7 +344,7 @@ export default function VerificationDashboardPage() {
                             </td>
 
                             {/* Flags */}
-                            <td style={{ padding: "14px 20px" }}>
+                            <td style={{ padding: "18px 24px" }}>
                               {flags.length === 0 ? (
                                 <span style={{
                                   fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
@@ -371,7 +371,7 @@ export default function VerificationDashboardPage() {
                             </td>
 
                             {/* Action */}
-                            <td style={{ padding: "14px 20px", textAlign: "right" }}>
+                            <td style={{ padding: "18px 24px", textAlign: "right" }}>
                               <Link
                                 href={`/papers/${p.id}`}
                                 style={{

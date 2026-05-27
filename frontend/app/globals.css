@@ -648,12 +648,8 @@ a[class*="card-hover"] span[style*="color: hsl(262"] {
   font-weight: 800 !important;
 }
 
-/* ============================================================
-   AGGRESSIVE BACKDROP OVERRIDES (Resolves "Blackboxes")
-   Eliminates all dark-mode custom/inline background utility colors.
-   ============================================================ */
-
-/* Intercept any element with custom dark backgrounds or Tailwind dark-mode utilities */
+/* Strip known dark Tailwind utility background classes only */
+/* Do NOT intercept inline hsl() style values — those are intentional page styles */
 [class*="bg-[#0"],
 [class*="bg-[#1"],
 [class*="bg-[#2"],
@@ -662,35 +658,26 @@ a[class*="card-hover"] span[style*="color: hsl(262"] {
 [class*="bg-gray-"],
 [class*="bg-neutral-"],
 [class*="bg-stone-"],
-[class*="bg-black"],
-[style*="background: hsl("],
-[style*="background: \"hsl("],
-[style*="background-color: hsl("],
-[style*="background-color: \"hsl("],
-[style*="background: radial-gradient"],
-[style*="background: linear-gradient"],
-[style*="background:linear-gradient"] {
+[class*="bg-black"] {
   background-color: #FAF8F5 !important;
   background: #FAF8F5 !important;
   background-image: none !important;
 }
 
-/* Ensure structured panels and card containers are clean neobrutalist white or colored boxes */
-div[style*="flex: 1"][style*="overflowY"],
-div[style*="flex: 1"][style*="overflow-y"],
-div[class*="overflow-y-auto"],
-div[class*="overflow-y-"],
-main div,
-main section,
-article,
+/* Ensure only real structured CARD containers get neobrutalist treatment */
+/* Do NOT target main div or every section — only explicit card wrappers */
 .card-hover,
-[class*="card-hover"] {
+[class*="card-hover"],
+.glass,
+.glass-card,
+.glass-elevated {
   background-color: #FFFFFF !important;
   background: #FFFFFF !important;
   background-image: none !important;
   border: 3px solid #000000 !important;
   border-radius: 20px !important;
   box-shadow: 6px 6px 0px #000000 !important;
+  padding: 24px 28px !important;
 }
 
 /* Intercept dark panels and containers and force them to clean neobrutalist white */
@@ -770,3 +757,123 @@ div[style*="radial-gradient(ellipse"] {
   background-image: none !important;
   background-color: #FAF8F5 !important;
 }
+
+/* ============================================================
+   UNIVERSAL NEOBRUTALIST PADDING SYSTEM
+   Provides generous breathing room across all pages & components
+   ============================================================ */
+
+/* Page-level top-level content wrappers — generous gutters */
+main > div,
+[role="main"] > div {
+  padding: 0 !important; /* Let individual pages control their own spacing */
+}
+
+/* Sidebar nav items — spacious pill-shaped links */
+aside nav a,
+aside nav button,
+aside [role="button"] {
+  padding: 12px 18px !important;
+  margin-bottom: 6px !important;
+}
+
+/* Sidebar section dividers & group headers */
+aside [class*="py-"],
+aside [class*="px-"],
+aside > div {
+  padding: 20px 16px !important;
+}
+
+/* Page sticky headers — consistent vertical rhythm */
+header.page-header,
+.page-header {
+  padding: 20px 32px !important;
+}
+
+/* Table cells — consistent comfortable padding */
+td {
+  padding: 16px 22px !important;
+}
+th {
+  padding: 14px 22px !important;
+}
+
+/* Badges — never cramped */
+.badge,
+span[class*="badge"],
+span[style*="border-radius"],
+[class*="rounded"][class*="px-"],
+[class*="rounded"][class*="py-"] {
+  padding: 5px 14px !important;
+  line-height: 1.5 !important;
+}
+
+/* Input wrappers & form rows */
+.input-wrapper,
+[class*="input-group"],
+form > div,
+fieldset {
+  padding: 16px 20px !important;
+  margin-bottom: 16px !important;
+}
+
+/* Toolbar / action bar strips */
+[class*="toolbar"],
+[class*="action-bar"],
+[class*="filter-bar"] {
+  padding: 16px 24px !important;
+}
+
+/* Neobrutalist panel cards (white bordered boxes) */
+.neo-card,
+[class*="neo-card"],
+[class*="panel"],
+[class*="info-card"] {
+  padding: 28px 32px !important;
+}
+
+/* Scrollable content regions */
+[class*="overflow-y-auto"],
+[class*="overflow-auto"] {
+  padding: 32px 40px !important;
+}
+
+/* Stat / metric number boxes */
+.stat-card,
+[class*="stat-card"],
+[class*="metric-"] {
+  padding: 28px 32px !important;
+}
+
+/* Empty state + loading placeholders */
+[class*="empty-state"],
+[class*="loading-state"],
+[class*="placeholder"] {
+  padding: 48px 32px !important;
+}
+
+/* Dropdown menus */
+[role="menu"],
+[class*="dropdown"] {
+  padding: 8px !important;
+}
+[role="menuitem"],
+[class*="menu-item"] {
+  padding: 10px 16px !important;
+}
+
+/* Tooltip bubbles */
+[role="tooltip"],
+[class*="tooltip"] {
+  padding: 8px 14px !important;
+}
+
+/* Code / monospace blocks */
+code,
+kbd {
+  padding: 3px 8px !important;
+  border-radius: 6px !important;
+  background: #F4F6F6 !important;
+  border: 1.5px solid #000000 !important;
+}
+

@@ -243,7 +243,7 @@ export default function ChatPage() {
       {/* ============================================================
           CHAT MESSAGES THREAD CONTAINER
          ============================================================ */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "40px 52px" }}>
         {messages.length === 0 && !currentAnswer && !isStreaming ? (
           /* Welcome Screen */
           <div style={{ maxWidth: 680, margin: "0 auto", paddingTop: 40 }}>
@@ -277,7 +277,7 @@ export default function ChatPage() {
                   key={idx}
                   onClick={() => handleSend(s)}
                   style={{
-                    padding: "16px 18px", borderRadius: 12, cursor: "pointer",
+                    padding: "20px 22px", borderRadius: 16, cursor: "pointer",
                     border: "1px solid hsl(240 8% 12%)",
                     background: "linear-gradient(135deg, hsl(240 8% 5%) 0%, hsl(240 6% 7%) 100%)",
                     textAlign: "left", display: "flex", flexDirection: "column",
@@ -310,7 +310,7 @@ export default function ChatPage() {
               <div key={idx} style={{ marginBottom: 24 }}>
                 {/* Chat message */}
                 <div style={{
-                  display: "flex", gap: 14, padding: "18px 20px", borderRadius: 14,
+                  display: "flex", gap: 16, padding: "24px 28px", borderRadius: 20,
                   border: "1px solid",
                   borderColor: m.role === "user" ? "hsl(240 8% 10%)" : "hsl(262 30% 14%)",
                   background: m.role === "user"
@@ -414,7 +414,7 @@ export default function ChatPage() {
                 {/* Streaming content */}
                 {currentAnswer && (
                   <div style={{
-                    display: "flex", gap: 14, padding: "18px 20px", borderRadius: 14,
+                    display: "flex", gap: 16, padding: "24px 28px", borderRadius: 20,
                     border: "1px solid hsl(262 30% 14%)",
                     background: "linear-gradient(135deg, hsl(262 30% 6%), hsl(240 8% 6%))",
                   }}>
@@ -454,7 +454,7 @@ export default function ChatPage() {
 
       {/* Input footer */}
       <footer style={{
-        padding: "16px 32px 24px",
+        padding: "20px 40px 28px",
         borderTop: "1px solid hsl(240 8% 9%)",
         background: "hsl(240 10% 3%)",
         flexShrink: 0,
