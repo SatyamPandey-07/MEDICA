@@ -622,12 +622,53 @@ a[class*="card-hover"] span[style*="color: hsl(262"] {
    Eliminates all dark-mode custom/inline background utility colors.
    ============================================================ */
 
+/* Intercept any element with custom dark backgrounds or Tailwind dark-mode utilities */
+[class*="bg-[#0"],
+[class*="bg-[#1"],
+[class*="bg-[#2"],
+[class*="bg-slate-"],
+[class*="bg-zinc-"],
+[class*="bg-gray-"],
+[class*="bg-neutral-"],
+[class*="bg-stone-"],
+[class*="bg-black"],
+[style*="background: hsl("],
+[style*="background: \"hsl("],
+[style*="background-color: hsl("],
+[style*="background-color: \"hsl("],
+[style*="background: radial-gradient"],
+[style*="background: linear-gradient"],
+[style*="background:linear-gradient"] {
+  background-color: #FAF8F5 !important;
+  background: #FAF8F5 !important;
+  background-image: none !important;
+}
+
+/* Ensure structured panels and card containers are clean neobrutalist white or colored boxes */
+div[style*="flex: 1"][style*="overflowY"],
+div[style*="flex: 1"][style*="overflow-y"],
+div[class*="overflow-y-auto"],
+div[class*="overflow-y-"],
+main div,
+main section,
+article,
+.card-hover,
+[class*="card-hover"] {
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+  background-image: none !important;
+  border: 3px solid #000000 !important;
+  border-radius: 20px !important;
+  box-shadow: 6px 6px 0px #000000 !important;
+}
+
 /* Intercept dark panels and containers and force them to clean neobrutalist white */
 [class*="bg-[#0c0c0f]"],
 [class*="bg-[#07070a]"],
 [class*="bg-[#050508]"],
 [class*="bg-[#0c0c0f]"] *,
 [class*="bg-[#07070a]"] *,
+[class*="bg-slate-955"],
 [class*="bg-slate-950"],
 [class*="bg-slate-900"],
 [class*="bg-zinc-950"],
@@ -636,6 +677,7 @@ a[class*="card-hover"] span[style*="color: hsl(262"] {
 [class*="bg-gray-900"] {
   background-color: #FFFFFF !important;
   background: #FFFFFF !important;
+  background-image: none !important;
 }
 
 /* Force light gray background instead of black for the page viewer container */
@@ -689,4 +731,11 @@ span[class*="text-slate-300"],
 span[class*="text-slate-400"],
 strong[class*="text-white"] {
   color: #000000 !important;
+}
+
+/* Enforce stark background for graph physics nodes map */
+div[style*="radial-gradient(ellipse"] {
+  background: #FAF8F5 !important;
+  background-image: none !important;
+  background-color: #FAF8F5 !important;
 }
