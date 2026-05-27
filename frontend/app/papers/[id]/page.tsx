@@ -102,14 +102,14 @@ export default function PaperViewerPage() {
       </header>
 
       {/* Main Console Layout */}
-      <div className="flex-1 overflow-y-auto p-8">
-        <div className="max-w-5xl mx-auto space-y-8">
+      <div className="flex-1 overflow-y-auto p-10">
+        <div className="max-w-5xl mx-auto space-y-10">
           {/* ============================================================
               HEADER: CLINICAL PROFILE OVERVIEW
              ============================================================ */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Status indicators */}
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-3">
               <span className={`px-2.5 py-0.5 rounded text-[10px] uppercase font-mono tracking-widest font-bold ${
                 paper.verification_status === "verified"
                   ? "text-emerald-400 bg-emerald-950/20 border border-emerald-500/20"
@@ -135,7 +135,7 @@ export default function PaperViewerPage() {
             </h1>
 
             {/* General Metadata */}
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-400">
+            <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-xs text-slate-400">
               <span className="flex items-center gap-1.5 shrink-0">
                 <Clock className="w-3.5 h-3.5 text-slate-500" />
                 {dateStr}
@@ -149,7 +149,7 @@ export default function PaperViewerPage() {
             </div>
 
             {/* Author list */}
-            <div className="flex items-start gap-2 text-xs text-slate-400 border-t border-[#15151a] pt-4">
+            <div className="flex items-start gap-3 text-xs text-slate-400 border-t border-[#15151a] pt-5">
               <User className="w-3.5 h-3.5 text-slate-500 mt-0.5 shrink-0" />
               <div>
                 <strong className="text-slate-300">Authors:</strong> {paper.authors.join(", ")}
@@ -192,23 +192,23 @@ export default function PaperViewerPage() {
             {/* LEFT / CENTER COLUMN: EVIDENCE & OUTCOMES */}
             <div className="lg:col-span-2 space-y-6">
               {/* Abstract card */}
-              <div className="p-6 rounded-xl border border-[#15151a] bg-slate-950/20 space-y-3">
-                <h3 className="text-sm font-semibold text-white uppercase tracking-wider font-display border-b border-[#15151a] pb-2">
+              <div className="p-8 rounded-2xl border border-[#15151a] bg-slate-950/20 space-y-4">
+                <h3 className="text-sm font-semibold text-white uppercase tracking-widest font-display border-b border-[#15151a] pb-3 mb-2">
                   Paper Abstract
                 </h3>
-                <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
+                <p className="text-sm text-slate-300 leading-[2] tracking-wide whitespace-pre-wrap">
                   {paper.abstract || "No abstract content indexed."}
                 </p>
               </div>
 
               {/* Extracted claims checklist */}
-              <div className="p-6 rounded-xl border border-[#15151a] bg-slate-950/20 space-y-4">
-                <h3 className="text-sm font-semibold text-white uppercase tracking-wider font-display border-b border-[#15151a] pb-2">
+              <div className="p-8 rounded-2xl border border-[#15151a] bg-slate-950/20 space-y-5">
+                <h3 className="text-sm font-semibold text-white uppercase tracking-widest font-display border-b border-[#15151a] pb-3 mb-2">
                   Extracted Scientific Claims
                 </h3>
                 {paper.keywords && paper.keywords.length > 0 ? (
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2.5 p-3.5 rounded-lg bg-[#07070a] border border-[#15151a] text-xs">
+                    <div className="flex items-start gap-3 p-5 rounded-xl bg-[#07070a] border border-[#15151a] text-xs">
                       <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
                       <div className="text-slate-300 leading-normal">
                         Claim: Efficacy of therapeutics matches the oncology target mutations.
@@ -227,30 +227,30 @@ export default function PaperViewerPage() {
             {/* RIGHT COLUMN: CLASSIFICATION & ADVERSARIAL SKEPTICISM */}
             <div className="space-y-6">
               {/* Study Stats Profile card */}
-              <div className="p-5 rounded-xl border border-[#15151a] bg-[#0c0c0f]">
+              <div className="p-6 rounded-2xl border border-[#15151a] bg-[#0c0c0f]">
                 <h4 className="text-[10px] font-mono tracking-widest text-slate-500 uppercase mb-3">
                   Clinical Profile
                 </h4>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-xs py-1.5 border-b border-[#15151a]">
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-xs py-3 border-b border-[#15151a]">
                     <span className="text-slate-400">Database Source</span>
                     <span className="font-mono text-white capitalize">{paper.source}</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs py-1.5 border-b border-[#15151a]">
+                  <div className="flex items-center justify-between text-xs py-3 border-b border-[#15151a]">
                     <span className="text-slate-400">Evidence Level</span>
                     <span className="font-semibold text-purple-400 capitalize">
                       {paper.evidence_level.replace("_", " ")}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-xs py-1.5 border-b border-[#15151a]">
+                  <div className="flex items-center justify-between text-xs py-3 border-b border-[#15151a]">
                     <span className="text-slate-400">Verification Rank</span>
                     <span className="font-mono text-white font-bold">{paper.confidence_score.toFixed(2)}</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs py-1.5 border-b border-[#15151a]">
+                  <div className="flex items-center justify-between text-xs py-3 border-b border-[#15151a]">
                     <span className="text-slate-400">Study Type</span>
                     <span className="font-mono text-white capitalize">{paper.study_type.replace("_", " ")}</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs py-1.5">
+                  <div className="flex items-center justify-between text-xs py-3">
                     <span className="text-slate-400">Trial Phase</span>
                     <span className="font-mono text-white capitalize">
                       {paper.trial_phase ? paper.trial_phase.replace("_", " ") : "N/A"}
@@ -260,20 +260,20 @@ export default function PaperViewerPage() {
               </div>
 
               {/* Taxonomy Tags Panel */}
-              <div className="p-5 rounded-xl border border-[#15151a] bg-[#0c0c0f] space-y-4">
+              <div className="p-6 rounded-2xl border border-[#15151a] bg-[#0c0c0f] space-y-5">
                 <h4 className="text-[10px] font-mono tracking-widest text-slate-500 uppercase">
                   Taxonomy Mapping
                 </h4>
 
                 {paper.tags && (
-                  <div className="space-y-3">
+                  <div className="space-y-5">
                     {/* Cancers */}
                     {paper.tags.cancer && paper.tags.cancer.length > 0 && (
                       <div>
                         <div className="text-[9px] font-mono text-slate-500 mb-1">Cancers:</div>
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-2">
                           {paper.tags.cancer.map((c) => (
-                            <span key={c} className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-[10px] text-slate-300">
+                            <span key={c} className="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-slate-300">
                               {c.replace(/_/g, " ")}
                             </span>
                           ))}
@@ -285,9 +285,9 @@ export default function PaperViewerPage() {
                     {paper.tags.drugs && paper.tags.drugs.length > 0 && (
                       <div>
                         <div className="text-[9px] font-mono text-slate-500 mb-1">Therapeutics:</div>
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-2">
                           {paper.tags.drugs.map((d) => (
-                            <span key={d} className="px-2 py-0.5 rounded bg-purple-950/20 border border-purple-500/10 text-[10px] text-purple-300">
+                            <span key={d} className="px-3 py-1 rounded-lg bg-purple-950/20 border border-purple-500/10 text-[11px] text-purple-300">
                               {d}
                             </span>
                           ))}
@@ -299,9 +299,9 @@ export default function PaperViewerPage() {
                     {paper.tags.biomarkers && paper.tags.biomarkers.length > 0 && (
                       <div>
                         <div className="text-[9px] font-mono text-slate-500 mb-1">Mutations / Targets:</div>
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-2">
                           {paper.tags.biomarkers.map((b) => (
-                            <span key={b} className="px-2 py-0.5 rounded bg-blue-950/20 border border-blue-500/10 text-[10px] text-blue-300">
+                            <span key={b} className="px-3 py-1 rounded-lg bg-blue-950/20 border border-blue-500/10 text-[11px] text-blue-300">
                               {b}
                             </span>
                           ))}
@@ -313,9 +313,9 @@ export default function PaperViewerPage() {
                     {paper.tags.treatment && paper.tags.treatment.length > 0 && (
                       <div>
                         <div className="text-[9px] font-mono text-slate-500 mb-1">Therapeutic Classes:</div>
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-2">
                           {paper.tags.treatment.map((t) => (
-                            <span key={t} className="px-2 py-0.5 rounded bg-emerald-950/20 border border-emerald-500/10 text-[10px] text-emerald-300">
+                            <span key={t} className="px-3 py-1 rounded-lg bg-emerald-950/20 border border-emerald-500/10 text-[11px] text-emerald-300">
                               {t}
                             </span>
                           ))}
@@ -327,12 +327,12 @@ export default function PaperViewerPage() {
               </div>
 
               {/* Adversarial Review panel */}
-              <div className="p-5 rounded-xl border border-rose-500/10 bg-rose-950/5 space-y-3">
+              <div className="p-6 rounded-2xl border border-rose-500/10 bg-rose-950/5 space-y-4">
                 <div className="flex items-center gap-2 text-rose-400 font-semibold text-xs font-mono uppercase tracking-wider">
                   <AlertTriangle className="w-4 h-4 text-rose-500" />
                   <span>Adversarial Review</span>
                 </div>
-                <div className="text-xs text-rose-300/80 leading-relaxed space-y-2">
+                <div className="text-xs text-rose-300/80 leading-[1.9] tracking-wide space-y-3">
                   <p>
                     <strong>Study Skeptic Assessment</strong>: This paper is classified as a{" "}
                     <strong>{paper.study_type.replace("_", " ")}</strong> (Evidence Level:{" "}

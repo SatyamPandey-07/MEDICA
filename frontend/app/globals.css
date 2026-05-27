@@ -55,7 +55,9 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-  letter-spacing: -0.015em;
+  letter-spacing: 0.005em;
+  word-spacing: 0.04em;
+  line-height: 1.75;
 }
 
 /* Force layout backgrounds to warm light beige */
@@ -345,18 +347,20 @@ div[class*="graph"] {
 h1, h2, h3, h4, h5, h6 {
   color: #000000 !important;
   font-weight: 800 !important;
-  line-height: 1.35 !important; /* Elegant neobrutalist heading height */
-  letter-spacing: -0.025em !important; /* Tight clean professional spacing */
-  margin-bottom: 16px !important; /* Increased whitespace below headings */
+  line-height: 1.4 !important;          /* Slightly more open heading height */
+  letter-spacing: -0.02em !important;   /* Tight but not cramped */
+  margin-bottom: 20px !important;       /* Extra whitespace below headings */
+  word-spacing: 0.02em !important;
 }
 p, li, label, dt, dd, summary, blockquote {
   color: #111111 !important;
-  line-height: 1.8 !important; /* Open, clean, readable body line height */
-  letter-spacing: -0.01em !important; /* Easy on the eyes */
-  margin-bottom: 12px !important; /* Generous spacing below text blocks */
+  line-height: 2.0 !important;          /* Very open, readable body line height */
+  letter-spacing: 0.01em !important;    /* Slight positive spacing — less cramped */
+  word-spacing: 0.06em !important;      /* Words breathe from each other */
+  margin-bottom: 16px !important;       /* More whitespace between blocks */
 }
 li {
-  margin-bottom: 8px !important;
+  margin-bottom: 10px !important;
 }
 strong, b {
   color: #000000 !important;

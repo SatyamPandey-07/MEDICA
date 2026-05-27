@@ -116,12 +116,12 @@ export default function CitationGraphPage() {
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
-    // Color definitions
+    // Color definitions — vivid neobrutalist palette visible on light/cream background
     const colors: Record<string, { fill: string; stroke: string; glow: string }> = {
-      cancer: { fill: "#4c1d95", stroke: "#a78bfa", glow: "rgba(167, 139, 250, 0.4)" }, // Violet
-      drug: { fill: "#1e3a8a", stroke: "#60a5fa", glow: "rgba(96, 165, 250, 0.4)" },    // Blue
-      biomarker: { fill: "#064e3b", stroke: "#34d399", glow: "rgba(52, 211, 153, 0.4)" }, // Emerald
-      treatment: { fill: "#78350f", stroke: "#fbbf24", glow: "rgba(251, 191, 36, 0.4)" }, // Amber
+      cancer:    { fill: "#7C3AED", stroke: "#000000", glow: "rgba(124,58,237,0.25)" }, // Bold violet
+      drug:      { fill: "#0EA5E9", stroke: "#000000", glow: "rgba(14,165,233,0.25)" }, // Vivid sky blue
+      biomarker: { fill: "#10B981", stroke: "#000000", glow: "rgba(16,185,129,0.25)" }, // Bright emerald
+      treatment: { fill: "#F59E0B", stroke: "#000000", glow: "rgba(245,158,11,0.25)" }, // Vibrant amber
     };
 
     // Main Physics loop (simple Verlet force-directed)
@@ -214,26 +214,39 @@ export default function CitationGraphPage() {
         n.y = Math.max(n.radius, Math.min(h - n.radius, n.y));
       }
 
-      // 2. Drawing Calculations
+      // 2. Drawing
       ctx.clearRect(0, 0, w, h);
 
-      // Draw Edges (Glow and Lines)
+      // ── Background: warm cream with subtle dot grid ──
+      ctx.fillStyle = "#FAF8F5";
+      ctx.fillRect(0, 0, w, h);
+      // Dot grid pattern
+      const gridSpacing = 28;
+      ctx.fillStyle = "rgba(0,0,0,0.06)";
+      for (let gx = 0; gx < w; gx += gridSpacing) {
+        for (let gy = 0; gy < h; gy += gridSpacing) {
+          ctx.beginPath();
+          ctx.arc(gx, gy, 1.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Draw Edges
       ctx.lineWidth = 1;
       for (const edge of edges) {
         const n1 = nodes.find((n) => n.id === edge.source);
         const n2 = nodes.find((n) => n.id === edge.target);
         if (!n1 || !n2) continue;
 
-        // Highlight active connections
         const isHoveredEdge = hoveredNode && (hoveredNode.id === n1.id || hoveredNode.id === n2.id);
         const isSelectedEdge = selectedNode && (selectedNode.id === n1.id || selectedNode.id === n2.id);
 
         if (isHoveredEdge || isSelectedEdge) {
-          ctx.strokeStyle = "rgba(167, 139, 250, 0.4)";
-          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = "rgba(0, 0, 0, 0.55)";
+          ctx.lineWidth = 2;
         } else {
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.04)";
-          ctx.lineWidth = 0.8;
+          ctx.strokeStyle = "rgba(0, 0, 0, 0.12)";
+          ctx.lineWidth = 1;
         }
 
         ctx.beginPath();
@@ -248,27 +261,27 @@ export default function CitationGraphPage() {
         const isHovered = hoveredNode?.id === n.id;
         const isSelected = selectedNode?.id === n.id;
 
-        // Node Glow Shadow
+        // Outer glow (light shadow on cream bg)
         if (isHovered || isSelected) {
-          ctx.shadowBlur = 15;
-          ctx.shadowColor = c.stroke;
+          ctx.shadowBlur = 18;
+          ctx.shadowColor = c.fill;
         } else {
           ctx.shadowBlur = 0;
         }
 
-        // Draw outer node border circle
+        // Node circle
         ctx.fillStyle = c.fill;
-        ctx.strokeStyle = isHovered || isSelected ? "#ffffff" : c.stroke;
-        ctx.lineWidth = isHovered || isSelected ? 2 : 1;
+        ctx.strokeStyle = isHovered || isSelected ? "#000000" : "#000000";
+        ctx.lineWidth = isHovered || isSelected ? 3 : 2;
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
 
-        ctx.shadowBlur = 0; // Reset shadow
+        ctx.shadowBlur = 0;
 
-        // Label details text
-        ctx.fillStyle = isHovered || isSelected ? "#ffffff" : "#94a3b8";
+        // Label
+        ctx.fillStyle = isHovered || isSelected ? "#000000" : "#333333";
         ctx.font = isHovered || isSelected ? "bold 10px Inter" : "9px Inter";
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
@@ -359,22 +372,25 @@ export default function CitationGraphPage() {
             </div>
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      {/* Header buttons */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {/* Rebuild button */}
           <button
             onClick={handleRebuild}
             disabled={rebuilding}
             style={{
-              display: "flex", alignItems: "center", gap: 7,
-              padding: "6px 12px", borderRadius: 8, cursor: rebuilding ? "not-allowed" : "pointer",
-              background: "linear-gradient(135deg, hsl(174 80% 30%), hsl(196 80% 36%))",
-              border: "none", color: "white", fontSize: 11, fontWeight: 600,
-              boxShadow: rebuilding ? "none" : "0 2px 12px hsl(174 70% 30% / 0.35)",
+              display: "flex", alignItems: "center", gap: 8,
+              padding: "10px 20px", borderRadius: "9999px", cursor: rebuilding ? "not-allowed" : "pointer",
+              background: "#FFE57F",
+              border: "3px solid #000000",
+              color: "#000000", fontSize: 12, fontWeight: 800,
+              boxShadow: rebuilding ? "none" : "4px 4px 0px #000000",
               transition: "all 0.15s ease", opacity: rebuilding ? 0.6 : 1,
+              letterSpacing: "0.06em", textTransform: "uppercase",
             }}
             title="Rebuild graph from all indexed papers"
           >
-            <Sparkles style={{ width: 12, height: 12, animation: rebuilding ? "spin 1s linear infinite" : "none" }} />
+            <Sparkles style={{ width: 13, height: 13, animation: rebuilding ? "spin 1s linear infinite" : "none" }} />
             {rebuilding ? "Building..." : "Rebuild Graph"}
           </button>
 
@@ -382,14 +398,17 @@ export default function CitationGraphPage() {
           <button
             onClick={loadGraph}
             style={{
-              width: 30, height: 30, borderRadius: 8, cursor: "pointer",
+              width: 36, height: 36, borderRadius: "9999px", cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
-              background: "hsl(240 8% 8%)", border: "1px solid hsl(240 8% 14%)",
-              color: "hsl(220 8% 45%)", transition: "all 0.15s ease",
+              background: "#FFFFFF",
+              border: "3px solid #000000",
+              color: "#000000",
+              boxShadow: "3px 3px 0px #000000",
+              transition: "all 0.15s ease",
             }}
             title="Reload Graph"
           >
-            <RefreshCw style={{ width: 13, height: 13 }} />
+            <RefreshCw style={{ width: 14, height: 14 }} />
           </button>
         </div>
       </header>
@@ -397,11 +416,13 @@ export default function CitationGraphPage() {
       {/* Rebuild status message */}
       {rebuildMsg && (
         <div style={{
-          margin: "0 24px", padding: "10px 16px", borderRadius: 8,
-          background: rebuildMsg.ok ? "hsl(174 60% 9%)" : "hsl(0 50% 10%)",
-          border: `1px solid ${rebuildMsg.ok ? "hsl(174 60% 20%)" : "hsl(0 50% 20%)"}`,
-          color: rebuildMsg.ok ? "hsl(174 80% 52%)" : "hsl(0 70% 60%)",
+          margin: "0 32px", padding: "14px 22px", borderRadius: 16,
+          background: rebuildMsg.ok ? "#E0F2F1" : "#FFEBEE",
+          border: `3px solid ${rebuildMsg.ok ? "#004D40" : "#B71C1C"}`,
+          color: rebuildMsg.ok ? "#004D40" : "#B71C1C",
           fontSize: 12, fontFamily: "'JetBrains Mono', monospace",
+          fontWeight: 700,
+          boxShadow: `4px 4px 0px ${rebuildMsg.ok ? "#004D40" : "#B71C1C"}`,
         }}>
           {rebuildMsg.text}
         </div>
@@ -458,32 +479,39 @@ export default function CitationGraphPage() {
           </div>
         ) : (
           <>
-            {/* Physics canvas */}
-            <div style={{ flex: 1, height: "100%", position: "relative", overflow: "hidden",
-              background: "radial-gradient(ellipse at 40% 40%, hsl(262 50% 6%) 0%, hsl(240 12% 2%) 100%)" }}>
-              {/* Legend HUD */}
+            {/* Physics canvas — warm cream background applied in canvas draw loop */}
+            <div style={{
+              flex: 1, height: "100%", position: "relative", overflow: "hidden",
+              background: "#FAF8F5",
+              border: "3px solid #000000",
+              borderRadius: 20,
+              margin: 20,
+              boxShadow: "8px 8px 0px #000000",
+            }}>
+              {/* Legend HUD — neobrutalist card */}
               <div style={{
-                position: "absolute", top: 24, left: 24, zIndex: 10,
+                position: "absolute", top: 20, left: 20, zIndex: 10,
                 padding: "18px 22px", borderRadius: 16,
-                background: "hsl(240 10% 5% / 0.9)", backdropFilter: "blur(16px)",
-                border: "1px solid hsl(240 8% 12%)",
+                background: "#FFFFFF",
+                border: "3px solid #000000",
+                boxShadow: "4px 4px 0px #000000",
                 pointerEvents: "none",
               }}>
-                <div style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "hsl(220 20% 80%)", fontWeight: 600, marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
-                  <Info style={{ width: 12, height: 12, color: "hsl(262 83% 68%)" }} />
-                  MAP KEY
+                <div style={{ fontSize: 11, fontFamily: "'JetBrains Mono', monospace", color: "#000000", fontWeight: 800, marginBottom: 12, display: "flex", alignItems: "center", gap: 6, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                  <Info style={{ width: 12, height: 12, color: "#7C3AED" }} />
+                  Map Key
                 </div>
                 {[
-                  { label: "Cancer Types", dot: "hsl(262 50% 55%)" },
-                  { label: "Drugs / Inhibitors", dot: "hsl(217 91% 58%)" },
-                  { label: "Biomarkers / Genes", dot: "hsl(150 76% 46%)" },
+                  { label: "Cancer Types",      dot: "#7C3AED" },
+                  { label: "Drugs / Inhibitors", dot: "#0EA5E9" },
+                  { label: "Biomarkers / Genes", dot: "#10B981" },
                 ].map((item) => (
-                  <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "hsl(220 8% 45%)" }}>
-                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: item.dot, flexShrink: 0, boxShadow: `0 0 6px ${item.dot}` }} />
+                  <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, fontSize: 11, fontFamily: "'JetBrains Mono', monospace", color: "#000000", fontWeight: 600 }}>
+                    <span style={{ width: 10, height: 10, borderRadius: "50%", background: item.dot, flexShrink: 0, border: "2px solid #000000" }} />
                     {item.label}
                   </div>
                 ))}
-                <div style={{ fontSize: 9, color: "hsl(220 8% 28%)", fontFamily: "'JetBrains Mono', monospace", borderTop: "1px solid hsl(240 8% 10%)", paddingTop: 8, marginTop: 4, lineHeight: 1.7 }}>
+                <div style={{ fontSize: 9, color: "#555555", fontFamily: "'JetBrains Mono', monospace", borderTop: "2px solid #000000", paddingTop: 10, marginTop: 6, lineHeight: 1.8 }}>
                   * Drag nodes to adjust physics<br />* Click a node to inspect it
                 </div>
               </div>
@@ -498,48 +526,57 @@ export default function CitationGraphPage() {
               />
             </div>
 
-            {/* Node detail drawer */}
+            {/* Node detail drawer — neobrutalist white card */}
             {selectedNode && (
               <div style={{
                 width: 320, flexShrink: 0, zIndex: 10,
-                borderLeft: "1px solid hsl(240 8% 10%)",
-                background: "hsl(240 10% 4%)",
-                overflowY: "auto", padding: 32,
+                borderLeft: "none",
+                background: "#FFFFFF",
+                border: "3px solid #000000",
+                borderRadius: 20,
+                boxShadow: "8px 8px 0px #000000",
+                margin: 20,
+                marginLeft: 0,
+                overflowY: "auto", padding: 28,
               }}>
-                <div style={{ marginBottom: 20, paddingBottom: 16, borderBottom: "1px solid hsl(240 8% 9%)" }}>
-                  <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.12em", color: "hsl(262 83% 65%)", textTransform: "uppercase", marginBottom: 8 }}>
+                <div style={{ marginBottom: 20, paddingBottom: 18, borderBottom: "3px solid #000000" }}>
+                  <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.12em", color: "#7C3AED", textTransform: "uppercase", marginBottom: 10, fontWeight: 700 }}>
                     {typeLabels[selectedNode.type] || "Node Entity"}
                   </div>
-                  <h3 style={{ fontSize: 17, fontWeight: 700, color: "hsl(220 20% 95%)", lineHeight: 1.4, marginBottom: 12, letterSpacing: "-0.01em" }}>
+                  <h3 style={{ fontSize: 18, fontWeight: 800, color: "#000000", lineHeight: 1.35, marginBottom: 14, letterSpacing: "-0.02em" }}>
                     {selectedNode.label}
                   </h3>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "hsl(220 8% 45%)" }}>
-                    <Activity style={{ width: 13, height: 13, color: "hsl(150 76% 50%)" }} />
-                    Active in <strong style={{ color: "hsl(220 20% 92%)", marginLeft: 4 }}>{selectedNode.papers_count}</strong>&nbsp;clinical trials
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#444444", fontWeight: 600 }}>
+                    <Activity style={{ width: 14, height: 14, color: "#10B981" }} />
+                    Active in <strong style={{ color: "#000000", marginLeft: 4 }}>{selectedNode.papers_count}</strong>&nbsp;clinical trials
                   </div>
                 </div>
 
                 <div>
-                  <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.12em", color: "hsl(220 8% 30%)", textTransform: "uppercase", marginBottom: 12 }}>
+                  <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.12em", color: "#555555", textTransform: "uppercase", marginBottom: 14, fontWeight: 700 }}>
                     Associated Knowledge
                   </div>
                   <div style={{
-                    padding: "18px 20px", borderRadius: 14,
-                    border: "1px solid hsl(240 8% 12%)",
-                    background: "hsl(240 8% 7%)",
-                    fontSize: 12, color: "hsl(220 8% 50%)", lineHeight: 1.6,
+                    padding: "18px 20px", borderRadius: 16,
+                    border: "3px solid #000000",
+                    background: "#FAF8F5",
+                    fontSize: 12, color: "#333333", lineHeight: 1.7,
+                    boxShadow: "3px 3px 0px #000000",
                   }}>
-                    <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 12, color: "hsl(220 15% 80%)" }}>
-                      <Info style={{ width: 13, height: 13, color: "hsl(262 83% 65%)", marginTop: 2, flexShrink: 0 }} />
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 16, color: "#000000", fontWeight: 600 }}>
+                      <Info style={{ width: 13, height: 13, color: "#7C3AED", marginTop: 2, flexShrink: 0 }} />
                       Explore papers matching this node in the Knowledge Explorer.
                     </div>
                     <a
                       href={`/explorer`}
                       style={{
                         display: "block", textAlign: "center",
-                        padding: "8px 0", borderRadius: 8, textDecoration: "none",
-                        background: "hsl(262 50% 18%)", border: "1px solid hsl(262 50% 28%)",
-                        color: "hsl(262 83% 72%)", fontSize: 11, fontWeight: 500,
+                        padding: "10px 0", borderRadius: 9999, textDecoration: "none",
+                        background: "#FFE57F",
+                        border: "3px solid #000000",
+                        color: "#000000", fontSize: 12, fontWeight: 800,
+                        boxShadow: "3px 3px 0px #000000",
+                        letterSpacing: "0.05em", textTransform: "uppercase",
                       }}
                     >
                       Open Explorer →
