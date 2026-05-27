@@ -130,7 +130,7 @@ export default function PaperViewerPage() {
             </div>
 
             {/* Trial Title */}
-            <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-normal font-display">
+            <h1 style={{ fontSize: 22, fontWeight: 800, color: "#000000", letterSpacing: "-0.02em", lineHeight: 1.3 }}>
               {paper.title}
             </h1>
 
@@ -149,25 +149,31 @@ export default function PaperViewerPage() {
             </div>
 
             {/* Author list */}
-            <div className="flex items-start gap-3 text-xs text-slate-400 border-t border-[#15151a] pt-5">
-              <User className="w-3.5 h-3.5 text-slate-500 mt-0.5 shrink-0" />
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 12, color: "#555555", borderTop: "3px solid #000000", paddingTop: 16 }}>
+              <User style={{ width: 14, height: 14, color: "#888888", marginTop: 1, flexShrink: 0 }} />
               <div>
-                <strong className="text-slate-300">Authors:</strong> {paper.authors.join(", ")}
+                <strong style={{ color: "#000000" }}>Authors:</strong> {paper.authors.join(", ")}
               </div>
             </div>
 
             {/* Direct PubMed/DOI external Links */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, paddingTop: 4 }}>
               {paper.pmid && (
                 <a
                   href={`https://pubmed.ncbi.nlm.nih.gov/${paper.pmid}/`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/40 text-xs text-slate-400 hover:text-white inline-flex items-center gap-1.5 transition-colors"
+                  style={{
+                    padding: "7px 14px", borderRadius: 9999, border: "2px solid #000000",
+                    background: "#FFFFFF", fontSize: 12, color: "#000000", fontWeight: 700,
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    textDecoration: "none", boxShadow: "3px 3px 0px #000000",
+                    letterSpacing: "0.04em",
+                  }}
                 >
-                  <FileText className="w-3.5 h-3.5 text-purple-400" />
-                  <span>PubMed Resource</span>
-                  <ExternalLink className="w-3 h-3 text-slate-500" />
+                  <FileText style={{ width: 13, height: 13, color: "#7C3AED" }} />
+                  PubMed Resource
+                  <ExternalLink style={{ width: 11, height: 11 }} />
                 </a>
               )}
               {paper.doi && (
@@ -175,11 +181,17 @@ export default function PaperViewerPage() {
                   href={`https://doi.org/${paper.doi}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/40 text-xs text-slate-400 hover:text-white inline-flex items-center gap-1.5 transition-colors"
+                  style={{
+                    padding: "7px 14px", borderRadius: 9999, border: "2px solid #000000",
+                    background: "#FFFFFF", fontSize: 12, color: "#000000", fontWeight: 700,
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    textDecoration: "none", boxShadow: "3px 3px 0px #000000",
+                    letterSpacing: "0.04em",
+                  }}
                 >
-                  <ExternalLink className="w-3.5 h-3.5 text-purple-400" />
-                  <span>DOI Direct</span>
-                  <ExternalLink className="w-3 h-3 text-slate-500" />
+                  <ExternalLink style={{ width: 13, height: 13, color: "#7C3AED" }} />
+                  DOI Direct
+                  <ExternalLink style={{ width: 11, height: 11 }} />
                 </a>
               )}
             </div>
@@ -192,34 +204,34 @@ export default function PaperViewerPage() {
             {/* LEFT / CENTER COLUMN: EVIDENCE & OUTCOMES */}
             <div className="lg:col-span-2 space-y-6">
               {/* Abstract card */}
-              <div className="p-8 rounded-2xl border border-[#15151a] bg-slate-950/20 space-y-4">
-                <h3 className="text-sm font-semibold text-white uppercase tracking-widest font-display border-b border-[#15151a] pb-3 mb-2">
+              <div style={{ padding: 32, borderRadius: 20, border: "3px solid #000000", background: "#FFFFFF", boxShadow: "6px 6px 0px #000000" }}>
+                <h3 style={{ fontSize: 11, fontWeight: 800, color: "#000000", textTransform: "uppercase", letterSpacing: "0.12em", fontFamily: "'JetBrains Mono', monospace", borderBottom: "3px solid #000000", paddingBottom: 12, marginBottom: 16 }}>
                   Paper Abstract
                 </h3>
-                <p className="text-sm text-slate-300 leading-[2] tracking-wide whitespace-pre-wrap">
+                <p style={{ fontSize: 13, color: "#333333", lineHeight: 2, letterSpacing: "0.01em", whiteSpace: "pre-wrap", fontWeight: 500 }}>
                   {paper.abstract || "No abstract content indexed."}
                 </p>
               </div>
 
               {/* Extracted claims checklist */}
-              <div className="p-8 rounded-2xl border border-[#15151a] bg-slate-950/20 space-y-5">
-                <h3 className="text-sm font-semibold text-white uppercase tracking-widest font-display border-b border-[#15151a] pb-3 mb-2">
+              <div style={{ padding: 32, borderRadius: 20, border: "3px solid #000000", background: "#FFFFFF", boxShadow: "6px 6px 0px #000000" }}>
+                <h3 style={{ fontSize: 11, fontWeight: 800, color: "#000000", textTransform: "uppercase", letterSpacing: "0.12em", fontFamily: "'JetBrains Mono', monospace", borderBottom: "3px solid #000000", paddingBottom: 12, marginBottom: 16 }}>
                   Extracted Scientific Claims
                 </h3>
                 {paper.keywords && paper.keywords.length > 0 ? (
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3 p-5 rounded-xl bg-[#07070a] border border-[#15151a] text-xs">
-                      <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <div className="text-slate-300 leading-normal">
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: 16, borderRadius: 12, background: "#D1FAE5", border: "2px solid #000000", boxShadow: "3px 3px 0px #000000" }}>
+                      <ShieldCheck style={{ width: 16, height: 16, color: "#059669", flexShrink: 0 }} />
+                      <div style={{ color: "#000000", lineHeight: 1.6, fontSize: 12, fontWeight: 600 }}>
                         Claim: Efficacy of therapeutics matches the oncology target mutations.
-                        <div className="text-[10px] text-slate-500 font-mono mt-1">
+                        <div style={{ fontSize: 10, color: "#555555", fontFamily: "'JetBrains Mono', monospace", marginTop: 4, fontWeight: 700 }}>
                           STATUS: VERIFIED | CONFIDENCE: {paper.confidence_score.toFixed(2)}
                         </div>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-500 italic">No claim audits run on this paper yet.</p>
+                  <p style={{ fontSize: 12, color: "#888888", fontStyle: "italic" }}>No claim audits run on this paper yet.</p>
                 )}
               </div>
             </div>
@@ -227,32 +239,30 @@ export default function PaperViewerPage() {
             {/* RIGHT COLUMN: CLASSIFICATION & ADVERSARIAL SKEPTICISM */}
             <div className="space-y-6">
               {/* Study Stats Profile card */}
-              <div className="p-6 rounded-2xl border border-[#15151a] bg-[#0c0c0f]">
-                <h4 className="text-[10px] font-mono tracking-widest text-slate-500 uppercase mb-3">
+              <div style={{ padding: 24, borderRadius: 20, border: "3px solid #000000", background: "#FFFFFF", boxShadow: "6px 6px 0px #000000" }}>
+                <h4 style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.12em", color: "#888888", textTransform: "uppercase", marginBottom: 12, fontWeight: 800 }}>
                   Clinical Profile
                 </h4>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-xs py-3 border-b border-[#15151a]">
-                    <span className="text-slate-400">Database Source</span>
-                    <span className="font-mono text-white capitalize">{paper.source}</span>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 12, padding: "12px 0", borderBottom: "2px solid #E5E7EB" }}>
+                    <span style={{ color: "#555555", fontWeight: 500 }}>Database Source</span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "#000000", fontWeight: 700, textTransform: "capitalize" }}>{paper.source}</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs py-3 border-b border-[#15151a]">
-                    <span className="text-slate-400">Evidence Level</span>
-                    <span className="font-semibold text-purple-400 capitalize">
-                      {paper.evidence_level.replace("_", " ")}
-                    </span>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 12, padding: "12px 0", borderBottom: "2px solid #E5E7EB" }}>
+                    <span style={{ color: "#555555", fontWeight: 500 }}>Evidence Level</span>
+                    <span style={{ color: "#7C3AED", fontWeight: 800, textTransform: "capitalize" }}>{paper.evidence_level.replace("_", " ")}</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs py-3 border-b border-[#15151a]">
-                    <span className="text-slate-400">Verification Rank</span>
-                    <span className="font-mono text-white font-bold">{paper.confidence_score.toFixed(2)}</span>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 12, padding: "12px 0", borderBottom: "2px solid #E5E7EB" }}>
+                    <span style={{ color: "#555555", fontWeight: 500 }}>Verification Rank</span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "#000000", fontWeight: 800 }}>{paper.confidence_score.toFixed(2)}</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs py-3 border-b border-[#15151a]">
-                    <span className="text-slate-400">Study Type</span>
-                    <span className="font-mono text-white capitalize">{paper.study_type.replace("_", " ")}</span>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 12, padding: "12px 0", borderBottom: "2px solid #E5E7EB" }}>
+                    <span style={{ color: "#555555", fontWeight: 500 }}>Study Type</span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "#000000", fontWeight: 700, textTransform: "capitalize" }}>{paper.study_type.replace("_", " ")}</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs py-3">
-                    <span className="text-slate-400">Trial Phase</span>
-                    <span className="font-mono text-white capitalize">
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 12, padding: "12px 0" }}>
+                    <span style={{ color: "#555555", fontWeight: 500 }}>Trial Phase</span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "#000000", fontWeight: 700, textTransform: "capitalize" }}>
                       {paper.trial_phase ? paper.trial_phase.replace("_", " ") : "N/A"}
                     </span>
                   </div>
@@ -260,20 +270,20 @@ export default function PaperViewerPage() {
               </div>
 
               {/* Taxonomy Tags Panel */}
-              <div className="p-6 rounded-2xl border border-[#15151a] bg-[#0c0c0f] space-y-5">
-                <h4 className="text-[10px] font-mono tracking-widest text-slate-500 uppercase">
+              <div style={{ padding: 24, borderRadius: 20, border: "3px solid #000000", background: "#FFFFFF", boxShadow: "6px 6px 0px #000000" }}>
+                <h4 style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.12em", color: "#888888", textTransform: "uppercase", fontWeight: 800, marginBottom: 16 }}>
                   Taxonomy Mapping
                 </h4>
 
                 {paper.tags && (
-                  <div className="space-y-5">
+                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                     {/* Cancers */}
                     {paper.tags.cancer && paper.tags.cancer.length > 0 && (
                       <div>
-                        <div className="text-[9px] font-mono text-slate-500 mb-1">Cancers:</div>
-                        <div className="flex flex-wrap gap-2">
+                        <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#888888", marginBottom: 6, fontWeight: 700 }}>Cancers:</div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                           {paper.tags.cancer.map((c) => (
-                            <span key={c} className="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-slate-300">
+                            <span key={c} style={{ padding: "4px 10px", borderRadius: 6, border: "2px solid #000000", background: "#FFE4E6", fontSize: 11, color: "#000000", fontWeight: 700 }}>
                               {c.replace(/_/g, " ")}
                             </span>
                           ))}
@@ -284,10 +294,10 @@ export default function PaperViewerPage() {
                     {/* Drugs */}
                     {paper.tags.drugs && paper.tags.drugs.length > 0 && (
                       <div>
-                        <div className="text-[9px] font-mono text-slate-500 mb-1">Therapeutics:</div>
-                        <div className="flex flex-wrap gap-2">
+                        <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#888888", marginBottom: 6, fontWeight: 700 }}>Therapeutics:</div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                           {paper.tags.drugs.map((d) => (
-                            <span key={d} className="px-3 py-1 rounded-lg bg-purple-950/20 border border-purple-500/10 text-[11px] text-purple-300">
+                            <span key={d} style={{ padding: "4px 10px", borderRadius: 6, border: "2px solid #000000", background: "#EDE9FE", fontSize: 11, color: "#000000", fontWeight: 700 }}>
                               {d}
                             </span>
                           ))}
@@ -298,10 +308,10 @@ export default function PaperViewerPage() {
                     {/* Biomarkers */}
                     {paper.tags.biomarkers && paper.tags.biomarkers.length > 0 && (
                       <div>
-                        <div className="text-[9px] font-mono text-slate-500 mb-1">Mutations / Targets:</div>
-                        <div className="flex flex-wrap gap-2">
+                        <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#888888", marginBottom: 6, fontWeight: 700 }}>Mutations / Targets:</div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                           {paper.tags.biomarkers.map((b) => (
-                            <span key={b} className="px-3 py-1 rounded-lg bg-blue-950/20 border border-blue-500/10 text-[11px] text-blue-300">
+                            <span key={b} style={{ padding: "4px 10px", borderRadius: 6, border: "2px solid #000000", background: "#DBEAFE", fontSize: 11, color: "#000000", fontWeight: 700 }}>
                               {b}
                             </span>
                           ))}
@@ -312,10 +322,10 @@ export default function PaperViewerPage() {
                     {/* Treatments */}
                     {paper.tags.treatment && paper.tags.treatment.length > 0 && (
                       <div>
-                        <div className="text-[9px] font-mono text-slate-500 mb-1">Therapeutic Classes:</div>
-                        <div className="flex flex-wrap gap-2">
+                        <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#888888", marginBottom: 6, fontWeight: 700 }}>Therapeutic Classes:</div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                           {paper.tags.treatment.map((t) => (
-                            <span key={t} className="px-3 py-1 rounded-lg bg-emerald-950/20 border border-emerald-500/10 text-[11px] text-emerald-300">
+                            <span key={t} style={{ padding: "4px 10px", borderRadius: 6, border: "2px solid #000000", background: "#D1FAE5", fontSize: 11, color: "#000000", fontWeight: 700 }}>
                               {t}
                             </span>
                           ))}
@@ -327,13 +337,13 @@ export default function PaperViewerPage() {
               </div>
 
               {/* Adversarial Review panel */}
-              <div className="p-6 rounded-2xl border border-rose-500/10 bg-rose-950/5 space-y-4">
-                <div className="flex items-center gap-2 text-rose-400 font-semibold text-xs font-mono uppercase tracking-wider">
-                  <AlertTriangle className="w-4 h-4 text-rose-500" />
+              <div style={{ padding: 24, borderRadius: 20, border: "3px solid #000000", background: "#FFE4E6", boxShadow: "6px 6px 0px #000000" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#DC2626", fontWeight: 800, fontSize: 11, fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>
+                  <AlertTriangle style={{ width: 15, height: 15, color: "#DC2626" }} />
                   <span>Adversarial Review</span>
                 </div>
-                <div className="text-xs text-rose-300/80 leading-[1.9] tracking-wide space-y-3">
-                  <p>
+                <div style={{ fontSize: 12, color: "#7F1D1D", lineHeight: 1.9, fontWeight: 600 }}>
+                  <p style={{ marginBottom: 8 }}>
                     <strong>Study Skeptic Assessment</strong>: This paper is classified as a{" "}
                     <strong>{paper.study_type.replace("_", " ")}</strong> (Evidence Level:{" "}
                     <strong>{paper.evidence_level}</strong>).
@@ -350,23 +360,29 @@ export default function PaperViewerPage() {
               {/* Related/Contradictory cross-references */}
               {((paper.related_papers && paper.related_papers.length > 0) || 
                 (paper.contradictory_papers && paper.contradictory_papers.length > 0)) && (
-                <div className="p-5 rounded-xl border border-[#15151a] bg-[#0c0c0f] space-y-4">
-                  <h4 className="text-[10px] font-mono tracking-widest text-slate-500 uppercase">
+                <div style={{ padding: 20, borderRadius: 20, border: "3px solid #000000", background: "#FFFFFF", boxShadow: "6px 6px 0px #000000", display: "flex", flexDirection: "column", gap: 16 }}>
+                  <h4 style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.12em", color: "#888888", textTransform: "uppercase", fontWeight: 800 }}>
                     Graph Cross-References
                   </h4>
                   
                   {/* Related */}
                   {paper.related_papers && paper.related_papers.length > 0 && (
-                    <div className="space-y-1.5">
-                      <div className="text-[9px] font-mono text-slate-500">Supporting Trials:</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#888888", fontWeight: 700 }}>Supporting Trials:</div>
                       {paper.related_papers.map((relId) => (
                         <Link
                           key={relId}
                           href={`/papers/${relId}`}
-                          className="flex items-center justify-between p-2 rounded bg-slate-900 border border-slate-800 text-[11px] text-slate-300 hover:text-purple-400 hover:border-purple-500/20 transition-all"
+                          style={{
+                            display: "flex", alignItems: "center", justifyContent: "space-between",
+                            padding: "8px 12px", borderRadius: 10, border: "2px solid #000000",
+                            background: "#EDE9FE", fontSize: 11, color: "#000000",
+                            fontWeight: 700, textDecoration: "none",
+                            boxShadow: "3px 3px 0px #000000",
+                          }}
                         >
-                          <span className="truncate pr-4">Related Clinical Profile</span>
-                          <ChevronRight className="w-3.5 h-3.5 shrink-0" />
+                          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", paddingRight: 16 }}>Related Clinical Profile</span>
+                          <ChevronRight style={{ width: 13, height: 13, flexShrink: 0 }} />
                         </Link>
                       ))}
                     </div>
@@ -374,16 +390,22 @@ export default function PaperViewerPage() {
 
                   {/* Contradictory */}
                   {paper.contradictory_papers && paper.contradictory_papers.length > 0 && (
-                    <div className="space-y-1.5 pt-2">
-                      <div className="text-[9px] font-mono text-rose-400">Contradictory / Conflict Trials:</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingTop: 8 }}>
+                      <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#DC2626", fontWeight: 700 }}>Contradictory / Conflict Trials:</div>
                       {paper.contradictory_papers.map((conId) => (
                         <Link
                           key={conId}
                           href={`/papers/${conId}`}
-                          className="flex items-center justify-between p-2 rounded bg-rose-950/10 border border-rose-500/10 text-[11px] text-rose-300 hover:text-red-400 hover:border-rose-500/30 transition-all animate-pulse"
+                          style={{
+                            display: "flex", alignItems: "center", justifyContent: "space-between",
+                            padding: "8px 12px", borderRadius: 10, border: "2px solid #000000",
+                            background: "#FFE4E6", fontSize: 11, color: "#000000",
+                            fontWeight: 700, textDecoration: "none",
+                            boxShadow: "3px 3px 0px #000000",
+                          }}
                         >
-                          <span className="truncate pr-4">Opposing Evidence Warning</span>
-                          <ChevronRight className="w-3.5 h-3.5 shrink-0" />
+                          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", paddingRight: 16 }}>Opposing Evidence Warning</span>
+                          <ChevronRight style={{ width: 13, height: 13, flexShrink: 0 }} />
                         </Link>
                       ))}
                     </div>

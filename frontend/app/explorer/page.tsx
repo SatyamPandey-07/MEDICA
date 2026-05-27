@@ -46,22 +46,22 @@ export default function KnowledgeExplorerPage() {
 
   const evidenceStyle = (level: string) => {
     const map: Record<string, [string, string, string]> = {
-      randomized_controlled_trial: ["hsl(262 50% 18%)", "hsl(262 83% 72%)", "hsl(262 50% 26%)"],
-      meta_analysis:               ["hsl(174 60% 11%)", "hsl(174 80% 52%)", "hsl(174 60% 20%)"],
-      systematic_review:           ["hsl(150 50% 11%)", "hsl(150 76% 52%)", "hsl(150 50% 20%)"],
-      rct:                         ["hsl(262 50% 18%)", "hsl(262 83% 72%)", "hsl(262 50% 26%)"],
-      cohort:                      ["hsl(217 60% 13%)", "hsl(217 91% 65%)", "hsl(217 60% 22%)"],
-      expert_opinion:              ["hsl(220 8% 10%)",  "hsl(220 8% 48%)",  "hsl(220 8% 15%)"],
-      preclinical:                 ["hsl(0 50% 11%)",   "hsl(0 70% 58%)",   "hsl(0 50% 18%)"],
+      randomized_controlled_trial: ["#EDE9FE", "#000000", "#000000"],
+      meta_analysis:               ["#D1FAE5", "#000000", "#000000"],
+      systematic_review:           ["#CCFBF1", "#000000", "#000000"],
+      rct:                         ["#EDE9FE", "#000000", "#000000"],
+      cohort:                      ["#DBEAFE", "#000000", "#000000"],
+      expert_opinion:              ["#F3F4F6", "#000000", "#000000"],
+      preclinical:                 ["#FFE4E6", "#000000", "#000000"],
     };
-    const s = map[level?.toLowerCase()] || ["hsl(220 8% 10%)", "hsl(220 8% 48%)", "hsl(220 8% 15%)"];
+    const s = map[level?.toLowerCase()] || ["#F3F4F6", "#000000", "#000000"];
     return { bg: s[0], text: s[1], border: s[2] };
   };
 
   const statusStyle = (s: string) => {
-    if (s === "verified") return { color: "hsl(150 76% 55%)", bg: "hsl(150 60% 10%)", border: "hsl(150 60% 18%)" };
-    if (s === "disputed") return { color: "hsl(24 90% 62%)", bg: "hsl(24 70% 10%)", border: "hsl(24 70% 18%)" };
-    return { color: "hsl(220 8% 45%)", bg: "hsl(220 8% 10%)", border: "hsl(220 8% 16%)" };
+    if (s === "verified") return { color: "#000000", bg: "#D1FAE5", border: "#000000" };
+    if (s === "disputed") return { color: "#000000", bg: "#FEF3C7", border: "#000000" };
+    return { color: "#000000", bg: "#F3F4F6", border: "#000000" };
   };
 
   return (
@@ -105,38 +105,39 @@ export default function KnowledgeExplorerPage() {
         {/* ── Left panel: folder tree ── */}
         <div style={{
           width: 240, flexShrink: 0,
-          borderRight: "1px solid hsl(240 8% 9%)",
-          background: "hsl(240 10% 3%)",
+          borderRight: "3px solid #000000",
+          background: "#FAF8F5",
           overflowY: "auto",
           padding: "28px 16px",
         }}>
           <div style={{
             fontSize: 9, fontFamily: "'JetBrains Mono', monospace",
-            letterSpacing: "0.15em", color: "hsl(220 8% 28%)",
+            letterSpacing: "0.15em", color: "#888888",
             textTransform: "uppercase", padding: "0 10px", marginBottom: 18,
+            fontWeight: 800,
           }}>
             Cancer Directories
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             {/* All */}
             <button
               onClick={() => setSelectedCancer(null)}
               style={{
                 display: "flex", alignItems: "center", gap: 10,
                 padding: "12px 14px", borderRadius: 12, cursor: "pointer",
-                border: "1px solid",
-                background: selectedCancer === null ? "hsl(262 50% 20% / 0.6)" : "transparent",
-                borderColor: selectedCancer === null ? "hsl(262 50% 35% / 0.4)" : "transparent",
-                color: selectedCancer === null ? "hsl(220 20% 95%)" : "hsl(220 8% 45%)",
-                fontSize: 12, fontWeight: selectedCancer === null ? 500 : 400,
+                border: selectedCancer === null ? "2px solid #000000" : "2px solid transparent",
+                background: selectedCancer === null ? "#FFE57F" : "transparent",
+                boxShadow: selectedCancer === null ? "3px 3px 0px #000000" : "none",
+                color: "#000000",
+                fontSize: 12, fontWeight: selectedCancer === null ? 800 : 500,
                 textAlign: "left", transition: "all 0.15s ease",
                 width: "100%", marginBottom: 4,
               }}
             >
               <Folder style={{
                 width: 14, height: 14,
-                color: selectedCancer === null ? "hsl(262 83% 70%)" : "hsl(220 8% 35%)",
+                color: selectedCancer === null ? "#7C3AED" : "#888888",
               }} />
               All Repositories
             </button>
@@ -150,18 +151,18 @@ export default function KnowledgeExplorerPage() {
                   style={{
                     display: "flex", alignItems: "center", gap: 10,
                     padding: "12px 14px", borderRadius: 12, cursor: "pointer",
-                    border: "1px solid",
-                    background: active ? "hsl(262 50% 20% / 0.6)" : "transparent",
-                    borderColor: active ? "hsl(262 50% 35% / 0.4)" : "transparent",
-                    color: active ? "hsl(220 20% 95%)" : "hsl(220 8% 42%)",
-                    fontSize: 12, fontWeight: active ? 500 : 400,
+                    border: active ? "2px solid #000000" : "2px solid transparent",
+                    background: active ? "#FFE57F" : "transparent",
+                    boxShadow: active ? "3px 3px 0px #000000" : "none",
+                    color: "#000000",
+                    fontSize: 12, fontWeight: active ? 800 : 500,
                     textAlign: "left", transition: "all 0.15s ease",
                     width: "100%", marginBottom: 4,
                   }}
                 >
                   <Folder style={{
                     width: 14, height: 14,
-                    color: active ? "hsl(262 83% 70%)" : "hsl(220 8% 30%)",
+                    color: active ? "#7C3AED" : "#888888",
                   }} />
                   <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {formatFolderName(type)}
@@ -178,13 +179,12 @@ export default function KnowledgeExplorerPage() {
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 24, gap: 16 }}>
             <div>
               <h1 style={{
-                fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", marginBottom: 4,
-                background: "linear-gradient(135deg, hsl(220 20% 97%), hsl(220 10% 70%))",
-                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 4,
+                color: "#000000",
               }}>
                 {selectedCancer ? formatFolderName(selectedCancer) : "Comprehensive Memory Store"}
               </h1>
-              <p style={{ fontSize: 12, color: "hsl(220 8% 40%)" }}>
+              <p style={{ fontSize: 12, color: "#555555", fontWeight: 500 }}>
                 Structured markdown files in the filesystem knowledge layer.
               </p>
             </div>
@@ -202,10 +202,12 @@ export default function KnowledgeExplorerPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
-                  paddingLeft: 30, paddingRight: 12, paddingTop: 7, paddingBottom: 7,
-                  borderRadius: 8, border: "1px solid hsl(240 8% 12%)",
-                  background: "hsl(240 8% 5%)", color: "hsl(220 20% 90%)",
+                  paddingLeft: 30, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
+                  borderRadius: 9999, border: "2px solid #000000",
+                  background: "#FFFFFF", color: "#000000",
                   fontSize: 12, outline: "none", width: 200,
+                  boxShadow: "3px 3px 0px #000000",
+                  fontWeight: 600,
                 }}
               />
             </div>
@@ -249,26 +251,29 @@ export default function KnowledgeExplorerPage() {
                     style={{
                       display: "block", textDecoration: "none",
                       padding: "24px 28px", borderRadius: 20,
-                      border: "1px solid hsl(240 8% 10%)",
-                      background: "linear-gradient(135deg, hsl(240 8% 5%) 0%, hsl(240 6% 6%) 100%)",
+                      border: "3px solid #000000",
+                      background: "#FFFFFF",
+                      boxShadow: "6px 6px 0px #000000",
+                      transition: "all 0.15s ease",
                     }}
                   >
                     {/* Top badges row */}
-                    <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
+                    <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
                       <span style={{
-                        padding: "2px 9px", borderRadius: 4, fontSize: 9,
-                        fontFamily: "'JetBrains Mono', monospace", fontWeight: 600,
-                        letterSpacing: "0.05em", textTransform: "uppercase",
-                        background: evStyle.bg, color: evStyle.text, border: `1px solid ${evStyle.border}`,
+                        padding: "4px 10px", borderRadius: 6, fontSize: 9,
+                        fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+                        letterSpacing: "0.06em", textTransform: "uppercase",
+                        background: evStyle.bg, color: evStyle.text, border: `2px solid ${evStyle.border}`,
                       }}>
                         {(p.evidence_level || "trial").replace(/_/g, " ")}
                       </span>
 
                       <span style={{
-                        padding: "2px 9px", borderRadius: 4, fontSize: 9,
-                        fontFamily: "'JetBrains Mono', monospace", fontWeight: 600,
+                        padding: "4px 10px", borderRadius: 6, fontSize: 9,
+                        fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
                         display: "flex", alignItems: "center", gap: 4,
-                        background: stStyle.bg, color: stStyle.color, border: `1px solid ${stStyle.border}`,
+                        background: stStyle.bg, color: stStyle.color, border: `2px solid ${stStyle.border}`,
+                        textTransform: "uppercase", letterSpacing: "0.06em",
                       }}>
                         {p.verification_status === "verified"
                           ? <CheckCircle style={{ width: 9, height: 9 }} />
@@ -279,11 +284,12 @@ export default function KnowledgeExplorerPage() {
                       </span>
 
                       <span style={{
-                        padding: "2px 9px", borderRadius: 4, fontSize: 9,
-                        fontFamily: "'JetBrains Mono', monospace",
-                        background: "hsl(262 50% 14%)", color: "hsl(262 83% 70%)",
-                        border: "1px solid hsl(262 50% 22%)",
+                        padding: "4px 10px", borderRadius: 6, fontSize: 9,
+                        fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+                        background: "#EDE9FE", color: "#000000",
+                        border: "2px solid #000000",
                         display: "flex", alignItems: "center", gap: 4,
+                        textTransform: "uppercase", letterSpacing: "0.06em",
                       }}>
                         <TrendingUp style={{ width: 9, height: 9 }} />
                         CONF: {p.confidence_score?.toFixed(2)}
@@ -292,21 +298,21 @@ export default function KnowledgeExplorerPage() {
 
                     {/* Title */}
                     <h3 style={{
-                      fontSize: 14, fontWeight: 600, color: "hsl(220 20% 93%)",
-                      marginBottom: 6, lineHeight: 1.5, letterSpacing: "-0.01em",
+                      fontSize: 15, fontWeight: 700, color: "#000000",
+                      marginBottom: 8, lineHeight: 1.5, letterSpacing: "-0.01em",
                     }}>
                       {p.title}
                     </h3>
 
                     {/* Metadata */}
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 16px", marginBottom: 12, fontSize: 11, color: "hsl(220 8% 42%)" }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 16px", marginBottom: 12, fontSize: 11, color: "#555555", fontWeight: 500 }}>
                       <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
                         <Clock style={{ width: 11, height: 11 }} />
                         {dateStr}
                       </span>
                       <span>By {authStr}{p.authors?.length > 3 ? " et al." : ""}</span>
                       {p.journal && (
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "hsl(220 8% 30%)" }}>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "#888888" }}>
                           {p.journal}
                         </span>
                       )}
@@ -317,26 +323,26 @@ export default function KnowledgeExplorerPage() {
                       <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
                         {p.tags.drugs?.slice(0, 3).map((d: string) => (
                           <span key={d} style={{
-                            padding: "2px 7px", borderRadius: 4, fontSize: 9,
-                            fontFamily: "'JetBrains Mono', monospace",
-                            background: "hsl(262 50% 14%)", color: "hsl(262 83% 70%)",
-                            border: "1px solid hsl(262 50% 22%)",
+                            padding: "3px 9px", borderRadius: 6, fontSize: 9,
+                            fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+                            background: "#EDE9FE", color: "#000000",
+                            border: "2px solid #000000",
                           }}>drug:{d}</span>
                         ))}
                         {p.tags.biomarkers?.slice(0, 3).map((b: string) => (
                           <span key={b} style={{
-                            padding: "2px 7px", borderRadius: 4, fontSize: 9,
-                            fontFamily: "'JetBrains Mono', monospace",
-                            background: "hsl(217 50% 13%)", color: "hsl(217 91% 65%)",
-                            border: "1px solid hsl(217 50% 22%)",
+                            padding: "3px 9px", borderRadius: 6, fontSize: 9,
+                            fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+                            background: "#DBEAFE", color: "#000000",
+                            border: "2px solid #000000",
                           }}>mut:{b}</span>
                         ))}
                         {p.tags.treatment?.slice(0, 3).map((t: string) => (
                           <span key={t} style={{
-                            padding: "2px 7px", borderRadius: 4, fontSize: 9,
-                            fontFamily: "'JetBrains Mono', monospace",
-                            background: "hsl(150 50% 10%)", color: "hsl(150 76% 55%)",
-                            border: "1px solid hsl(150 50% 18%)",
+                            padding: "3px 9px", borderRadius: 6, fontSize: 9,
+                            fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+                            background: "#D1FAE5", color: "#000000",
+                            border: "2px solid #000000",
                           }}>tx:{t}</span>
                         ))}
                       </div>
