@@ -126,10 +126,13 @@ export default function VerificationDashboardPage() {
           </div>
         </div>
         <div style={{
-          padding: "4px 12px", borderRadius: 6,
-          background: "hsl(150 50% 10%)", border: "1px solid hsl(150 50% 20%)",
+          padding: "6px 14px", borderRadius: 9999,
+          background: "#D1FAE5", border: "2px solid #000000",
+          boxShadow: "3px 3px 0px #000000",
           fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
-          color: "hsl(150 76% 55%)", display: "flex", alignItems: "center", gap: 6,
+          color: "#000000", fontWeight: 800,
+          display: "flex", alignItems: "center", gap: 6,
+          letterSpacing: "0.08em",
         }}>
           <ShieldCheck style={{ width: 11, height: 11 }} />
           GUARDED MODE
@@ -189,20 +192,21 @@ export default function VerificationDashboardPage() {
 
             {/* Audit Ledger */}
             <div style={{
-              borderRadius: 16, border: "1px solid hsl(240 8% 10%)",
-              background: "hsl(240 8% 4%)", overflow: "hidden",
+              borderRadius: 20, border: "3px solid #000000",
+              background: "#FFFFFF", overflow: "hidden",
+              boxShadow: "8px 8px 0px #000000",
             }}>
               {/* Toolbar */}
               <div style={{
                 padding: "20px 28px",
-                borderBottom: "1px solid hsl(240 8% 8%)",
-                background: "hsl(240 10% 5%)",
+                borderBottom: "3px solid #000000",
+                background: "#FAF8F5",
                 display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <ShieldAlert style={{ width: 15, height: 15, color: "hsl(262 83% 68%)" }} />
+                  <ShieldAlert style={{ width: 15, height: 15, color: "#7C3AED" }} />
                   <span style={{
-                    fontSize: 12, fontWeight: 600, color: "hsl(220 20% 90%)",
+                    fontSize: 12, fontWeight: 800, color: "#000000",
                     fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em",
                     textTransform: "uppercase",
                   }}>
@@ -211,20 +215,21 @@ export default function VerificationDashboardPage() {
                 </div>
 
                 {/* Status tabs */}
-                <div style={{ display: "flex", gap: 4 }}>
+                <div style={{ display: "flex", gap: 6 }}>
                   {statusTabs.map((s) => (
                     <button
                       key={s}
                       onClick={() => handleStatusChange(s)}
                       style={{
-                        padding: "4px 12px", borderRadius: 6, fontSize: 11,
+                        padding: "6px 14px", borderRadius: 9999, fontSize: 11,
                         fontFamily: "'JetBrains Mono', monospace", cursor: "pointer",
-                        transition: "all 0.15s ease", border: "1px solid",
+                        transition: "all 0.15s ease",
+                        border: "2px solid #000000",
                         textTransform: "capitalize",
-                        background: activeStatus === s ? "hsl(262 50% 22%)" : "transparent",
-                        borderColor: activeStatus === s ? "hsl(262 50% 35%)" : "hsl(240 8% 12%)",
-                        color: activeStatus === s ? tabColor(s) : "hsl(220 8% 40%)",
-                        fontWeight: activeStatus === s ? 600 : 400,
+                        background: activeStatus === s ? "#FFE57F" : "#FFFFFF",
+                        color: "#000000",
+                        fontWeight: activeStatus === s ? 800 : 600,
+                        boxShadow: activeStatus === s ? "3px 3px 0px #000000" : "none",
                       }}
                     >
                       {s}
@@ -248,15 +253,15 @@ export default function VerificationDashboardPage() {
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
                       <tr style={{
-                        borderBottom: "1px solid hsl(240 8% 9%)",
-                        background: "hsl(240 10% 4%)",
+                        borderBottom: "3px solid #000000",
+                        background: "#FAF8F5",
                       }}>
                         {["Trial ID / PMID", "Clinical Study", "Evidence Level", "Confidence", "Quality Flags", ""].map((h) => (
                           <th key={h} style={{
                             padding: "16px 24px", textAlign: "left",
                             fontSize: 9, fontFamily: "'JetBrains Mono', monospace",
-                            letterSpacing: "0.1em", color: "hsl(220 8% 30%)", textTransform: "uppercase",
-                            fontWeight: 600,
+                            letterSpacing: "0.1em", color: "#000000", textTransform: "uppercase",
+                            fontWeight: 800,
                           }}>
                             {h}
                           </th>
@@ -271,10 +276,10 @@ export default function VerificationDashboardPage() {
                           <tr
                             key={p.id}
                             style={{
-                              borderBottom: "1px solid hsl(240 8% 7%)",
+                              borderBottom: "2px solid #E5E7EB",
                               transition: "background 0.15s ease",
                             }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = "hsl(240 8% 6%)")}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = "#FAF8F5")}
                             onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                           >
                             {/* PMID */}
@@ -285,15 +290,15 @@ export default function VerificationDashboardPage() {
                                   target="_blank" rel="noopener noreferrer"
                                   style={{
                                     fontFamily: "'JetBrains Mono', monospace",
-                                    fontSize: 11, fontWeight: 600,
-                                    color: "hsl(262 83% 72%)",
-                                    textDecoration: "none", borderBottom: "1px solid hsl(262 50% 35%)",
+                                    fontSize: 11, fontWeight: 700,
+                                    color: "#7C3AED",
+                                    textDecoration: "none", borderBottom: "2px solid #7C3AED",
                                   }}
                                 >
                                   pmid:{p.pmid}
                                 </a>
                               ) : (
-                                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "hsl(220 8% 45%)" }}>
+                                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#555555", fontWeight: 600 }}>
                                   {`doi:${(p.doi || "").substring(0, 10)}…`}
                                 </span>
                               )}
@@ -302,7 +307,7 @@ export default function VerificationDashboardPage() {
                             {/* Title */}
                             <td style={{ padding: "18px 24px", maxWidth: 320 }}>
                               <div style={{
-                                fontSize: 12, fontWeight: 500, color: "hsl(220 15% 85%)",
+                                fontSize: 12, fontWeight: 600, color: "#111111",
                                 overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                               }} title={p.title}>
                                 {p.title}
@@ -312,11 +317,11 @@ export default function VerificationDashboardPage() {
                             {/* Level */}
                             <td style={{ padding: "14px 20px" }}>
                               <span style={{
-                                padding: "2px 8px", borderRadius: 4,
+                                padding: "4px 10px", borderRadius: 6,
                                 fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
-                                fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
-                                background: "hsl(240 8% 10%)", color: "hsl(220 8% 50%)",
-                                border: "1px solid hsl(240 8% 14%)",
+                                fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase",
+                                background: "#EDE9FE", color: "#000000",
+                                border: "2px solid #000000",
                               }}>
                                 {(p.evidence_level || "").replace(/_/g, " ")}
                               </span>
@@ -327,17 +332,18 @@ export default function VerificationDashboardPage() {
                               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                                 <span style={{
                                   fontFamily: "'JetBrains Mono', monospace", fontSize: 12,
-                                  fontWeight: 700, color: scoreColor(p.confidence_score),
+                                  fontWeight: 700, color: "#000000",
                                 }}>
                                   {scorePct}%
                                 </span>
                                 <div style={{
-                                  width: 60, height: 4, borderRadius: 2,
-                                  background: "hsl(240 8% 12%)", overflow: "hidden", flexShrink: 0,
+                                  width: 60, height: 6, borderRadius: 3,
+                                  background: "#E5E7EB", overflow: "hidden", flexShrink: 0,
+                                  border: "2px solid #000000",
                                 }}>
                                   <div style={{
-                                    width: `${scorePct}%`, height: "100%", borderRadius: 2,
-                                    background: scoreGradient(p.confidence_score),
+                                    width: `${scorePct}%`, height: "100%",
+                                    background: p.confidence_score >= 0.75 ? "#10B981" : p.confidence_score >= 0.40 ? "#0EA5E9" : "#EF4444",
                                   }} />
                                 </div>
                               </div>
@@ -348,9 +354,9 @@ export default function VerificationDashboardPage() {
                               {flags.length === 0 ? (
                                 <span style={{
                                   fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
-                                  padding: "2px 8px", borderRadius: 4,
-                                  background: "hsl(150 60% 10%)", color: "hsl(150 76% 55%)",
-                                  border: "1px solid hsl(150 60% 18%)",
+                                  padding: "4px 10px", borderRadius: 6,
+                                  background: "#D1FAE5", color: "#000000",
+                                  border: "2px solid #000000", fontWeight: 700,
                                 }}>
                                   no flags
                                 </span>
@@ -359,9 +365,9 @@ export default function VerificationDashboardPage() {
                                   {flags.map((f: string) => (
                                     <span key={f} style={{
                                       fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
-                                      padding: "2px 7px", borderRadius: 4,
-                                      background: "hsl(0 50% 10%)", color: "hsl(0 70% 65%)",
-                                      border: "1px solid hsl(0 50% 18%)",
+                                      padding: "4px 9px", borderRadius: 6, fontWeight: 700,
+                                      background: "#FFE4E6", color: "#000000",
+                                      border: "2px solid #000000",
                                     }}>
                                       {f}
                                     </span>
@@ -376,13 +382,13 @@ export default function VerificationDashboardPage() {
                                 href={`/papers/${p.id}`}
                                 style={{
                                   display: "inline-flex", alignItems: "center", gap: 6,
-                                  padding: "5px 12px", borderRadius: 7,
-                                  background: "hsl(262 50% 18%)", border: "1px solid hsl(262 50% 28%)",
-                                  color: "hsl(262 83% 72%)", fontSize: 11, textDecoration: "none",
-                                  fontWeight: 500, transition: "all 0.15s ease",
+                                  padding: "6px 14px", borderRadius: 9999,
+                                  background: "#FFE57F", border: "2px solid #000000",
+                                  color: "#000000", fontSize: 11, textDecoration: "none",
+                                  fontWeight: 800, transition: "all 0.15s ease",
+                                  boxShadow: "3px 3px 0px #000000",
+                                  letterSpacing: "0.05em", textTransform: "uppercase",
                                 }}
-                                onMouseEnter={(e) => (e.currentTarget.style.background = "hsl(262 50% 24%)")}
-                                onMouseLeave={(e) => (e.currentTarget.style.background = "hsl(262 50% 18%)")}
                               >
                                 <Eye style={{ width: 11, height: 11 }} />
                                 Inspect

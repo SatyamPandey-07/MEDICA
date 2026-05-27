@@ -170,12 +170,13 @@ export default function AdminDashboardPage() {
           {/* Scraper form */}
           <div style={{
             padding: "32px 36px", borderRadius: 20,
-            border: "1px solid hsl(240 8% 10%)",
-            background: "linear-gradient(135deg, hsl(240 8% 5%) 0%, hsl(240 6% 6%) 100%)",
+            border: "3px solid #000000",
+            background: "#FFFFFF",
+            boxShadow: "8px 8px 0px #000000",
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, paddingBottom: 16, borderBottom: "1px solid hsl(240 8% 9%)" }}>
-              <Search style={{ width: 15, height: 15, color: "hsl(262 83% 68%)" }} />
-              <span style={{ fontSize: 12, fontWeight: 600, color: "hsl(220 20% 90%)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, paddingBottom: 16, borderBottom: "3px solid #000000" }}>
+              <Search style={{ width: 15, height: 15, color: "#7C3AED" }} />
+              <span style={{ fontSize: 12, fontWeight: 800, color: "#000000", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}>
                 Ingest Research Adapter
               </span>
             </div>
@@ -184,7 +185,7 @@ export default function AdminDashboardPage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, marginBottom: 16 }}>
                 {/* Query input */}
                 <div>
-                  <label style={{ display: "block", marginBottom: 6, fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "hsl(220 8% 36%)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  <label style={{ display: "block", marginBottom: 6, fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "#000000", letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 700 }}>
                     Search Terms
                   </label>
                   <div style={{ position: "relative" }}>
@@ -200,8 +201,8 @@ export default function AdminDashboardPage() {
                       disabled={submitting}
                       style={{
                         width: "100%", paddingLeft: 32, paddingRight: 12, paddingTop: 10, paddingBottom: 10,
-                        borderRadius: 9, border: "1px solid hsl(240 8% 12%)",
-                        background: "hsl(240 10% 4%)", color: "hsl(220 20% 90%)",
+                        borderRadius: 9, border: "2px solid #000000",
+                        background: "#FFFFFF", color: "#000000",
                         fontSize: 12, outline: "none",
                       }}
                     />
@@ -210,7 +211,7 @@ export default function AdminDashboardPage() {
 
                 {/* Limit */}
                 <div>
-                  <label style={{ display: "block", marginBottom: 6, fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "hsl(220 8% 36%)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  <label style={{ display: "block", marginBottom: 6, fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "#000000", letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 700 }}>
                     Limit
                   </label>
                   <select
@@ -218,8 +219,8 @@ export default function AdminDashboardPage() {
                     onChange={(e) => setLimit(Number(e.target.value))}
                     disabled={submitting}
                     style={{
-                      padding: "10px 12px", borderRadius: 9, border: "1px solid hsl(240 8% 12%)",
-                      background: "hsl(240 10% 4%)", color: "hsl(220 20% 90%)",
+                      padding: "10px 12px", borderRadius: 9, border: "2px solid #000000",
+                      background: "#FFFFFF", color: "#000000",
                       fontSize: 12, outline: "none", cursor: "pointer",
                     }}
                   >
@@ -233,11 +234,12 @@ export default function AdminDashboardPage() {
               {/* Status message */}
               {triggerMsg && (
                 <div style={{
-                  padding: "10px 14px", borderRadius: 8, marginBottom: 16, fontSize: 12,
-                  fontFamily: "'JetBrains Mono', monospace",
-                  background: triggerMsg.type === "success" ? "hsl(150 60% 9%)" : "hsl(0 50% 10%)",
-                  border: `1px solid ${triggerMsg.type === "success" ? "hsl(150 60% 18%)" : "hsl(0 50% 18%)"}`,
-                  color: triggerMsg.type === "success" ? "hsl(150 76% 55%)" : "hsl(0 70% 60%)",
+                  padding: "12px 16px", borderRadius: 12, marginBottom: 16, fontSize: 12,
+                  fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+                  background: triggerMsg.type === "success" ? "#D1FAE5" : "#FFE4E6",
+                  border: `2px solid #000000`,
+                  color: "#000000",
+                  boxShadow: "3px 3px 0px #000000",
                 }}>
                   {triggerMsg.text}
                 </div>
@@ -268,17 +270,18 @@ export default function AdminDashboardPage() {
           {/* Optimizer card */}
           <div style={{
             padding: "32px 36px", borderRadius: 20, display: "flex", flexDirection: "column", justifyContent: "space-between",
-            border: "1px solid hsl(240 8% 10%)",
-            background: "linear-gradient(135deg, hsl(240 8% 5%) 0%, hsl(240 6% 6%) 100%)",
+            border: "3px solid #000000",
+            background: "#FFFFFF",
+            boxShadow: "8px 8px 0px #000000",
           }}>
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, paddingBottom: 14, borderBottom: "1px solid hsl(240 8% 9%)" }}>
-                <Zap style={{ width: 15, height: 15, color: "hsl(262 83% 68%)" }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: "hsl(220 20% 90%)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, paddingBottom: 14, borderBottom: "3px solid #000000" }}>
+                <Zap style={{ width: 15, height: 15, color: "#7C3AED" }} />
+                <span style={{ fontSize: 12, fontWeight: 800, color: "#000000", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}>
                   Memory Optimizer
                 </span>
               </div>
-              <p style={{ fontSize: 12, color: "hsl(220 8% 40%)", lineHeight: 1.7 }}>
+              <p style={{ fontSize: 12, color: "#555555", lineHeight: 1.7, fontWeight: 500 }}>
                 Trigger the weekly relinking script to compute semantic controversies, rebuild pgvector index files, and cross-reference citations.
               </p>
             </div>
@@ -287,16 +290,16 @@ export default function AdminDashboardPage() {
               disabled={optimizing}
               style={{
                 marginTop: 20, width: "100%",
-                padding: "10px 0", borderRadius: 9, cursor: "pointer",
-                background: "hsl(240 8% 10%)", border: "1px solid hsl(240 8% 16%)",
-                color: "hsl(220 20% 85%)", fontSize: 12, fontWeight: 500,
+                padding: "12px 0", borderRadius: 9999, cursor: "pointer",
+                background: "#FFE57F", border: "3px solid #000000",
+                color: "#000000", fontSize: 12, fontWeight: 800,
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                boxShadow: "4px 4px 0px #000000",
+                letterSpacing: "0.06em", textTransform: "uppercase",
                 transition: "all 0.15s ease",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "hsl(240 8% 14%)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "hsl(240 8% 10%)")}
             >
-              <RefreshCw style={{ width: 13, height: 13, color: "hsl(262 83% 65%)", animation: optimizing ? "spin 1s linear infinite" : "none" }} />
+              <RefreshCw style={{ width: 13, height: 13, color: "#000000", animation: optimizing ? "spin 1s linear infinite" : "none" }} />
               {optimizing ? "Analyzing nodes..." : "Trigger Relinking Run"}
             </button>
           </div>
@@ -304,31 +307,34 @@ export default function AdminDashboardPage() {
 
         {/* Job ledger */}
         <div style={{
-          borderRadius: 16, border: "1px solid hsl(240 8% 10%)",
-          background: "hsl(240 8% 4%)", overflow: "hidden",
+          borderRadius: 20, border: "3px solid #000000",
+          background: "#FFFFFF", overflow: "hidden",
+          boxShadow: "8px 8px 0px #000000",
         }}>
           <div style={{
-            padding: "20px 28px", borderBottom: "1px solid hsl(240 8% 8%)",
-            background: "hsl(240 10% 5%)",
+            padding: "20px 28px", borderBottom: "3px solid #000000",
+            background: "#FAF8F5",
             display: "flex", alignItems: "center", justifyContent: "space-between",
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Terminal style={{ width: 15, height: 15, color: "hsl(262 83% 68%)" }} />
-              <span style={{ fontSize: 12, fontWeight: 600, color: "hsl(220 20% 90%)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              <Terminal style={{ width: 15, height: 15, color: "#7C3AED" }} />
+              <span style={{ fontSize: 12, fontWeight: 800, color: "#000000", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}>
                 Background Ingestion Runs
               </span>
             </div>
             <button
+              data-sidebar-delete
               onClick={loadJobs}
               style={{
-                width: 28, height: 28, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center",
-                background: "transparent", border: "1px solid hsl(240 8% 14%)",
-                cursor: "pointer", color: "hsl(220 8% 40%)",
+                width: 32, height: 32, borderRadius: 9999, display: "flex", alignItems: "center", justifyContent: "center",
+                background: "#FFFFFF", border: "2px solid #000000",
+                boxShadow: "2px 2px 0px #000000",
+                cursor: "pointer", color: "#000000",
                 transition: "all 0.15s ease",
               }}
               title="Refresh"
             >
-              <RefreshCw style={{ width: 12, height: 12 }} />
+              <RefreshCw style={{ width: 13, height: 13 }} />
             </button>
           </div>
 
@@ -345,13 +351,13 @@ export default function AdminDashboardPage() {
             ) : (
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
-                  <tr style={{ borderBottom: "1px solid hsl(240 8% 9%)", background: "hsl(240 10% 4%)" }}>
+                  <tr style={{ borderBottom: "3px solid #000000", background: "#FAF8F5" }}>
                     {["Job ID", "Query Terms", "Status", "Indexed Stats", "Initialized", "Diagnostics"].map((h) => (
                       <th key={h} style={{
-                        padding: "12px 20px", textAlign: "left",
+                        padding: "14px 20px", textAlign: "left",
                         fontSize: 9, fontFamily: "'JetBrains Mono', monospace",
-                        letterSpacing: "0.1em", color: "hsl(220 8% 28%)",
-                        textTransform: "uppercase", fontWeight: 600,
+                        letterSpacing: "0.1em", color: "#000000",
+                        textTransform: "uppercase", fontWeight: 800,
                       }}>
                         {h}
                       </th>
@@ -366,43 +372,43 @@ export default function AdminDashboardPage() {
                     return (
                       <tr
                         key={j.id}
-                        style={{ borderBottom: "1px solid hsl(240 8% 7%)", transition: "background 0.15s ease" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "hsl(240 8% 6%)")}
+                        style={{ borderBottom: "2px solid #E5E7EB", transition: "background 0.15s ease" }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = "#FAF8F5")}
                         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                       >
-                        <td style={{ padding: "16px 22px", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "hsl(220 8% 38%)" }} title={j.id}>
+                        <td style={{ padding: "16px 22px", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#555555", fontWeight: 600 }} title={j.id}>
                           {j.id.substring(0, 8)}…
                         </td>
-                        <td style={{ padding: "16px 22px", fontSize: 12, fontWeight: 500, color: "hsl(220 15% 82%)", maxWidth: 220, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={j.query}>
+                        <td style={{ padding: "16px 22px", fontSize: 12, fontWeight: 600, color: "#111111", maxWidth: 220, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={j.query}>
                           {j.query}
                         </td>
                         <td style={{ padding: "16px 22px" }}>
                           {statusBadge(j.status)}
                         </td>
-                        <td style={{ padding: "13px 20px", fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>
+                        <td style={{ padding: "13px 20px", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#333333" }}>
                           {j.status === "running" ? (
-                            <span style={{ color: "hsl(220 8% 38%)" }}>processing…</span>
+                            <span style={{ color: "#555555", fontWeight: 600 }}>processing…</span>
                           ) : (
                             <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                              <span>Fetched: <strong style={{ color: "hsl(220 20% 90%)" }}>{j.fetched}</strong></span>
-                              <span>Indexed: <strong style={{ color: "hsl(262 83% 70%)" }}>{j.processed}</strong></span>
-                              {(j.failed ?? 0) > 0 && <span style={{ color: "hsl(0 70% 60%)" }}>Failed: {j.failed}</span>}
+                              <span>Fetched: <strong style={{ color: "#000000" }}>{j.fetched}</strong></span>
+                              <span>Indexed: <strong style={{ color: "#7C3AED" }}>{j.processed}</strong></span>
+                              {(j.failed ?? 0) > 0 && <span style={{ color: "#DC2626", fontWeight: 700 }}>Failed: {j.failed}</span>}
                             </span>
                           )}
                         </td>
                         <td style={{ padding: "13px 20px" }}>
-                          <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "hsl(220 8% 38%)", fontFamily: "'JetBrains Mono', monospace" }}>
+                          <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "#555555", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>
                             <Clock style={{ width: 11, height: 11 }} />
                             {startStr}
                           </span>
                         </td>
                         <td style={{ padding: "13px 20px", fontFamily: "'JetBrains Mono', monospace", fontSize: 10, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={j.error_message || ""}>
                           {j.status === "failed" ? (
-                            <span style={{ color: "hsl(0 70% 60%)" }}>{j.error_message}</span>
+                            <span style={{ color: "#DC2626", fontWeight: 700 }}>{j.error_message}</span>
                           ) : j.status === "done" ? (
-                            <span style={{ color: "hsl(150 76% 50%)" }}>✓ pipeline completed</span>
+                            <span style={{ color: "#059669", fontWeight: 700 }}>✓ pipeline completed</span>
                           ) : (
-                            <span style={{ color: "hsl(220 8% 30%)" }}>waiting…</span>
+                            <span style={{ color: "#888888" }}>waiting…</span>
                           )}
                         </td>
                       </tr>
