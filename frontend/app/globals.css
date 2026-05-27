@@ -89,14 +89,20 @@ aside nav a:hover {
   transform: translate(-2px, -2px) !important;
 }
 
-/* Active links inside sidebar (Pill shape with yellow / mint fill) */
-aside nav a[class*="bg-"] {
+/* Active links inside sidebar (Pill shape with vibrant green active fill) */
+aside nav a[class*="bg-"],
+aside nav a[style*="hsl(262 50% 25%"] {
   background: #2EE59D !important; /* Bright green accent active */
   border: 3px solid #000000 !important;
   border-radius: 9999px !important;
   box-shadow: 4px 4px 0px #000000 !important;
   color: #000000 !important;
   font-weight: 800 !important;
+}
+aside nav a[style*="hsl(262 50% 25%"] span,
+aside nav a[style*="hsl(262 50% 25%"] svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
 }
 
 /* Sidebar Header / Logo */
@@ -193,7 +199,7 @@ div[class*="assistant"], div[style*="m.role === 'assistant'"] {
 
 /* Chat page suggestions cards */
 div[style*="gridTemplateColumns"] button {
-  background: #FFFFFF !important;
+  background: #FFE57F !important; /* Yellow */
   border: 3px solid #000000 !important;
   border-radius: 16px !important;
   box-shadow: 6px 6px 0px #000000 !important;
@@ -201,7 +207,7 @@ div[style*="gridTemplateColumns"] button {
   font-weight: 700 !important;
 }
 div[style*="gridTemplateColumns"] button:hover {
-  background: #FFE57F !important;
+  background: #FFF59D !important;
   box-shadow: 8px 8px 0px #000000 !important;
   transform: translate(-2px, -2px) !important;
 }
@@ -402,4 +408,74 @@ aside nav a svg {
 code, pre, pre *, code * {
   color: #000000 !important;
   font-weight: 600 !important;
+}
+
+/* ============================================================
+   ULTRA-SPECIFIC INLINE COLOR AND LOGO REVERSALS
+   Overrides hardcoded light gray/white styles in NextJS page structures.
+   ============================================================ */
+
+/* Welcome screen title "Welcome to MEDICA Intelligence" inline text override */
+h1[style*="WebkitTextFillColor"],
+div[style*="textAlign: 'center'"] h1 {
+  background: none !important;
+  -webkit-text-fill-color: #000000 !important;
+  color: #000000 !important;
+}
+
+/* Welcome screen subtitle inline text override */
+div[style*="textAlign: 'center'"] p,
+p[style*="color: \"hsl(220 8% 45%)\""],
+p[style*="hsl(220 8% 45%"] {
+  color: #000000 !important;
+  font-weight: 600 !important;
+}
+
+/* "Llama 3.3 70B on Groq" inline span override */
+div[style*="textAlign: 'center'"] p span,
+span[style*="color: \"hsl(262 83% 70%)\""],
+span[style*="hsl(262 83% 70%"] {
+  color: #004D40 !important; /* Deep clinical teal */
+  font-weight: 800 !important;
+}
+
+/* Force all span texts in the chat copilot suggestions buttons to be black */
+div[style*="gridTemplateColumns"] button span {
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+/* "Submit Query ->" inline text override inside suggestion buttons */
+div[style*="gridTemplateColumns"] button span[style*="color: \"hsl(262"],
+div[style*="gridTemplateColumns"] button span[style*="hsl(262"] {
+  color: #004D40 !important; /* Deep clinical teal */
+  font-weight: 800 !important;
+}
+
+/* Sidebar header v1.0 and state details */
+aside div[style*="letterSpacing: \"0.12em\""],
+aside div[style*="background: \"linear-gradient(90deg, hsl(262"] {
+  background: none !important;
+  -webkit-text-fill-color: #A7FFEB !important;
+  color: #A7FFEB !important;
+  font-weight: 700 !important;
+}
+
+/* Sidebar Node State detail footer */
+aside div[style*="borderTop"] * {
+  color: #000000 !important;
+}
+
+/* Header dynamic descriptions contrast */
+header.page-header div[style*="fontFamily: 'JetBrains Mono'"],
+header.page-header div[style*="fontFamily: 'JetBrains Mono'"] * {
+  color: #212121 !important;
+  font-weight: 700 !important;
+}
+
+/* "AGENTIC RUNTIME ACTIVE" text description */
+header.page-header span[style*="color: \"hsl(150 76% 55%)\""],
+header.page-header span[style*="hsl(150 76% 55%"] {
+  color: #004D40 !important;
+  font-weight: 800 !important;
 }
