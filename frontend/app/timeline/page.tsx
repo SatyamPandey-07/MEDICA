@@ -37,20 +37,22 @@ export default function ResearchTimelinePage() {
   }, []);
 
   const getStatusColor = (status: string) => {
-    if (status === "verified") return { dot: "hsl(150 76% 50%)", text: "hsl(150 76% 60%)", bg: "hsl(150 60% 12%)", border: "hsl(150 60% 20%)" };
-    if (status === "disputed") return { dot: "hsl(24 90% 55%)", text: "hsl(24 90% 65%)", bg: "hsl(24 70% 10%)", border: "hsl(24 70% 20%)" };
-    return { dot: "hsl(220 8% 40%)", text: "hsl(220 8% 55%)", bg: "hsl(220 8% 10%)", border: "hsl(220 8% 15%)" };
+    if (status === "verified")
+      return { dot: "#10B981", text: "#000000", bg: "#D1FAE5", border: "#000000" };
+    if (status === "disputed")
+      return { dot: "#F59E0B", text: "#000000", bg: "#FEF3C7", border: "#000000" };
+    return { dot: "#6B7280", text: "#000000", bg: "#F3F4F6", border: "#000000" };
   };
 
   const getEvidenceStyle = (level: string) => {
     const map: Record<string, { bg: string; text: string; border: string }> = {
-      randomized_controlled_trial: { bg: "hsl(262 50% 18%)", text: "hsl(262 83% 75%)", border: "hsl(262 50% 28%)" },
-      meta_analysis:               { bg: "hsl(174 60% 12%)", text: "hsl(174 80% 55%)", border: "hsl(174 60% 22%)" },
-      systematic_review:           { bg: "hsl(150 50% 12%)", text: "hsl(150 76% 55%)", border: "hsl(150 50% 22%)" },
-      cohort:                      { bg: "hsl(217 60% 14%)", text: "hsl(217 91% 65%)", border: "hsl(217 60% 24%)" },
-      expert_opinion:              { bg: "hsl(220 8% 10%)",  text: "hsl(220 8% 50%)",  border: "hsl(220 8% 16%)" },
+      randomized_controlled_trial: { bg: "#EDE9FE", text: "#000000", border: "#000000" },
+      meta_analysis:               { bg: "#D1FAE5", text: "#000000", border: "#000000" },
+      systematic_review:           { bg: "#CCFBF1", text: "#000000", border: "#000000" },
+      cohort:                      { bg: "#DBEAFE", text: "#000000", border: "#000000" },
+      expert_opinion:              { bg: "#F3F4F6", text: "#000000", border: "#000000" },
     };
-    return map[level?.toLowerCase()] || { bg: "hsl(220 8% 10%)", text: "hsl(220 8% 50%)", border: "hsl(220 8% 16%)" };
+    return map[level?.toLowerCase()] || { bg: "#F3F4F6", text: "#000000", border: "#000000" };
   };
 
   // Group by year
@@ -98,16 +100,16 @@ export default function ResearchTimelinePage() {
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
 
           {/* Hero heading */}
-          <div style={{ marginBottom: 40 }}>
+          <div style={{ marginBottom: 48 }}>
             <h1 style={{
-              fontSize: 26, fontWeight: 700,
-              background: "linear-gradient(135deg, hsl(220 20% 97%), hsl(220 10% 70%))",
-              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-              letterSpacing: "-0.02em", marginBottom: 8,
+              fontSize: 32, fontWeight: 800,
+              color: "#000000",
+              letterSpacing: "-0.03em", marginBottom: 12,
+              lineHeight: 1.2,
             }}>
               Clinical Trial Milestones
             </h1>
-            <p style={{ fontSize: 13, color: "hsl(220 8% 45%)", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 14, color: "#555555", lineHeight: 1.7, fontWeight: 500 }}>
               Chronological map of verified clinical studies, targeted therapeutics, and emerging oncology trials.
             </p>
           </div>
@@ -140,37 +142,43 @@ export default function ResearchTimelinePage() {
           ) : (
             /* Timeline stream */
             <div style={{ position: "relative" }}>
-              {/* Vertical line */}
+              {/* Vertical bold black line */}
               <div style={{
-                position: "absolute", left: 28, top: 0, bottom: 0, width: 1,
-                background: "linear-gradient(180deg, transparent 0%, hsl(262 50% 30%) 10%, hsl(262 50% 25%) 90%, transparent 100%)",
+                position: "absolute", left: 22, top: 0, bottom: 0, width: 4,
+                background: "#000000",
+                borderRadius: 4,
               }} />
 
               {years.map((year) => (
                 <div key={year} style={{ marginBottom: 40 }}>
-                  {/* Year marker */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24, position: "relative" }}>
+                  {/* Year marker - neobrutalist stamp */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20, position: "relative" }}>
                     <div style={{
-                      width: 57, height: 28, borderRadius: 8, flexShrink: 0, zIndex: 1,
-                      background: "linear-gradient(135deg, hsl(262 83% 55%), hsl(234 89% 60%))",
+                      width: 64, height: 32, borderRadius: 8, flexShrink: 0, zIndex: 1,
+                      background: "#FFE57F",
+                      border: "3px solid #000000",
+                      boxShadow: "3px 3px 0px #000000",
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 12, fontWeight: 700, color: "white",
+                      fontSize: 13, fontWeight: 800, color: "#000000",
                       fontFamily: "'JetBrains Mono', monospace",
-                      boxShadow: "0 4px 16px hsl(262 83% 40% / 0.35)",
                     }}>
                       {year}
                     </div>
-                    <div style={{ height: 1, flex: 1, background: "hsl(240 8% 10%)" }} />
+                    <div style={{ height: 3, flex: 1, background: "#000000", borderRadius: 2 }} />
                     <div style={{
-                      fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
-                      color: "hsl(220 8% 30%)", flexShrink: 0,
+                      fontSize: 11, fontFamily: "'JetBrains Mono', monospace",
+                      color: "#000000", flexShrink: 0, fontWeight: 700,
+                      background: "#F3F4F6",
+                      border: "2px solid #000000",
+                      borderRadius: 6,
+                      padding: "2px 10px",
                     }}>
                       {byYear[year].length} trial{byYear[year].length !== 1 ? "s" : ""}
                     </div>
                   </div>
 
                   {/* Papers for this year */}
-                  <div style={{ paddingLeft: 56, display: "flex", flexDirection: "column", gap: 16 }}>
+                  <div style={{ paddingLeft: 56, display: "flex", flexDirection: "column", gap: 20 }}>
                     {byYear[year].map((p, idx) => {
                       const pubDate = new Date(p.published);
                       const monthDay = pubDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
@@ -179,17 +187,15 @@ export default function ResearchTimelinePage() {
 
                       return (
                         <div key={p.id || idx} style={{ position: "relative" }}>
-                          {/* Timeline node */}
+                          {/* Timeline node dot */}
                           <div style={{
                             position: "absolute",
-                            left: -40, top: 18,
-                            width: 12, height: 12, borderRadius: "50%",
-                            background: "hsl(240 12% 2%)",
-                            border: `2px solid ${p.verification_status === "verified" ? "hsl(150 76% 50%)" : "hsl(262 50% 45%)"}`,
-                            boxShadow: p.verification_status === "verified"
-                              ? "0 0 8px hsl(150 76% 50% / 0.4)"
-                              : "0 0 6px hsl(262 83% 50% / 0.3)",
-                            transition: "all 0.2s ease",
+                            left: -46, top: 20,
+                            width: 16, height: 16, borderRadius: "50%",
+                            background: p.verification_status === "verified" ? "#10B981" : "#FFE57F",
+                            border: "3px solid #000000",
+                            boxShadow: "2px 2px 0px #000000",
+                            zIndex: 1,
                           }} />
 
                           {/* Card */}
@@ -200,18 +206,23 @@ export default function ResearchTimelinePage() {
                               display: "block",
                               padding: "24px 28px",
                               borderRadius: 20,
-                              border: "1px solid hsl(240 8% 10%)",
-                              background: "linear-gradient(135deg, hsl(240 8% 5%) 0%, hsl(240 6% 6%) 100%)",
+                              border: "3px solid #000000",
+                              background: "#FFFFFF",
                               textDecoration: "none",
+                              boxShadow: "6px 6px 0px #000000",
+                              transition: "all 0.15s ease",
                             }}
                           >
                             {/* Top row */}
-                            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 10 }}>
-                              {/* Date */}
+                            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 14 }}>
+                              {/* Date chip */}
                               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                 <span style={{
-                                  fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
-                                  color: "hsl(220 8% 40%)", fontWeight: 500,
+                                  fontSize: 11, fontFamily: "'JetBrains Mono', monospace",
+                                  color: "#000000", fontWeight: 700,
+                                  background: "#F3F4F6",
+                                  border: "2px solid #000000",
+                                  borderRadius: 6, padding: "2px 8px",
                                 }}>
                                   {monthDay}
                                 </span>
@@ -220,31 +231,33 @@ export default function ResearchTimelinePage() {
                               {/* Badges */}
                               <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
                                 <span style={{
-                                  ...evidStyle, padding: "2px 8px",
-                                  borderRadius: 4, fontSize: 9,
-                                  fontFamily: "'JetBrains Mono', monospace", fontWeight: 600,
-                                  border: `1px solid ${evidStyle.border}`,
-                                  letterSpacing: "0.05em",
+                                  padding: "4px 10px",
+                                  borderRadius: 6, fontSize: 9,
+                                  fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+                                  border: `2px solid #000000`,
+                                  letterSpacing: "0.06em", textTransform: "uppercase",
                                   background: evidStyle.bg, color: evidStyle.text,
                                 }}>
                                   {(p.evidence_level || "trial").replace(/_/g, " ").toUpperCase()}
                                 </span>
                                 {p.trial_phase && (
                                   <span style={{
-                                    padding: "2px 8px", borderRadius: 4, fontSize: 9,
-                                    fontFamily: "'JetBrains Mono', monospace", fontWeight: 600,
-                                    background: "hsl(217 60% 14%)", color: "hsl(217 91% 65%)",
-                                    border: "1px solid hsl(217 60% 24%)",
+                                    padding: "4px 10px", borderRadius: 6, fontSize: 9,
+                                    fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+                                    background: "#DBEAFE", color: "#000000",
+                                    border: "2px solid #000000",
+                                    letterSpacing: "0.06em", textTransform: "uppercase",
                                   }}>
                                     {p.trial_phase.replace("_", " ").toUpperCase()}
                                   </span>
                                 )}
                                 <span style={{
-                                  padding: "2px 8px", borderRadius: 4, fontSize: 9,
-                                  fontFamily: "'JetBrains Mono', monospace", fontWeight: 600,
+                                  padding: "4px 10px", borderRadius: 6, fontSize: 9,
+                                  fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
                                   background: statusStyle.bg, color: statusStyle.text,
-                                  border: `1px solid ${statusStyle.border}`,
+                                  border: `2px solid #000000`,
                                   display: "flex", alignItems: "center", gap: 4,
+                                  letterSpacing: "0.06em", textTransform: "uppercase",
                                 }}>
                                   {p.verification_status === "verified"
                                     ? <CheckCircle style={{ width: 9, height: 9 }} />
@@ -258,17 +271,17 @@ export default function ResearchTimelinePage() {
 
                             {/* Title */}
                             <h3 style={{
-                              fontSize: 14, fontWeight: 600, lineHeight: 1.5,
-                              color: "hsl(220 20% 95%)", marginBottom: 6,
+                              fontSize: 15, fontWeight: 700, lineHeight: 1.5,
+                              color: "#000000", marginBottom: 8,
                               letterSpacing: "-0.01em",
                             }}>
                               {p.title}
                             </h3>
 
                             {/* Authors */}
-                            <div style={{ fontSize: 11, color: "hsl(220 8% 45%)", marginBottom: 12 }}>
+                            <div style={{ fontSize: 12, color: "#555555", marginBottom: 14, fontWeight: 500 }}>
                               By {(p.authors || []).slice(0, 2).join(", ")}{p.authors?.length > 2 ? " et al." : ""}{" "}
-                              <span style={{ color: "hsl(220 8% 30%)", fontFamily: "'JetBrains Mono', monospace", fontSize: 10 }}>
+                              <span style={{ color: "#888888", fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>
                                 {p.journal}
                               </span>
                             </div>
@@ -278,20 +291,20 @@ export default function ResearchTimelinePage() {
                               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                                 {p.tags.drugs?.slice(0, 2).map((d: string) => (
                                   <span key={d} style={{
-                                    padding: "2px 7px", borderRadius: 4, fontSize: 9,
-                                    fontFamily: "'JetBrains Mono', monospace",
-                                    background: "hsl(262 50% 15%)", color: "hsl(262 83% 72%)",
-                                    border: "1px solid hsl(262 50% 22%)",
+                                    padding: "3px 9px", borderRadius: 6, fontSize: 9,
+                                    fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+                                    background: "#EDE9FE", color: "#000000",
+                                    border: "2px solid #000000",
                                   }}>
                                     drug:{d}
                                   </span>
                                 ))}
                                 {p.tags.biomarkers?.slice(0, 2).map((b: string) => (
                                   <span key={b} style={{
-                                    padding: "2px 7px", borderRadius: 4, fontSize: 9,
-                                    fontFamily: "'JetBrains Mono', monospace",
-                                    background: "hsl(217 50% 13%)", color: "hsl(217 91% 68%)",
-                                    border: "1px solid hsl(217 50% 22%)",
+                                    padding: "3px 9px", borderRadius: 6, fontSize: 9,
+                                    fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+                                    background: "#DBEAFE", color: "#000000",
+                                    border: "2px solid #000000",
                                   }}>
                                     mut:{b}
                                   </span>
