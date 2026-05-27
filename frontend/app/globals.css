@@ -2,96 +2,98 @@
 
 @layer base {
   :root {
-    /* Core palette: Stark white & off-white clinical background */
-    --background: 192 10% 96%; /* #F4F6F6 */
+    /* Warm beige neobrutalist canvas background */
+    --background: 34 25% 97%;   /* #FAF8F5 */
     --surface-1: 0 0% 100%;    /* #FFFFFF pure white */
-    --surface-2: 174 80% 96%;  /* #E0F2F1 soft mint green */
-    --surface-3: 0 0% 100%;    /* #FFFFFF pure white */
+    --surface-2: 48 100% 90%;  /* #FFE57F soft yellow */
+    --surface-3: 150 76% 93%;  /* #E0F2F1 soft mint */
     
     --foreground: 0 0% 0%;       /* Stark black #000000 */
     --foreground-muted: 0 0% 15%;/* High contrast dark charcoal */
     --foreground-subtle: 0 0% 30%;/* Highly readable dark grey */
 
-    /* Brand Accent: Deep Clinical Teal HSL(174 100% 15%) => #004D40 */
-    --primary: 174 100% 15%;      
+    /* Brand accents */
+    --primary: 0 0% 0%;           /* Stark black for structural accents */
     --primary-glow: 174 100% 15%; 
     --primary-dim: 174 80% 90%;   
     --accent-teal: 174 100% 15%;  
     --accent-indigo: 174 100% 15%;
 
     /* Semantic badges */
-    --verified: 174 100% 15%;     /* Deep Clinical Teal */
-    --verified-dim: 174 80% 90%;  /* Soft Mint */
+    --verified: 174 100% 15%;     
+    --verified-dim: 174 80% 90%;  
     --disputed: 24 90% 40%;       
     --disputed-dim: 24 90% 92%;   
     --unverified: 0 0% 40%;
     --pending: 217 91% 35%;
 
-    /* Borders: Pure Stark Black, thick! */
+    /* Borders: Pure Stark Black */
     --border-subtle: 0 0% 0%;
     --border-normal: 0 0% 0%;
     --border-accent: 0 0% 0%;
 
-    /* Sharp corners enforced globally! */
-    --radius-sm: 0px !important;
-    --radius-md: 0px !important;
-    --radius-lg: 0px !important;
-    --radius-xl: 0px !important;
+    /* Neobrutalist rounded corners as in the reference screenshot */
+    --radius-sm: 8px !important;
+    --radius-md: 12px !important;
+    --radius-lg: 20px !important;
+    --radius-xl: 24px !important;
   }
 }
 
 /* ============================================================
-   RESET & GLOBAL OVERRIDES FOR NEOBRUTALISM
+   RESET & GLOBAL OVERRIDES FOR NEOBRUTALISM (Chorke Style)
    ============================================================ */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  border-radius: 0px !important; /* Forces 0px rounded corners on EVERY element! */
 }
 
 body {
-  background-color: #F4F6F6 !important;
+  background-color: #FAF8F5 !important;
   color: #000000 !important;
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 
-/* Force layout backgrounds to stark off-white/pure white */
+/* Force layout backgrounds to warm light beige */
 main {
-  background-color: #F4F6F6 !important;
+  background-color: #FAF8F5 !important;
   background-image: none !important;
 }
 
-/* Sidebar navigation */
+/* Stark White Sidebar with Black Borders & Rounded Elements */
 aside {
   background: #FFFFFF !important;
   border-right: 4px solid #000000 !important;
 }
 aside * {
-  border-radius: 0px !important;
+  border-radius: 12px !important;
 }
 
-/* Sidebar Links */
+/* Sidebar Links: Rounded Pill Shapes as in "CONTACT" button */
 aside nav a {
   border: 3px solid transparent !important;
+  border-radius: 9999px !important; /* Perfect Pill Shape */
   transition: all 0.15s ease !important;
-  margin-bottom: 4px !important;
+  margin-bottom: 6px !important;
   color: #000000 !important;
+  font-weight: 700 !important;
 }
 aside nav a:hover {
-  background: #E0F2F1 !important;
+  background: #FFE57F !important; /* Yellow hover */
   border-color: #000000 !important;
   box-shadow: 4px 4px 0px #000000 !important;
   transform: translate(-2px, -2px) !important;
 }
 
-/* Active links inside sidebar */
+/* Active links inside sidebar (Pill shape with yellow / mint fill) */
 aside nav a[class*="bg-"] {
-  background: #A7FFEB !important;
+  background: #2EE59D !important; /* Bright green accent active */
   border: 3px solid #000000 !important;
+  border-radius: 9999px !important;
   box-shadow: 4px 4px 0px #000000 !important;
   color: #000000 !important;
   font-weight: 800 !important;
@@ -100,51 +102,32 @@ aside nav a[class*="bg-"] {
 /* Sidebar Header / Logo */
 aside div[class*="py-5"] {
   border-bottom: 3px solid #000000 !important;
+  border-radius: 0px !important;
 }
 aside div[class*="bg-linear-"] {
-  background: #004D40 !important;
+  background: #000000 !important;
   border: 2px solid #000000 !important;
+  border-radius: 8px !important;
   box-shadow: 2px 2px 0px #000000 !important;
 }
 
-/* Dynamic Research Streams list */
+/* Sidebar Research Streams */
 aside div[class*="cursor-pointer"] {
   background: #FFFFFF !important;
   border: 2px solid #000000 !important;
+  border-radius: 12px !important;
   color: #000000 !important;
   margin-bottom: 6px !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
 }
 aside div[class*="cursor-pointer"]:hover {
-  background: #E0F2F1 !important;
+  background: #FFE57F !important;
   box-shadow: 3px 3px 0px #000000 !important;
   transform: translate(-1px, -1px) !important;
 }
 aside div[class*="cursor-pointer"][class*="bg-"] {
-  background: #A7FFEB !important;
+  background: #FFE57F !important;
   box-shadow: 3px 3px 0px #000000 !important;
-}
-
-/* Core grid panels */
-.glass, .glass-card, .glass-elevated, div[class*="glass-card"] {
-  background: #FFFFFF !important;
-  border: 3px solid #000000 !important;
-  box-shadow: 8px 8px 0px #000000 !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  color: #000000 !important;
-}
-
-/* Stat Cards */
-.stat-card, div[class*="stat-card"] {
-  background: #E0F2F1 !important;
-  border: 3px solid #000000 !important;
-  box-shadow: 6px 6px 0px #000000 !important;
-  color: #000000 !important;
-}
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 8px 8px 0px #000000 !important;
 }
 
 /* Page headers sticky at the top */
@@ -152,23 +135,75 @@ aside div[class*="cursor-pointer"][class*="bg-"] {
   background: #FFFFFF !important;
   border-bottom: 4px solid #000000 !important;
   color: #000000 !important;
+  border-radius: 0px !important;
 }
 .page-header * {
   color: #000000 !important;
 }
 
-/* Chat bubble logs user & assistant */
-div[class*="m.role === 'user'"], div[class*="user"], div[style*="m.role === 'user'"] {
+/* 24px Rounded Neobrutalist Cards as in the reference image */
+.glass, .glass-card, .glass-elevated, div[class*="glass-card"] {
   background: #FFFFFF !important;
   border: 3px solid #000000 !important;
+  border-radius: 24px !important;
+  box-shadow: 8px 8px 0px #000000 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  color: #000000 !important;
+}
+
+/* Alternating Feature Cards (Vibrant Yellow / Mint / Pink) */
+.stat-card, div[class*="stat-card"] {
+  border: 3px solid #000000 !important;
+  border-radius: 24px !important;
+  box-shadow: 8px 8px 0px #000000 !important;
+  color: #000000 !important;
+  padding: 32px !important;
+}
+/* Assign neobrutalist colors to columns / rows */
+.stat-card:nth-child(3n+1), div[class*="stat-card"]:nth-child(3n+1) {
+  background: #FFE57F !important; /* Vibrant Asset Management Yellow */
+}
+.stat-card:nth-child(3n+2), div[class*="stat-card"]:nth-child(3n+2) {
+  background: #2EE59D !important; /* Vibrant Investment Banking Green */
+}
+.stat-card:nth-child(3n), div[class*="stat-card"]:nth-child(3n) {
+  background: #F3E5F5 !important; /* Soft Ventures Lavender */
+}
+.stat-card:hover {
+  transform: translate(-2px, -2px) !important;
+  box-shadow: 10px 10px 0px #000000 !important;
+}
+
+/* Chat bubble logs user & assistant with rounded card styles */
+div[class*="m.role === 'user'"], div[class*="user"], div[style*="m.role === 'user'"] {
+  background: #FFE57F !important; /* Yellow user bubble */
+  border: 3px solid #000000 !important;
+  border-radius: 20px !important;
   box-shadow: 6px 6px 0px #000000 !important;
   color: #000000 !important;
 }
 div[class*="assistant"], div[style*="m.role === 'assistant'"] {
-  background: #E0F2F1 !important; /* Soft mint assistant */
+  background: #F3E5F5 !important; /* Soft lavender assistant bubble */
   border: 3px solid #000000 !important;
+  border-radius: 20px !important;
   box-shadow: 6px 6px 0px #000000 !important;
   color: #000000 !important;
+}
+
+/* Chat page suggestions cards */
+div[style*="gridTemplateColumns"] button {
+  background: #FFFFFF !important;
+  border: 3px solid #000000 !important;
+  border-radius: 16px !important;
+  box-shadow: 6px 6px 0px #000000 !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+div[style*="gridTemplateColumns"] button:hover {
+  background: #FFE57F !important;
+  box-shadow: 8px 8px 0px #000000 !important;
+  transform: translate(-2px, -2px) !important;
 }
 
 /* Text Input & Controls */
@@ -176,31 +211,20 @@ input, select, textarea {
   background: #FFFFFF !important;
   color: #000000 !important;
   border: 3px solid #000000 !important;
+  border-radius: 14px !important; /* Rounded inputs */
   box-shadow: 4px 4px 0px #000000 !important;
   outline: none !important;
   font-weight: 600 !important;
 }
 input:focus, select:focus, textarea:focus {
-  border-color: #004D40 !important;
+  border-color: #000000 !important;
   box-shadow: 4px 4px 0px #000000 !important;
 }
 
-/* Overriding Tailwind Text Colors for High Contrast scannability */
-.text-white, .text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500, .text-slate-600 {
-  color: #000000 !important;
-}
-.text-slate-400, .text-slate-500, .text-slate-600, .text-slate-700 {
-  color: #263238 !important; /* rich dark grey for muteds */
-}
-.text-violet-400, .text-indigo-400, .text-purple-400, .text-cyan-400, .text-emerald-400 {
-  color: #004D40 !important; /* Replace brand colors with Deep Teal */
-}
-
-/* Ingestion panel scheduler queue buttons */
-button {
-  background: #FFFFFF;
-  color: #000000;
+/* Buttons: Pill shape & vibrant colors as in reference */
+button, input[type="submit"] {
   border: 3px solid #000000 !important;
+  border-radius: 9999px !important; /* Perfect Pill Shape */
   box-shadow: 4px 4px 0px #000000 !important;
   font-weight: 800 !important;
   text-transform: uppercase;
@@ -208,85 +232,100 @@ button {
   transition: all 0.1s ease;
   cursor: pointer;
 }
+/* Yellow / Green / Black buttons depending on type */
+button[class*="bg-slate-"], button[class*="bg-[#"], button[style*="background"] {
+  background: #FFE57F !important; /* Default to neobrutalist yellow */
+  color: #000000 !important;
+}
+button[class*="text-rose-"], button[class*="Trash2"] {
+  background: #FFCDD2 !important; /* Soft pink for destructive */
+}
 button:active {
-  transform: translate(2px, 2px);
+  transform: translate(2px, 2px) !important;
   box-shadow: 2px 2px 0px #000000 !important;
 }
 
-/* Collapsible trace logger boxes */
-pre {
-  background: #FFFFFF !important;
-  border: 2px solid #000000 !important;
+/* Overriding Tailwind Text Colors for High Contrast scannability */
+.text-white, .text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500, .text-slate-600 {
   color: #000000 !important;
-  font-family: 'JetBrains Mono', monospace !important;
-  font-size: 11px !important;
-  box-shadow: 3px 3px 0px #000000 !important;
+}
+.text-slate-400, .text-slate-500, .text-slate-600, .text-slate-700 {
+  color: #212121 !important; /* High contrast */
+}
+.text-violet-400, .text-indigo-400, .text-purple-400, .text-cyan-400, .text-emerald-400 {
+  color: #000000 !important;
+  font-weight: 700 !important;
 }
 
-/* Hide all background glowing dots & spheres to make layout uncluttered */
+/* Hide glowing overlay dots */
 .glow-sphere, .glow-sphere--violet, .glow-sphere--indigo, .glow-sphere--teal {
   display: none !important;
 }
 
-/* Force Table Gridlines */
+/* Collapsible traces pre box */
+pre {
+  background: #FFFFFF !important;
+  border: 3px solid #000000 !important;
+  border-radius: 12px !important;
+  color: #000000 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important;
+  box-shadow: 4px 4px 0px #000000 !important;
+}
+
+/* Table gridlines */
 table {
-  border-collapse: collapse !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: 3px solid #000000 !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  background: #FFFFFF !important;
 }
 th, td {
-  border: 2px solid #000000 !important;
-  padding: 12px 16px !important;
+  border: 1.5px solid #000000 !important;
+  padding: 14px 18px !important;
   color: #000000 !important;
-  background: #FFFFFF;
 }
 th {
-  background: #E0F2F1 !important;
+  background: #FFE57F !important;
   font-weight: 800 !important;
   text-transform: uppercase;
 }
 
-/* Badges Neobrutalist design */
+/* Badges */
 .badge, span[class*="badge"] {
   border: 2px solid #000000 !important;
-  background: #E0F2F1 !important;
+  border-radius: 6px !important;
+  background: #FFE57F !important;
   color: #000000 !important;
   font-weight: 700 !important;
   letter-spacing: 0.05em !important;
   text-transform: uppercase !important;
 }
 .badge--verified, span[class*="verified"] {
-  background: #004D40 !important;
-  color: #FFFFFF !important;
+  background: #2EE59D !important;
+  color: #000000 !important;
 }
 
-/* Explorer list papers links and cards */
+/* Explorer page cards list */
 a.card-hover, a[class*="card-hover"] {
   background: #FFFFFF !important;
   border: 3px solid #000000 !important;
+  border-radius: 20px !important;
   box-shadow: 4px 4px 0px #000000 !important;
   color: #000000 !important;
-  margin-bottom: 12px !important;
+  margin-bottom: 16px !important;
 }
 a.card-hover:hover, a[class*="card-hover"]:hover {
-  background: #E0F2F1 !important;
+  background: #FFF9C4 !important;
   box-shadow: 8px 8px 0px #000000 !important;
   transform: translate(-3px, -3px) !important;
 }
 
-/* Main chat suggest button cards */
-div[style*="gridTemplateColumns"] button {
-  background: #FFFFFF !important;
-  border: 3px solid #000000 !important;
-  box-shadow: 6px 6px 0px #000000 !important;
-  color: #000000 !important;
-}
-div[style*="gridTemplateColumns"] button:hover {
-  background: #E0F2F1 !important;
-  box-shadow: 8px 8px 0px #000000 !important;
-  transform: translate(-2px, -2px) !important;
-}
-
-/* Interactive force graph elements */
+/* Interactive force graph container */
 div[class*="graph"] {
   background: #FFFFFF !important;
   border: 3px solid #000000 !important;
+  border-radius: 24px !important;
 }
