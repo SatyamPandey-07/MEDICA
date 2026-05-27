@@ -148,7 +148,7 @@ aside div[class*="cursor-pointer"][class*="bg-"] {
 }
 
 /* 24px Rounded Neobrutalist Cards as in the reference image */
-.glass, .glass-card, .glass-elevated, div[class*="glass-card"] {
+.glass, .glass-card, .glass-elevated, div[class*="glass-card"], .card-hover, [class*="card-hover"], a.card-hover, a[class*="card-hover"] {
   background: #FFFFFF !important;
   border: 3px solid #000000 !important;
   border-radius: 24px !important;
@@ -156,6 +156,9 @@ aside div[class*="cursor-pointer"][class*="bg-"] {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   color: #000000 !important;
+  padding: 28px 32px !important; /* Generous, premium card padding */
+  margin-bottom: 24px !important;
+  transition: all 0.2s ease !important;
 }
 
 /* Alternating Feature Cards (Vibrant Yellow / Mint / Pink) */
@@ -164,7 +167,7 @@ aside div[class*="cursor-pointer"][class*="bg-"] {
   border-radius: 24px !important;
   box-shadow: 8px 8px 0px #000000 !important;
   color: #000000 !important;
-  padding: 32px !important;
+  padding: 32px 36px !important; /* Expansive layout padding */
 }
 /* Assign neobrutalist colors to columns / rows */
 .stat-card:nth-child(3n+1), div[class*="stat-card"]:nth-child(3n+1) {
@@ -188,6 +191,8 @@ div[class*="m.role === 'user'"], div[class*="user"], div[style*="m.role === 'use
   border-radius: 20px !important;
   box-shadow: 6px 6px 0px #000000 !important;
   color: #000000 !important;
+  padding: 20px 24px !important; /* Generous bubble chat padding */
+  margin-bottom: 16px !important;
 }
 div[class*="assistant"], div[style*="m.role === 'assistant'"] {
   background: #F3E5F5 !important; /* Soft lavender assistant bubble */
@@ -195,6 +200,8 @@ div[class*="assistant"], div[style*="m.role === 'assistant'"] {
   border-radius: 20px !important;
   box-shadow: 6px 6px 0px #000000 !important;
   color: #000000 !important;
+  padding: 20px 24px !important; /* Generous bubble chat padding */
+  margin-bottom: 16px !important;
 }
 
 /* Chat page suggestions cards */
@@ -205,6 +212,7 @@ div[style*="gridTemplateColumns"] button {
   box-shadow: 6px 6px 0px #000000 !important;
   color: #000000 !important;
   font-weight: 700 !important;
+  padding: 20px 22px !important; /* Enhanced suggestion padding */
 }
 div[style*="gridTemplateColumns"] button:hover {
   background: #FFF59D !important;
@@ -221,6 +229,7 @@ input, select, textarea {
   box-shadow: 4px 4px 0px #000000 !important;
   outline: none !important;
   font-weight: 600 !important;
+  padding: 14px 20px !important; /* Generous text input padding */
 }
 input:focus, select:focus, textarea:focus {
   border-color: #000000 !important;
@@ -234,9 +243,10 @@ button, input[type="submit"] {
   box-shadow: 4px 4px 0px #000000 !important;
   font-weight: 800 !important;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  transition: all 0.1s ease;
+  letter-spacing: 0.08em !important;
+  transition: all 0.15s ease;
   cursor: pointer;
+  padding: 12px 28px !important; /* Generous button padding */
 }
 /* Yellow / Green / Black buttons depending on type */
 button[class*="bg-slate-"], button[class*="bg-[#"], button[style*="background"] {
@@ -263,8 +273,9 @@ pre {
   border-radius: 12px !important;
   color: #000000 !important;
   font-family: 'JetBrains Mono', monospace !important;
-  font-size: 11px !important;
+  font-size: 11.5px !important;
   box-shadow: 4px 4px 0px #000000 !important;
+  padding: 16px 20px !important; /* Generous code block padding */
 }
 
 /* Table gridlines */
@@ -275,10 +286,12 @@ table {
   border-radius: 16px !important;
   overflow: hidden !important;
   background: #FFFFFF !important;
+  margin-top: 16px !important;
+  margin-bottom: 24px !important;
 }
 th, td {
   border: 1.5px solid #000000 !important;
-  padding: 14px 18px !important;
+  padding: 18px 24px !important; /* Premium expansive table cell padding */
   color: #000000 !important;
 }
 th {
@@ -328,8 +341,26 @@ div[class*="graph"] {
    AGGRESSIVE HIGH CONTRAST TEXT OVERRIDES
    Ensures absolute legibility against light/beige backgrounds.
    ============================================================ */
-h1, h2, h3, h4, h5, h6, p, li, strong, b, label, blockquote, dt, dd, summary {
+/* Generous Neobrutalist Typography Spacing & Line Heights */
+h1, h2, h3, h4, h5, h6 {
   color: #000000 !important;
+  font-weight: 800 !important;
+  line-height: 1.35 !important; /* Elegant neobrutalist heading height */
+  letter-spacing: -0.025em !important; /* Tight clean professional spacing */
+  margin-bottom: 16px !important; /* Increased whitespace below headings */
+}
+p, li, label, dt, dd, summary, blockquote {
+  color: #111111 !important;
+  line-height: 1.8 !important; /* Open, clean, readable body line height */
+  letter-spacing: -0.01em !important; /* Easy on the eyes */
+  margin-bottom: 12px !important; /* Generous spacing below text blocks */
+}
+li {
+  margin-bottom: 8px !important;
+}
+strong, b {
+  color: #000000 !important;
+  font-weight: 700 !important;
 }
 
 /* Force dark text for all slate/zinc/gray muted classes */
