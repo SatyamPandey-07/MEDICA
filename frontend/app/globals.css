@@ -581,3 +581,77 @@ a[class*="card-hover"] span[style*="color: hsl(262"] {
   color: #000000 !important;
   font-weight: 800 !important;
 }
+
+/* ============================================================
+   AGGRESSIVE BACKDROP OVERRIDES (Resolves "Blackboxes")
+   Eliminates all dark-mode custom/inline background utility colors.
+   ============================================================ */
+
+/* Intercept dark panels and containers and force them to clean neobrutalist white */
+[class*="bg-[#0c0c0f]"],
+[class*="bg-[#07070a]"],
+[class*="bg-[#050508]"],
+[class*="bg-[#0c0c0f]"] *,
+[class*="bg-[#07070a]"] *,
+[class*="bg-slate-950"],
+[class*="bg-slate-900"],
+[class*="bg-zinc-950"],
+[class*="bg-zinc-900"],
+[class*="bg-gray-950"],
+[class*="bg-gray-900"] {
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+}
+
+/* Force light gray background instead of black for the page viewer container */
+.bg-slate-950\/20,
+[class*="bg-slate-950/20"] {
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+  border: 3px solid #000000 !important;
+  box-shadow: 6px 6px 0px #000000 !important;
+  border-radius: 20px !important;
+}
+
+/* Force details block inside clinical claims and panel elements to white */
+.bg-slate-900\/40,
+[class*="bg-slate-900/40"] {
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+  border: 2px solid #000000 !important;
+}
+
+/* Force high contrast light background for badges */
+[class*="bg-emerald-950"],
+[class*="bg-teal-950"],
+[class*="bg-green-950"],
+[class*="bg-emerald-900"],
+[class*="bg-purple-950"],
+[class*="bg-violet-950"],
+[class*="bg-indigo-950"],
+[class*="bg-blue-950"],
+[class*="bg-purple-900"],
+[class*="bg-orange-950"],
+[class*="bg-amber-950"] {
+  background-color: #E0F2F1 !important; /* Clean soft mint */
+  background: #E0F2F1 !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+/* Force high-contrast warm pink for adversarial review skeptic assessment card */
+[class*="bg-rose-950"] {
+  background-color: #FFEBEE !important; /* Soft rose red */
+  background: #FFEBEE !important;
+  color: #000000 !important;
+  border: 3px solid #B71C1C !important;
+  border-radius: 16px !important;
+  box-shadow: 4px 4px 0px #000000 !important;
+}
+
+/* Overwrite clinical detail info text to be black */
+span[class*="text-slate-300"],
+span[class*="text-slate-400"],
+strong[class*="text-white"] {
+  color: #000000 !important;
+}
