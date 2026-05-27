@@ -456,8 +456,8 @@ div[style*="gridTemplateColumns"] button span[style*="hsl(262"] {
 aside div[style*="letterSpacing: \"0.12em\""],
 aside div[style*="background: \"linear-gradient(90deg, hsl(262"] {
   background: none !important;
-  -webkit-text-fill-color: #A7FFEB !important;
-  color: #A7FFEB !important;
+  -webkit-text-fill-color: #004D40 !important;
+  color: #004D40 !important;
   font-weight: 700 !important;
 }
 
@@ -477,5 +477,107 @@ header.page-header div[style*="fontFamily: 'JetBrains Mono'"] * {
 header.page-header span[style*="color: \"hsl(150 76% 55%)\""],
 header.page-header span[style*="hsl(150 76% 55%"] {
   color: #004D40 !important;
+  font-weight: 800 !important;
+}
+
+/* ============================================================
+   KNOWLEDGE EXPLORER PAGE NEOBRUTALIST CONTRAST FIXES
+   Intercepts dark backgrounds, dark badges, and unreadable text.
+   ============================================================ */
+
+/* Main Title "Comprehensive Memory Store" inline color override */
+h1[style*="linear-gradient"],
+div[style*="overflowY"] h1,
+main h1 {
+  background: none !important;
+  -webkit-text-fill-color: #000000 !important;
+  color: #000000 !important;
+  font-weight: 900 !important;
+}
+
+/* Description text "Structured markdown files..." contrast override */
+div[style*="overflowY"] p {
+  color: #212121 !important;
+  font-weight: 600 !important;
+}
+
+/* Explorer "files indexed" header status badge (resolves unreadable dark purple) */
+header div[style*="background: \"hsl(262 50% 15%)\""],
+header div[style*="background: hsl(262 50% 15%)"],
+header div[style*="hsl(262 50% 15%"] {
+  background: #E0F2F1 !important; /* Soft clinical mint */
+  border: 3px solid #000000 !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+  box-shadow: 2px 2px 0px #000000 !important;
+}
+
+/* Explorer left navigation/directory browser panel background (resolves dark black panel) */
+div[style*="flexShrink: 0"],
+div[style*="width: 220"][style*="flexShrink: 0"] {
+  background: #FFFFFF !important;
+  border-right: 4px solid #000000 !important;
+}
+
+/* Inactive folder button links in directory panel (stark white with black borders) */
+div[style*="flexShrink: 0"] button,
+div[style*="width: 220"] button {
+  background: #FFFFFF !important;
+  border: 3px solid #000000 !important;
+  border-radius: 9999px !important; /* Pill shaped folder buttons */
+  color: #000000 !important;
+  box-shadow: 4px 4px 0px #000000 !important;
+  font-weight: 700 !important;
+  margin-bottom: 8px !important;
+  transition: all 0.15s ease !important;
+}
+div[style*="flexShrink: 0"] button:hover,
+div[style*="width: 220"] button:hover {
+  background: #FFE57F !important; /* Bright Yellow Hover */
+  transform: translate(-2px, -2px) !important;
+  box-shadow: 6px 6px 0px #000000 !important;
+}
+
+/* Active folder button link (vibrant mint green fill) */
+div[style*="flexShrink: 0"] button[style*="background: hsl(262"],
+div[style*="flexShrink: 0"] button[class*="bg-"],
+div[style*="width: 220"] button[style*="hsl(262"],
+div[style*="width: 220"] button[style*="background: hsl(262"] {
+  background: #2EE59D !important; /* Bright clinical green active */
+  box-shadow: 4px 4px 0px #000000 !important;
+  font-weight: 800 !important;
+}
+
+/* "CANCER DIRECTORIES" title header contrast override */
+div[style*="flexShrink: 0"] div[style*="color: hsl(220 8% 28%)"],
+div[style*="width: 220"] div[style*="color: hsl(220 8% 28%)"],
+div[style*="color: hsl(220 8% 28%)"] {
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+/* Explorer Paper Card Badge Overrides (resolves dark study evidence levels) */
+a.card-hover span[style*="background:"],
+a[class*="card-hover"] span[style*="background:"],
+a.card-hover span[style*="background: hsl("],
+a[class*="card-hover"] span[style*="background: hsl("] {
+  background: #F4F6F6 !important; /* Stark light gray */
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  font-weight: 700 !important;
+}
+
+/* verified status / CONF score badge visual updates */
+a.card-hover span[style*="color: hsl(150"],
+a[class*="card-hover"] span[style*="color: hsl(150"] {
+  background: #2EE59D !important; /* Saturated clinical green for verified */
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+a.card-hover span[style*="color: hsl(262"],
+a[class*="card-hover"] span[style*="color: hsl(262"] {
+  background: #FFE57F !important; /* Saturated yellow for CONF score badge */
+  color: #000000 !important;
   font-weight: 800 !important;
 }
