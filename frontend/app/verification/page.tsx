@@ -315,13 +315,15 @@ export default function VerificationDashboardPage() {
                             </td>
 
                             {/* Level */}
-                            <td style={{ padding: "14px 20px" }}>
+                            <td style={{ padding: "14px 20px", whiteSpace: "nowrap" }}>
                               <span style={{
+                                display: "inline-block",
                                 padding: "4px 10px", borderRadius: 6,
                                 fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                                 fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase",
                                 background: "#EDE9FE", color: "#000000",
                                 border: "2px solid #000000",
+                                whiteSpace: "nowrap",
                               }}>
                                 {(p.evidence_level || "").replace(/_/g, " ")}
                               </span>
