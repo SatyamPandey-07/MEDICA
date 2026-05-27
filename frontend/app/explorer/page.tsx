@@ -87,10 +87,12 @@ export default function KnowledgeExplorerPage() {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <div style={{
-            padding: "4px 12px", borderRadius: 6,
-            background: "hsl(262 50% 15%)", border: "1px solid hsl(262 50% 24%)",
+            padding: "6px 14px", borderRadius: 9999,
+            background: "#FFE57F", border: "2px solid #000000",
+            boxShadow: "3px 3px 0px #000000",
             fontSize: 11, fontFamily: "'JetBrains Mono', monospace",
-            color: "hsl(262 83% 72%)", display: "flex", alignItems: "center", gap: 6,
+            color: "#000000", fontWeight: 700,
+            display: "flex", alignItems: "center", gap: 6,
           }}>
             <Database style={{ width: 11, height: 11 }} />
             {papers.length} files indexed

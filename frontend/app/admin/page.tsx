@@ -70,18 +70,19 @@ export default function AdminDashboardPage() {
 
   const statusBadge = (status: string) => {
     const styles: Record<string, { bg: string; color: string; border: string; icon: JSX.Element }> = {
-      done:    { bg: "hsl(150 60% 10%)", color: "hsl(150 76% 55%)", border: "hsl(150 60% 20%)", icon: <CheckCircle style={{ width: 10, height: 10 }} /> },
-      running: { bg: "hsl(262 50% 15%)", color: "hsl(262 83% 70%)", border: "hsl(262 50% 25%)", icon: <Activity style={{ width: 10, height: 10 }} /> },
-      failed:  { bg: "hsl(0 50% 11%)",   color: "hsl(0 70% 62%)",   border: "hsl(0 50% 20%)",  icon: <XCircle style={{ width: 10, height: 10 }} /> },
-      pending: { bg: "hsl(220 8% 10%)",  color: "hsl(220 8% 50%)",  border: "hsl(220 8% 16%)", icon: <RefreshCw style={{ width: 10, height: 10, animation: "spin 1.5s linear infinite" }} /> },
+      done:    { bg: "#D1FAE5", color: "#000000", border: "#000000", icon: <CheckCircle style={{ width: 10, height: 10 }} /> },
+      running: { bg: "#EDE9FE", color: "#000000", border: "#000000", icon: <Activity style={{ width: 10, height: 10 }} /> },
+      failed:  { bg: "#FFE4E6", color: "#000000", border: "#000000", icon: <XCircle style={{ width: 10, height: 10 }} /> },
+      pending: { bg: "#F3F4F6", color: "#000000", border: "#000000", icon: <RefreshCw style={{ width: 10, height: 10, animation: "spin 1.5s linear infinite" }} /> },
     };
     const s = styles[status.toLowerCase()] || styles.pending;
     return (
       <span style={{
         display: "inline-flex", alignItems: "center", gap: 5,
-        padding: "3px 10px", borderRadius: 5, fontSize: 10,
-        fontFamily: "'JetBrains Mono', monospace", fontWeight: 600,
-        background: s.bg, color: s.color, border: `1px solid ${s.border}`,
+        padding: "4px 10px", borderRadius: 6, fontSize: 10,
+        fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+        background: s.bg, color: s.color, border: `2px solid ${s.border}`,
+        textTransform: "uppercase", letterSpacing: "0.06em",
       }}>
         {s.icon} {status}
       </span>
@@ -114,10 +115,13 @@ export default function AdminDashboardPage() {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{
-            padding: "4px 12px", borderRadius: 6,
-            background: "hsl(262 50% 15%)", border: "1px solid hsl(262 50% 24%)",
+            padding: "6px 14px", borderRadius: 9999,
+            background: "#FFE57F", border: "2px solid #000000",
+            boxShadow: "3px 3px 0px #000000",
             fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
-            color: "hsl(262 83% 70%)", display: "flex", alignItems: "center", gap: 6,
+            color: "#000000", fontWeight: 800,
+            display: "flex", alignItems: "center", gap: 6,
+            letterSpacing: "0.08em",
           }}>
             <Activity style={{ width: 10, height: 10 }} />
             {jobs.filter(j => j.status === "running").length} RUNNING
