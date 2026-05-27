@@ -245,18 +245,6 @@ button:active {
   box-shadow: 2px 2px 0px #000000 !important;
 }
 
-/* Overriding Tailwind Text Colors for High Contrast scannability */
-.text-white, .text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400, .text-slate-500, .text-slate-600 {
-  color: #000000 !important;
-}
-.text-slate-400, .text-slate-500, .text-slate-600, .text-slate-700 {
-  color: #212121 !important; /* High contrast */
-}
-.text-violet-400, .text-indigo-400, .text-purple-400, .text-cyan-400, .text-emerald-400 {
-  color: #000000 !important;
-  font-weight: 700 !important;
-}
-
 /* Hide glowing overlay dots */
 .glow-sphere, .glow-sphere--violet, .glow-sphere--indigo, .glow-sphere--teal {
   display: none !important;
@@ -328,4 +316,90 @@ div[class*="graph"] {
   background: #FFFFFF !important;
   border: 3px solid #000000 !important;
   border-radius: 24px !important;
+}
+
+/* ============================================================
+   AGGRESSIVE HIGH CONTRAST TEXT OVERRIDES
+   Ensures absolute legibility against light/beige backgrounds.
+   ============================================================ */
+h1, h2, h3, h4, h5, h6, p, li, strong, b, label, blockquote, dt, dd, summary {
+  color: #000000 !important;
+}
+
+/* Force dark text for all slate/zinc/gray muted classes */
+[class*="text-slate-"], [class*="text-zinc-"], [class*="text-gray-"], [class*="text-slate/"], [class*="text-zinc/"], [class*="text-slate-50"] {
+  color: #111111 !important;
+}
+
+/* Explicit overrides for common Tailwind muted utilities */
+.text-slate-300, .text-zinc-300, .text-gray-300,
+.text-slate-400, .text-zinc-400, .text-gray-400,
+.text-slate-500, .text-zinc-500, .text-gray-500,
+.text-slate-600, .text-zinc-600, .text-gray-600 {
+  color: #212121 !important; /* Deep visible charcoal charcoal slate */
+  font-weight: 500 !important;
+}
+
+.text-white, 
+.text-slate-100, .text-zinc-100, .text-gray-100,
+.text-slate-200, .text-zinc-200, .text-gray-200 {
+  color: #000000 !important; /* Force true black */
+}
+
+/* Ensure links are dark and visible */
+a, span[class*="link"] {
+  color: #004D40 !important; /* clinical deep teal */
+  font-weight: 700 !important;
+  text-decoration: underline !important;
+}
+a:hover {
+  color: #000000 !important;
+}
+
+/* Specific Badge and Status overrides for high-contrast visibility */
+.text-emerald-400, .text-emerald-500, .text-emerald-600,
+[class*="text-emerald-"] {
+  color: #004D40 !important; /* Keep deep teal/green for verified status */
+  font-weight: 800 !important;
+}
+.text-orange-400, .text-orange-500, .text-orange-600,
+[class*="text-orange-"] {
+  color: #BF360C !important; /* Very high contrast dark neobrutalist orange/brown */
+  font-weight: 800 !important;
+}
+.text-rose-400, .text-rose-500, .text-rose-600,
+[class*="text-rose-"] {
+  color: #B71C1C !important; /* High contrast crimson red for disputed/retracted */
+  font-weight: 800 !important;
+}
+.text-purple-400, .text-purple-500, .text-purple-600,
+.text-violet-400, .text-violet-500, .text-violet-600,
+.text-indigo-400, .text-indigo-500, .text-indigo-600,
+.text-blue-400, .text-blue-500, .text-blue-600,
+[class*="text-violet-"], [class*="text-indigo-"], [class*="text-purple-"], [class*="text-blue-"] {
+  color: #000000 !important; /* Force black for clinical terms to prevent light blur */
+}
+
+/* Sidebar navigation links text visibility */
+aside nav a span {
+  color: #000000 !important;
+}
+aside nav a:hover span {
+  color: #000000 !important;
+}
+aside nav a svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+/* Main chat bubble font legibility */
+.leading-relaxed {
+  color: #000000 !important;
+  font-weight: 500 !important;
+}
+
+/* Pre and code font color visibility */
+code, pre, pre *, code * {
+  color: #000000 !important;
+  font-weight: 600 !important;
 }
