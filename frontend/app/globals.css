@@ -239,7 +239,9 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* Buttons: Pill shape & vibrant colors as in reference */
-button, input[type="submit"] {
+/* Exclude: sidebar delete buttons, icon-only buttons */
+button:not([data-sidebar-delete]):not([data-icon-btn]),
+input[type="submit"] {
   border: 3px solid #000000 !important;
   border-radius: 9999px !important; /* Perfect Pill Shape */
   box-shadow: 4px 4px 0px #000000 !important;
@@ -249,6 +251,25 @@ button, input[type="submit"] {
   transition: all 0.15s ease;
   cursor: pointer;
   padding: 12px 28px !important; /* Generous button padding */
+}
+
+/* Sidebar delete (trash) button — raw, no pill styles */
+button[data-sidebar-delete] {
+  all: unset;
+  cursor: pointer;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: hsl(0 70% 55%) !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 2px !important;
+  border-radius: 4px !important;
+  width: 20px !important;
+  height: 20px !important;
+  opacity: inherit;
+  transition: opacity 0.15s ease !important;
 }
 /* Yellow / Green / Black buttons depending on type */
 button[class*="bg-slate-"], button[class*="bg-[#"], button[style*="background"] {
@@ -773,19 +794,16 @@ main > div,
   padding: 0 !important; /* Let individual pages control their own spacing */
 }
 
-/* Sidebar nav items — spacious pill-shaped links */
-aside nav a,
-aside nav button,
-aside [role="button"] {
+/* Sidebar nav items — pill-shaped links only */
+aside nav a {
   padding: 12px 18px !important;
   margin-bottom: 6px !important;
 }
 
-/* Sidebar section dividers & group headers */
-aside [class*="py-"],
-aside [class*="px-"],
-aside > div {
-  padding: 20px 16px !important;
+/* Sidebar section header padding — ONLY the label divs, not all aside children */
+aside nav .px-2 {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
 }
 
 /* Page sticky headers — consistent vertical rhythm */

@@ -108,7 +108,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <aside
             className="relative z-10 flex flex-col shrink-0"
             style={{
-              width: 256,
+              width: 288,
               borderRight: "1px solid hsl(240 8% 10%)",
               background: "linear-gradient(180deg, hsl(240 10% 3%) 0%, hsl(240 10% 2%) 100%)",
             }}
@@ -165,20 +165,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               >
                 Core Systems
               </div>
-              <div className="space-y-0.5">
+              <div className="space-y-1">
                 {navLinks.map((link) => {
                   const isActive = pathname === link.href;
                   return (
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 group relative"
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 group relative"
                       style={{
                         background: isActive ? "hsl(262 50% 25% / 0.4)" : "transparent",
                         border: `1px solid ${isActive ? "hsl(262 50% 40% / 0.3)" : "transparent"}`,
                         color: isActive ? "hsl(220 20% 97%)" : "hsl(220 8% 50%)",
                         fontWeight: isActive ? 500 : 400,
                         fontSize: 13,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        minWidth: 0,
                       }}
                     >
                       {/* Active indicator line */}
@@ -195,7 +198,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         className="w-4 h-4 shrink-0 transition-all duration-150"
                         style={{ color: isActive ? "hsl(262 83% 72%)" : "hsl(220 8% 40%)" }}
                       />
-                      <span>{link.name}</span>
+                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
+                        {link.name}
+                      </span>
                     </Link>
                   );
                 })}
@@ -243,31 +248,57 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     No active streams.
                   </div>
                 ) : (
-                  <div className="space-y-0.5">
+                  <div className="space-y-1">
                     {sessions.map((s) => {
                       const isActive = pathname === "/" && window.location.search.includes(s.id);
                       return (
                         <div
                           key={s.id}
                           onClick={() => router.push(`/?session_id=${s.id}`)}
-                          className="group flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-all"
+                          className="group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all"
                           style={{
                             background: isActive ? "hsl(262 50% 20% / 0.4)" : "transparent",
                             border: `1px solid ${isActive ? "hsl(262 50% 35% / 0.25)" : "transparent"}`,
                             color: isActive ? "hsl(262 83% 75%)" : "hsl(220 8% 45%)",
                             fontSize: 12,
+                            overflow: "hidden",
+                            minWidth: 0,
                           }}
                         >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <Circle className="w-1.5 h-1.5 shrink-0" style={{ color: isActive ? "hsl(262 83% 70%)" : "hsl(220 8% 30%)", fill: "currentColor" }} />
-                            <span className="truncate" style={{ maxWidth: 160 }} title={s.title}>
-                              {s.title}
-                            </span>
-                          </div>
+                          <Circle
+                            className="w-1.5 h-1.5 shrink-0"
+                            style={{ color: isActive ? "hsl(262 83% 70%)" : "hsl(220 8% 30%)", fill: "currentColor" }}
+                          />
+                          <span
+                            style={{
+                              flex: 1,
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              minWidth: 0,
+                            }}
+                            title={s.title}
+                          >
+                            {s.title}
+                          </span>
                           <button
+                            data-sidebar-delete
                             onClick={(e) => handleDeleteSession(e, s.id)}
-                            className="opacity-0 group-hover:opacity-100 rounded p-0.5 transition-all shrink-0"
-                            style={{ color: "hsl(0 70% 55%)" }}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                            style={{
+                              color: "hsl(0 70% 55%)",
+                              background: "transparent",
+                              border: "none",
+                              padding: "2px",
+                              borderRadius: 4,
+                              boxShadow: "none",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              minWidth: 20,
+                              height: 20,
+                            }}
                             title="Delete"
                           >
                             <Trash2 className="w-3 h-3" />
