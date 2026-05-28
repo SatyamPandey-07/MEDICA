@@ -51,6 +51,9 @@ class PaperRecord(Base):
     evidence_level: Mapped[str] = mapped_column(String(50), default="unknown")
     study_type: Mapped[str] = mapped_column(String(50), default="other")
     trial_phase: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    sample_size: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    biomarkers: Mapped[list] = mapped_column(JSON, default=list)
+    is_open_access: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Tags and links (JSON arrays)
     tags: Mapped[dict] = mapped_column(JSON, default=dict)
@@ -143,6 +146,7 @@ class ChatSessionRecord(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title: Mapped[str | None] = mapped_column(String(500), nullable=True)
     messages: Mapped[list] = mapped_column(JSON, default=list)
+    llm_config: Mapped[dict] = mapped_column(JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

@@ -57,6 +57,13 @@ class Settings(BaseSettings):
     groq_api_key: str = ""
     groq_model: str = "llama-3.3-70b-versatile"
 
+    # --- LLM Fallbacks ---
+    fallback_llm_provider: LLMProvider | None = LLMProvider.GEMINI
+    fallback_gemini_model: str = "gemini-2.0-flash"
+    fallback_openai_model: str = "gpt-4o-mini"
+    fallback_anthropic_model: str = "claude-3-5-haiku-20241022"
+    fallback_groq_model: str = "llama-3-3-70b-versatile"
+
     # --- Embeddings ---
     embedding_provider: EmbeddingProvider = EmbeddingProvider.LOCAL
     embedding_model: str = "all-MiniLM-L6-v2"

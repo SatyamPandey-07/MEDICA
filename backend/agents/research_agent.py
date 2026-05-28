@@ -10,6 +10,7 @@ from typing import AsyncGenerator, Dict, List, Any, Optional
 
 from core.config import settings, LLMProvider
 from core.logging import get_logger
+from core.llm import LLMFactory
 from agents.tools import (
     search_pubmed,
     retrieve_papers,
@@ -97,71 +98,42 @@ class OncologyResearchAgent:
     async def _call_llm(self, prompt: str, history: List[Dict[str, str]]) -> str:
         """Call the configured LLM provider and return response text."""
         # Setup system context
-        full_messages = [{"role": "system", "content": _AGENT_SYSTEM_PROMPT}]
+        messages = []
         for msg in history:
-            full_messages.append({"role": msg["role"], "content": msg["content"]})
-        full_messages.append({"role": "user", "content": prompt})
+            messages.append({"role": msg["role"], "content": msg["content"]})
+        messages.append({"role": "user", "content": prompt})
 
-        # Gemini
-        if settings.llm_provider == LLMProvider.GEMINI:
-            import google.generativeai as genai
-            genai.configure(api_key=settings.gemini_api_key)
-            model = genai.GenerativeModel(settings.gemini_model)
-
-            # Convert messages to Gemini history structure
-            contents = []
-            for msg in full_messages:
-                role = "user" if msg["role"] in ["user", "system"] else "model"
-                contents.append({"role": role, "parts": [msg["content"]]})
-
-            response = model.generate_content(contents)
-            return response.text.strip()
-
-        # OpenAI
-        elif settings.llm_provider == LLMProvider.OPENAI:
-            from openai import AsyncOpenAI
-            client = AsyncOpenAI(api_key=settings.openai_api_key)
-            response = await client.chat.completions.create(
-                model=settings.openai_model,
-                messages=full_messages,
-                temperature=0.1,
-            )
-            return response.choices[0].message.content.strip()
-
-        # Anthropic
-        elif settings.llm_provider == LLMProvider.ANTHROPIC:
-            import anthropic
-            client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-
-            # Anthropic takes system prompt as parameter
-            user_messages = [msg for msg in full_messages if msg["role"] != "system"]
-
-            response = client.messages.create(
-                model=settings.anthropic_model,
-                system=_AGENT_SYSTEM_PROMPT,
-                max_tokens=2048,
-                temperature=0.1,
-                messages=[{"role": m["role"], "content": m["content"]} for m in user_messages],
-            )
-            return response.content[0].text.strip()
-
-        # Groq (OpenAI-compatible)
-        elif settings.llm_provider == LLMProvider.GROQ:
-            from openai import AsyncOpenAI
-            client = AsyncOpenAI(
-                api_key=settings.groq_api_key,
-                base_url="https://api.groq.com/openai/v1",
-            )
-            response = await client.chat.completions.create(
-                model=settings.groq_model,
-                messages=full_messages,
+        try:
+            # Attempt active LLM client from the Factory
+            client = LLMFactory.get_client()
+            logger.info("agent_llm_factory_call", provider=settings.llm_provider, model=settings.active_llm_model)
+            return await client.generate(
+                messages=messages,
                 temperature=0.1,
                 max_tokens=2048,
+                system_prompt=_AGENT_SYSTEM_PROMPT
             )
-            return response.choices[0].message.content.strip()
-
-        else:
-            raise ValueError(f"Unsupported LLM Provider: {settings.llm_provider}")
+        except Exception as e:
+            logger.warning("agent_llm_primary_failed", error=str(e), action="attempt_fallback")
+            fallback_client = LLMFactory.get_fallback_client()
+            if fallback_client:
+                logger.info(
+                    "agent_llm_fallback_call",
+                    provider=settings.fallback_llm_provider,
+                    model=fallback_client.model_name
+                )
+                try:
+                    return await fallback_client.generate(
+                        messages=messages,
+                        temperature=0.1,
+                        max_tokens=2048,
+                        system_prompt=_AGENT_SYSTEM_PROMPT
+                    )
+                except Exception as fe:
+                    logger.error("agent_llm_fallback_failed", error=str(fe))
+                    raise fe
+            else:
+                raise e
 
     def _parse_react(self, text: str) -> tuple[Optional[str], Optional[str], Optional[str]]:
         """Parse Thought, Action, Action Input, or Final Answer from LLM response."""
@@ -208,7 +180,14 @@ class OncologyResearchAgent:
         """
         logger.info("agent_run_start", query=user_query)
 
-        # 1. Graceful Fallback if LLM is not configured
+        # 1. Run Input Safety and Relevance Guardrails
+        from core.guardrails import ClinicalGuardrails
+        is_safe, guard_err = ClinicalGuardrails.validate_input(user_query)
+        if not is_safe:
+            yield f"### ⚠️ Safety Guardrail Blocked\n*{guard_err}*\n"
+            return
+
+        # 2. Graceful Fallback if LLM is not configured
         if not settings.active_llm_key:
             yield "### ⚠️ MEDICA Notice\n*No LLM API Key is configured. Running in Local Direct Retrieval Fallback Mode.*\n\n"
             yield f"[thought] Executing local hybrid search fallback for: '{user_query}'...[/thought]\n"
@@ -229,7 +208,7 @@ class OncologyResearchAgent:
             yield claim_text
             return
 
-        # 2. Main ReAct Loop
+        # 3. Main ReAct Loop
         history: List[Dict[str, str]] = []
         step = 0
         prompt = f"Question: {user_query}"
@@ -252,7 +231,9 @@ class OncologyResearchAgent:
 
                 # Check if we have a Final Answer
                 if final_answer:
-                    yield f"\n{final_answer}"
+                    # Run Output groundedness and statistical self-healing checks
+                    _, verified_answer = await ClinicalGuardrails.validate_output(final_answer, user_query)
+                    yield f"\n{verified_answer}"
                     logger.info("agent_run_success", step=step)
                     return
 

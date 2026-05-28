@@ -1,10 +1,11 @@
-# <p align="center"><br>MEDICA</p>
+
+# <p align="center"><img src="https://raw.githubusercontent.com/SatyamPandey-07/MEDICA/main/frontend/public/logo.png" alt="MEDICA Logo" width="100" style="border-radius: 20%; margin-bottom: 10px;"/><br>MEDICA</p>
 <p align="center">
   <strong>Autonomous Oncology Intelligence Operating System</strong>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-1.0.0-blueviolet?style=for-the-badge&logo=semver" alt="Version"/>
+  <img src="https://img.shields.io/badge/Version-2.0.0-blueviolet?style=for-the-badge&logo=semver" alt="Version"/>
   <img src="https://img.shields.io/badge/FastAPI-0.100%2B-009688?style=for-the-badge&logo=fastapi" alt="FastAPI"/>
   <img src="https://img.shields.io/badge/Next.js-14.0%2B-000000?style=for-the-badge&logo=next.js" alt="Next.js"/>
   <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python" alt="Python"/>
@@ -14,88 +15,123 @@
 
 ---
 
-**MEDICA** is a production-grade, agentic oncology research operating system. It continuously ingests, verifies, indexes, links, and maintains clinical and scientific cancer research knowledge from trusted, canonical databases (NCBI PubMed, CrossRef, and Semantic Scholar).
+**MEDICA** is a production-grade, agentic oncology research operating system. It continuously ingests, verifies, indexes, links, and maintains clinical and scientific cancer research knowledge from trusted, canonical databases — including NCBI PubMed, CrossRef, Semantic Scholar, Europe PMC, ClinicalTrials.gov, openFDA, and WHO.
 
-Going far beyond simple RAG or shallow chatbots, MEDICA acts as a **structured scientific memory system** and a **guarded oncology librarian** equipped with adversarial claim verification, clinical evidence grading, and real-time interactive citation graph cross-linking.
+Going far beyond simple RAG or shallow chatbots, MEDICA acts as a **structured scientific memory system** and a **guarded oncology librarian** equipped with adversarial claim verification, clinical evidence grading, real-time Open Access paper ingestion, and interactive citation graph cross-linking.
 
 ---
 
 ## 🚀 Core Architectural Engine
 
-MEDICA comprises a pipeline of autonomous agentic systems designed to ingest, process, verify, and retrieve structured clinical information.
-
 ```mermaid
 graph TD
-    %% Source Adapters
-    PubMed[NCBI PubMed Adapter] -. Ingests .-> Pipeline[Ingestion Pipeline]
-    CrossRef[CrossRef Adapter] -. Ingests .-> Pipeline
-    SemScholar[Semantic Scholar Adapter] -. Ingests .-> Pipeline
+    User([Oncology Researcher]) --> GuardrailsIn[Clinical Input Guardrails]
+    GuardrailsIn -->|Approved| Agent[ReAct Research Librarian Agent]
+    GuardrailsIn -->|Blocked| SafeReject[Safety / Relevance Rejection]
 
-    %% Ingestion Pipeline & Processing
+    PubMed[NCBI PubMed] -. Ingests .-> Pipeline[Ingestion Pipeline]
+    CrossRef[CrossRef] -. Ingests .-> Pipeline
+    SemScholar[Semantic Scholar] -. Ingests .-> Pipeline
+    EuropePMC[Europe PMC] -. Ingests .-> Pipeline
+    ClinicalTrials[ClinicalTrials.gov] -. Ingests .-> Pipeline
+    FDA[openFDA] -. Ingests .-> Pipeline
+    WHO[WHO GHO] -. Ingests .-> Pipeline
+
     Pipeline --> Normalizer[Study Normalizer / Classifier]
     Normalizer --> Tagger[Auto-Tagger Engine]
     Tagger --> Linker[Entity Linker]
     Linker --> Verifier[Adversarial Claim Auditor]
 
-    %% Storage & Indexing
     Verifier --> MDStore[(Markdown File Store)]
     Verifier --> PGVector[(pgvector Vector Index)]
     Verifier --> SQLIndex[(PostgreSQL Metadata Index)]
 
-    %% Researcher Interaction & ReAct Agent
-    User([Oncology Researcher]) <==> SSE[FastAPI SSE Stream]
-    SSE <==> Agent[ReAct Research Librarian Agent]
-
-    %% Agent Tools
-    Agent <--> SearchTool[Direct Search / Ingestion Tool]
-    Agent <--> HybridRetrieve[Hybrid Retrieval Engine]
+    Agent <--> SearchTool[Search / Ingestion Tool]
+    Agent <--> HybridRetrieve[Hybrid Retrieval + Reranker]
     Agent <--> ClaimsAudit[Claims Verification Tool]
+    Agent <--> OAIngester[Open Access HTML Ingester]
 
-    %% Retrievers connection
+    Agent --> GuardrailsOut[Clinical Output Guardrails]
+    GuardrailsOut -->|Verified| SSE[FastAPI SSE Stream]
+    GuardrailsOut -->|Hallucination| SelfHeal[Self-Healing Correction Loop]
+    SelfHeal --> SSE
+    SSE --> User
+
     HybridRetrieve --> PGVector
     HybridRetrieve --> SQLIndex
     SearchTool --> Pipeline
 ```
 
+---
+
+## ✨ What's New in v2.0
+
+| Feature | Description |
+|---|---|
+| 🔌 **Swappable LLM Factory** | Unified `LLMFactory` supporting Gemini, OpenAI, Anthropic & Groq from a single config with automatic failover |
+| 🌐 **4 New Data Sources** | Europe PMC, ClinicalTrials.gov API v2, openFDA drug labels, WHO Global Health Observatory |
+| 📄 **Open Access Chat Ingestion** | Paste any DOI or OA URL into chat — full-text HTML is fetched, parsed, embedded, and indexed live |
+| 🛡️ **Clinical Safety Guardrails** | Input relevance filter, prompt injection defense, output p-value self-healing loop |
+| 📊 **Advanced Oncology Reranker** | Biomarker matching boost, log citation density, trial cohort size scoring, strict retraction penalties |
+
+---
+
+## 🏗️ Core Pipeline Components
+
 ### 1. Ingestion Pipeline & Normalizer
-* **Continuous Ingestion Pipeline**: Automatically ingests clinical trial papers, publications, and meta-analyses matching key oncology terms.
-* **Study Type Normalizer**: Classifies incoming literature by evidence grade (e.g., Randomized Controlled Trials (RCTs), Meta-Analyses, Systematic Reviews, Preclinical Studies, Retrospective Cohorts).
-* **Clinical Tagger**: Automatically extracts and catalogues entities across:
-  * **22+ Cancer Types** (e.g., Lung Cancer, Breast Cancer, Glioblastoma, Leukemia, Melanoma, Pancreatic, Prostate, Colorectal).
-  * **25+ Oncological Drugs** (e.g., Osimertinib, Pembrolizumab, Trastuzumab, Erlotinib, Cetuximab).
-  * **20+ Biomarkers & Mutations** (e.g., EGFR, ALK, KRAS, BRAF, HER2, BRCA1/2, Mismatch Repair).
+* Continuously ingests clinical trial papers matching oncology terms from **7 data sources**.
+* Classifies literature by evidence grade: RCTs, Meta-Analyses, Systematic Reviews, Preclinical Studies.
+* Auto-tags 22+ cancer types, 25+ oncological drugs, 20+ biomarkers & mutations.
 
-### 2. Adversarial Claim Verification Agent
-* Uses a dual **LLM skeptic** and a **rule-based scorer** to audit clinical claims.
-* Extracts asserted claims, cross-references sample sizes ($n$), identifies potential biases (e.g., preclinical models mislabeled as clinical evidence), validates $p$-values, and assigns an evidence level score before accepting papers into canonical storage.
+### 2. Clinical Safety Guardrails
+* **Input**: Validates oncology relevance; blocks prompt injection attempts.
+* **Output**: Extracts p-values, hazard ratios, OS/PFS from responses and cross-checks against cited source abstracts. Triggers LLM self-healing if any mismatch is detected.
 
-### 3. Markdown-First Canonical Memory Store
-* Stored transparently under `knowledge/cancers/<type>/papers/` as YAML-frontmatter structured markdown documents.
-* Standardized, auditable format ensures clinical databases can be version-controlled, edited, and backed up easily.
+### 3. Adversarial Claim Verification Agent
+* Dual LLM skeptic + rule-based scorer audits every clinical claim.
+* Validates statistics, identifies biases, cross-references sample sizes, assigns evidence levels.
 
-### 4. Hybrid Retrieval & Reranker Engine
-* Features a high-precision multi-stage retriever:
-  * **pgvector Semantic Search (60%)** using advanced embeddings.
-  * **PostgreSQL Full-Text Search (30%)** targeting exact clinical vocabulary.
-  * **Categorical Tag Match (10%)** targeting explicit drug/biomarker markers.
-* Employs a **Clinical Evidence Level Reranker** to weight high-quality human randomized trials over animal or preclinical data.
+### 4. Open Access Paper Ingestion
+* Paste any **DOI** or **Open Access URL** directly into the chat copilot.
+* MEDICA fetches full-text HTML, strips boilerplate, extracts structured clinical metadata and claims via the LLM Factory, generates vector embeddings, and updates the local knowledge base — streamed live in the UI.
 
-### 5. Autonomous ReAct Agent Loop
-* Powered by a reasoning loop that executes tools to search, read, retrieve, and cross-reference research.
-* Streams thoughts, tool calls, and observations live to the frontend using **Server-Sent Events (SSE)**.
+### 5. Markdown-First Canonical Memory Store
+* Papers stored under `knowledge/cancers/<type>/papers/` as YAML-frontmatter structured markdown.
+* Version-controlled, auditable, and editable.
+
+### 6. Advanced Hybrid Retrieval & Reranker Engine
+Multi-stage retriever combining:
+* **pgvector Semantic Search (35%)** — dense vector cosine similarity.
+* **PostgreSQL Full-Text Search (30%)** — exact clinical vocabulary.
+* **Categorical Tag Match** — explicit drug/biomarker markers.
+
+Advanced Evidence Reranker applies:
+* Molecular **biomarker alignment boost** (+0.15 for EGFR/KRAS/BRCA/ALK/HER2/etc. matches)
+* **Logarithmic citation density** scaling
+* **Trial cohort size** boost (log scale, max at n=1000)
+* Strict penalties for retracted (×0.02) and disputed (×0.40) works
+
+### 7. Swappable LLM Factory
+Unified `core/llm.py` interface implemented for:
+* **Google Gemini** (default)  •  **OpenAI GPT-4o**  •  **Anthropic Claude**  •  **Groq Llama-3**
+
+Swap providers from `.env` with zero code changes. Automatic failover to a secondary provider on rate-limit or error.
+
+### 8. Autonomous ReAct Agent Loop
+Multi-step reasoning loop that executes tools to search, read, retrieve, and cross-reference research. Streams thoughts, tool calls, and observations live via **Server-Sent Events (SSE)**.
 
 ---
 
 ## 🎨 Premium Frontend Portal
 
-The client console is built using **Next.js (App Router), TypeScript, and Vanilla CSS**, engineered to deliver a premium, dark-mode terminal layout:
+Built with **Next.js (App Router), TypeScript, and Vanilla CSS**:
 
-* 💬 **Chat Copilot**: Includes an interactive console that streams the ReAct reasoning chain (`Thought -> Action -> Observation`) through sleek collapsible panels.
-* 🕸️ **Interactive Force Graph**: An interactive, physics-based canvas force-directed network mapping cancer classifications, drugs, and genetic biomarkers.
-* 📂 **Knowledge File Explorer**: An in-browser markdown file manager allowing researchers to browse the clinical database schema directly.
-* 📄 **Split-Screen Paper Viewer**: A split panel presenting clinical abstracts, evidence tags, adversarial critiques, and side-by-side links to contradictory or supportive trials.
-* 📈 **Evidence Auditor**: A clean dashboard detailing identified clinical caveats (e.g., small sample sizes, source funding conflict).
-* ⚙️ **Operator Console**: Allows administrators to trigger manual PubMed scrapes and monitor real-time background task schedules.
+* 💬 **Chat Copilot** — Streams the ReAct chain (`Thought → Action → Observation`). Auto-detects and ingests pasted DOIs/URLs.
+* 🕸️ **Interactive Force Graph** — Physics-based network mapping cancer types, drugs, and biomarkers.
+* 📂 **Knowledge File Explorer** — In-browser markdown file manager.
+* 📄 **Split-Screen Paper Viewer** — Abstracts, evidence tags, adversarial critiques, and links to contradictory trials.
+* 📈 **Evidence Auditor** — Clinical caveats dashboard (sample sizes, funding conflicts).
+* ⚙️ **Operator Console** — Trigger ingestion jobs and monitor background task schedules.
 
 ---
 
@@ -103,122 +139,99 @@ The client console is built using **Next.js (App Router), TypeScript, and Vanill
 
 ```
 MEDICA/
-├── backend/                  # Python FastAPI Backend Services
+├── backend/
 │   ├── agents/               # ReAct Research Librarian & Agent Tools
 │   ├── api/                  # FastAPI App, SSE Streams, Admin, Search Router
-│   ├── core/                 # App Settings, Core Event Loop, Logging Utilities
-│   ├── indexing/             # Hybrid Keyword, Vector, & Metadata Indexers
-│   ├── ingestion/            # PubMed, CrossRef, and Semantic Scholar Pipeline
+│   ├── core/                 # Config, LLM Factory, Guardrails, Logging
+│   ├── indexing/             # Keyword, Vector & Metadata Indexers
+│   ├── ingestion/            # PubMed · CrossRef · Semantic Scholar · Europe PMC
+│   │                         # ClinicalTrials.gov · openFDA · WHO adapters
 │   ├── knowledge/            # Database Seeders, Canonical Markdown Store
-│   ├── processing/           # Entity Linker, Study Normalizer, Auto-Tagger
-│   ├── retrieval/            # Hybrid Retrieval Engine & Evidence Level Reranker
+│   ├── processing/           # Entity Linker, Normalizer, Tagger, OA Ingester
+│   ├── retrieval/            # Hybrid Retrieval Engine & Advanced Evidence Reranker
 │   ├── scheduler/            # Background Ingestion & Verification Jobs
-│   ├── shared/               # PostgreSQL Database Schemas, Models & Utils
+│   ├── shared/               # PostgreSQL Schemas, Models & Utils
 │   ├── verification/         # Adversarial Claim Auditor & Skeptic Evaluators
-│   └── requirements.txt      # Python Dependencies
+│   └── requirements.txt
 │
 ├── frontend/                 # Next.js React Frontend Portal
-│   ├── app/                  # Next.js App Router (Chat, Explorer, Graph, Admin)
-│   ├── components/           # Force-directed graphs, copilot, split-panel viewer
-│   └── package.json          # Node Dependencies
+│   ├── app/                  # App Router (Chat, Explorer, Graph, Admin)
+│   └── components/
 │
-├── knowledge/                # Canonical Local Markdown Memory Store (Empty Skeletons)
-│   ├── cancers/              # Cancers Directory structure
-│   └── entities/             # Biomarkers, Drugs, and Genes Directory structures
-│
-├── scripts/                  # Convenience Database scaffolding SQL
-│   └── init_db.sql           # Database Initialization Scaffolding
-│
-├── tests/                    # Backend Unit Tests
-│
-├── Makefile                  # Developer Convenience Shortcuts
-├── .env.example              # Template Environment Variables
-└── README.md                 # Project Documentation
+├── knowledge/                # Canonical Local Markdown Memory Store
+├── scripts/                  # Database scaffolding SQL
+├── tests/                    # Backend Verification Suite
+├── Makefile
+├── .env.example
+└── README.md
 ```
 
 ---
 
-## 🛠️ Step-by-Step Developer Setup
+## 🛠️ Developer Setup
 
 ### 1. Prerequisites
-Ensure you have the following installed on your machine:
-* **Docker & Docker Compose**
-* **Node.js (v18+)**
-* **Python (3.10+)**
-
----
+* Docker & Docker Compose  •  Node.js v18+  •  Python 3.10+
 
 ### 2. Configure Environment Variables
-Copy `.env.example` to `.env` in the root workspace directory and configure your keys:
 ```bash
 cp .env.example .env
 ```
 
-Key Settings:
-* `LLM_PROVIDER`: Set to `gemini` (default), `openai`, or `anthropic`.
-* `GEMINI_API_KEY`, `OPENAI_API_KEY`, or `ANTHROPIC_API_KEY`: Provide your API key to activate the ReAct agent's thoughts and adversarial evaluations.
-* **Note**: *If no API key is provided, the platform gracefully degrades to zero-API-key fallback mode using local direct hybrid index searches!*
+| Variable | Description | Default |
+|---|---|---|
+| `LLM_PROVIDER` | Active provider (`gemini` / `openai` / `anthropic` / `groq`) | `gemini` |
+| `GEMINI_API_KEY` | Google Gemini key | — |
+| `OPENAI_API_KEY` | OpenAI key | — |
+| `ANTHROPIC_API_KEY` | Anthropic key | — |
+| `GROQ_API_KEY` | Groq key | — |
+| `FALLBACK_LLM_PROVIDER` | Provider to use if primary fails | `gemini` |
+| `NCBI_API_KEY` | NCBI key (higher rate limits) | — |
+| `NCBI_EMAIL` | Required by NCBI E-utilities | `medica@research.local` |
 
----
+> If no LLM key is set, MEDICA falls back to zero-key local hybrid retrieval mode automatically.
 
-### 3. Spin Up Using Docker Compose
-Start PostgreSQL with `pgvector`, the FastAPI backend, and Next.js frontend with a single command:
+### 3. Docker Compose (recommended)
 ```bash
 docker-compose up --build -d
 ```
+* PostgreSQL + pgvector → `localhost:5432`
+* FastAPI backend → `localhost:8000` (Swagger at `/docs`)
+* Next.js frontend → `localhost:3000`
 
-This spins up the complete microservices stack:
-* **PostgreSQL + pgvector**: `localhost:5432` (Auto-scaffolds database tables!)
-* **FastAPI Backend Application**: `localhost:8000` (FastAPI Swagger Docs available at `/docs`)
-* **Next.js Frontend Client Portal**: `localhost:3000`
+### 4. Local Development
 
----
-
-### 4. Running Locally Outside Docker (Development Mode)
-
-If you prefer to run services individually for active development:
-
-#### A. PostgreSQL Scaffolding
-Ensure a PostgreSQL database is running on `localhost:5432`. Create a database named `medica` and run the script:
 ```bash
-psql -h localhost -U postgres -d medica -f scripts/init_db.sql
-```
-
-#### B. Start Backend Service
-```bash
+# Backend
 cd backend
 python -m venv venv
-source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+source venv/bin/activate   # Windows: .\venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn api.main:app --reload --port 8000
-```
 
-#### C. Start Frontend Client Portal
-```bash
+# Frontend
 cd frontend
 npm install
 npm run dev
 ```
 
-The app will run at `http://localhost:3000`.
+---
+
+## 📈 Makefile Commands
+
+| Command | Action |
+|---|---|
+| `make up` | Start all containers |
+| `make down` | Stop all containers |
+| `make backend-logs` | Stream backend logs |
+| `make db-shell` | Open PostgreSQL shell |
+| `make test` | Run verification suite |
 
 ---
 
-## 📈 Dev Convenience Commands (Makefile)
+## 🔬 Example Queries
 
-A clean `Makefile` is located in the root directory to simplify operations:
-* `make up` - Start all container services.
-* `make down` - Shut down all container services.
-* `make backend-logs` - Stream FastAPI backend console logs.
-* `make db-shell` - Enter PostgreSQL client terminal.
-* `make test` - Run backend python unit tests.
-
----
-
-## 🔬 Operational Seed Queries
-
-To seed the knowledge base and populate all dashboards with high-quality clinical data immediately, navigate to the **System Operator** (`/admin`) page or trigger the seeder from the console, or simply ask the **Chat Copilot**:
-
-* 🧪 *"Verify osimertinib combination trials in EGFR NSCLC"*
-* 🧪 *"Review pembrolizumab in mismatch repair-deficient colorectal cancer"*
-* 🧪 *"What clinical evidence supports CAR-T infusion in glioblastoma?"*
+* *"Verify osimertinib combination trials in EGFR NSCLC"*
+* *"Review pembrolizumab in mismatch repair-deficient colorectal cancer"*
+* *"What clinical evidence supports CAR-T infusion in glioblastoma?"*
+* *Paste a DOI like* `10.1056/NEJMoa2301638` *to ingest a paper live into the session*

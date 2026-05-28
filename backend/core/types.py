@@ -98,6 +98,9 @@ class PaperMetadata(BaseModel):
     evidence_level: EvidenceLevel = EvidenceLevel.UNKNOWN
     study_type: StudyType = StudyType.OTHER
     trial_phase: TrialPhase | None = None
+    sample_size: int | None = None
+    biomarkers: list[str] = Field(default_factory=list)
+    is_open_access: bool = False
     tags: PaperTags = Field(default_factory=PaperTags)
     linked_entities: list[str] = Field(default_factory=list)
     related_papers: list[str] = Field(default_factory=list)
