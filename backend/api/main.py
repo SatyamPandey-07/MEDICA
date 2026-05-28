@@ -48,17 +48,21 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="MEDICA Oncology Research Operating System",
         description="Autonomous oncology intelligence and structured clinical memory system.",
-        version="1.0.0",
+        version="2.0.0",
         lifespan=lifespan,
     )
 
     # CORS configuration
+    # NOTE: allow_origins=["*"] + allow_credentials=True is illegal per the CORS spec —
+    # browsers silently strip the Access-Control-Allow-Origin header on credentialed requests.
+    # We use an explicit origins list instead.
+    allowed_origins = settings.allowed_origins
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],  # Set to specific domains in production (e.g. http://localhost:3000)
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_origins=allowed_origins,
+        allow_credentials=False,  # No cookie/auth-header credentials used from browser
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+        allow_headers=["Content-Type", "Accept", "Authorization", "X-Request-ID"],
     )
 
     # Mount API routers under `/api` prefix

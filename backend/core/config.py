@@ -6,8 +6,9 @@ from __future__ import annotations
 
 from enum import Enum
 from pathlib import Path
+from typing import List
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -41,6 +42,15 @@ class Settings(BaseSettings):
     environment: Environment = Environment.DEVELOPMENT
     secret_key: str = "change_this_in_production"
     log_level: str = "INFO"
+
+    # Comma-separated list of allowed CORS origins.
+    # Defaults cover the standard local dev stack (Next.js + Vite).
+    cors_origins: str = "http://localhost:3000,http://localhost:3001,http://localhost:8000,http://127.0.0.1:3000,http://127.0.0.1:8000"
+
+    @property
+    def allowed_origins(self) -> List[str]:
+        """Parse CORS_ORIGINS into a list, stripping whitespace."""
+        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
 
     # --- Database ---
     database_url: str = "postgresql+asyncpg://medica:medica_secret@localhost:5432/medica"
