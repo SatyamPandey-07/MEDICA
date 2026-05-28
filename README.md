@@ -1,4 +1,4 @@
-# <p align="center"><img src="https://raw.githubusercontent.com/SatyamPandey-07/MEDICA/main/frontend/public/logo.png" alt="MEDICA Logo" width="100" style="border-radius: 20%; margin-bottom: 10px;"/><br>MEDICA</p>
+# <p align="center"><br>MEDICA</p>
 <p align="center">
   <strong>Autonomous Oncology Intelligence Operating System</strong>
 </p>
