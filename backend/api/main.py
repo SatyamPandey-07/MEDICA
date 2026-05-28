@@ -56,7 +56,14 @@ def create_app() -> FastAPI:
     # NOTE: allow_origins=["*"] + allow_credentials=True is illegal per the CORS spec —
     # browsers silently strip the Access-Control-Allow-Origin header on credentialed requests.
     # We use an explicit origins list instead.
+    # Derive allowed origins from settings; if none are configured (common in some
+    # local setups), fall back to permissive dev-friendly wildcard so browsers
+    # receive an Access-Control-Allow-Origin header. In production, ensure
+    # `settings.cors_origins` is explicitly set to allowed hosts.
     allowed_origins = settings.allowed_origins
+    if not allowed_origins:
+        allowed_origins = ["*"]
+
     app.add_middleware(
         CORSMiddleware,
         allow_origins=allowed_origins,
