@@ -69,7 +69,7 @@ export default function AdminDashboardPage() {
   };
 
   const statusBadge = (status: string) => {
-    const styles: Record<string, { bg: string; color: string; border: string; icon: JSX.Element }> = {
+    const styles: Record<string, { bg: string; color: string; border: string; icon: React.ReactNode }> = {
       done:    { bg: "#D1FAE5", color: "#000000", border: "#000000", icon: <CheckCircle style={{ width: 10, height: 10 }} /> },
       running: { bg: "#EDE9FE", color: "#000000", border: "#000000", icon: <Activity style={{ width: 10, height: 10 }} /> },
       failed:  { bg: "#FFE4E6", color: "#000000", border: "#000000", icon: <XCircle style={{ width: 10, height: 10 }} /> },
@@ -150,19 +150,22 @@ export default function AdminDashboardPage() {
             { label: "Total Runs", value: jobs.length, icon: Terminal, color: "hsl(262 83% 68%)" },
             { label: "Papers Fetched", value: totalFetched, icon: Database, color: "hsl(217 91% 65%)" },
             { label: "Papers Indexed", value: totalIndexed, icon: CheckCircle, color: "hsl(150 76% 55%)" },
-          ].map((c) => (
-            <div key={c.label} className="stat-card">
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-                <span style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em", color: "hsl(220 8% 38%)", textTransform: "uppercase" }}>
-                  {c.label}
-                </span>
-                <c.icon style={{ width: 14, height: 14, color: c.color }} />
+          ].map((c) => {
+            const IconComponent = c.icon;
+            return (
+              <div key={c.label} className="stat-card">
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                  <span style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em", color: "hsl(220 8% 38%)", textTransform: "uppercase" }}>
+                    {c.label}
+                  </span>
+                  <IconComponent style={{ width: 14, height: 14, color: c.color }} />
+                </div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: "hsl(220 20% 97%)", letterSpacing: "-0.03em" }}>
+                  {c.value}
+                </div>
               </div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: "hsl(220 20% 97%)", letterSpacing: "-0.03em" }}>
-                {c.value}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Control cards */}

@@ -286,27 +286,79 @@ export default function ResearchTimelinePage() {
                               </span>
                             </div>
 
-                            {/* Tags */}
+                            {/* Normalized Neobrutalist Tag Badges */}
                             {p.tags && (
-                              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+                                {p.tags.cancer?.slice(0, 2).map((c: string) => (
+                                  <span key={c} style={{
+                                    padding: "3px 8px", borderRadius: 6, fontSize: 9,
+                                    fontFamily: "'JetBrains Mono', monospace", fontWeight: 800,
+                                    background: "#FFE4E6", color: "#000000",
+                                    border: "2px solid #000000",
+                                    display: "inline-flex", alignItems: "center", gap: 4,
+                                    whiteSpace: "nowrap",
+                                  }}>
+                                    <span>🎗️</span> {c.replace(/_/g, " ").toUpperCase()}
+                                  </span>
+                                ))}
                                 {p.tags.drugs?.slice(0, 2).map((d: string) => (
                                   <span key={d} style={{
-                                    padding: "3px 9px", borderRadius: 6, fontSize: 9,
-                                    fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+                                    padding: "3px 8px", borderRadius: 6, fontSize: 9,
+                                    fontFamily: "'JetBrains Mono', monospace", fontWeight: 800,
                                     background: "#EDE9FE", color: "#000000",
                                     border: "2px solid #000000",
+                                    display: "inline-flex", alignItems: "center", gap: 4,
+                                    whiteSpace: "nowrap",
                                   }}>
-                                    drug:{d}
+                                    <span>💊</span> {d.replace(/_/g, " ").toUpperCase()}
                                   </span>
                                 ))}
                                 {p.tags.biomarkers?.slice(0, 2).map((b: string) => (
                                   <span key={b} style={{
-                                    padding: "3px 9px", borderRadius: 6, fontSize: 9,
-                                    fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+                                    padding: "3px 8px", borderRadius: 6, fontSize: 9,
+                                    fontFamily: "'JetBrains Mono', monospace", fontWeight: 800,
                                     background: "#DBEAFE", color: "#000000",
                                     border: "2px solid #000000",
+                                    display: "inline-flex", alignItems: "center", gap: 4,
+                                    whiteSpace: "nowrap",
                                   }}>
-                                    mut:{b}
+                                    <span>🧬</span> {b.replace(/_/g, " ").toUpperCase()}
+                                  </span>
+                                ))}
+                                {p.tags.treatment?.slice(0, 2).map((t: string) => (
+                                  <span key={t} style={{
+                                    padding: "3px 8px", borderRadius: 6, fontSize: 9,
+                                    fontFamily: "'JetBrains Mono', monospace", fontWeight: 800,
+                                    background: "#D1FAE5", color: "#000000",
+                                    border: "2px solid #000000",
+                                    display: "inline-flex", alignItems: "center", gap: 4,
+                                    whiteSpace: "nowrap",
+                                  }}>
+                                    <span>🎯</span> {t.replace(/_/g, " ").toUpperCase()}
+                                  </span>
+                                ))}
+                                {p.tags.evidence?.slice(0, 2).map((e: string) => (
+                                  <span key={e} style={{
+                                    padding: "3px 8px", borderRadius: 6, fontSize: 9,
+                                    fontFamily: "'JetBrains Mono', monospace", fontWeight: 800,
+                                    background: "#FFE57F", color: "#000000",
+                                    border: "2px solid #000000",
+                                    display: "inline-flex", alignItems: "center", gap: 4,
+                                    whiteSpace: "nowrap",
+                                  }}>
+                                    <span>🛡️</span> {e.replace(/_/g, " ").toUpperCase()}
+                                  </span>
+                                ))}
+                                {p.tags.temporal?.slice(0, 2).map((temp: string) => (
+                                  <span key={temp} style={{
+                                    padding: "3px 8px", borderRadius: 6, fontSize: 9,
+                                    fontFamily: "'JetBrains Mono', monospace", fontWeight: 800,
+                                    background: "#F3F4F6", color: "#000000",
+                                    border: "2px solid #000000",
+                                    display: "inline-flex", alignItems: "center", gap: 4,
+                                    whiteSpace: "nowrap",
+                                  }}>
+                                    <span>⏱️</span> {temp.replace(/_/g, " ").toUpperCase()}
                                   </span>
                                 ))}
                               </div>

@@ -98,7 +98,7 @@ function parseInlineStyles(htmlText: string): string {
 // ============================================================
 // CORE CHAT COMPONENT
 // ============================================================
-export default function ChatPage() {
+function ChatPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
@@ -577,5 +577,17 @@ function ReasoningLogsVisualizer({ steps }: { steps: ReasoningStep[] }) {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <React.Suspense fallback={
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: "#FAF8F5", fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 700, color: "#000000" }}>
+        <span>⏳ INITIATING MEDICA CONSOLE...</span>
+      </div>
+    }>
+      <ChatPageContent />
+    </React.Suspense>
   );
 }

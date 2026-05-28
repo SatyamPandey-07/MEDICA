@@ -320,12 +320,12 @@ export default function VerificationDashboardPage() {
                                 display: "inline-block",
                                 padding: "4px 10px", borderRadius: 6,
                                 fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
-                                fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase",
+                                fontWeight: 800, letterSpacing: "0.06em", textTransform: "uppercase",
                                 background: "#EDE9FE", color: "#000000",
                                 border: "2px solid #000000",
                                 whiteSpace: "nowrap",
                               }}>
-                                {(p.evidence_level || "").replace(/_/g, " ")}
+                                {(p.evidence_level || "").replace(/_/g, " ").toUpperCase()}
                               </span>
                             </td>
 
@@ -358,20 +358,35 @@ export default function VerificationDashboardPage() {
                                   fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
                                   padding: "4px 10px", borderRadius: 6,
                                   background: "#D1FAE5", color: "#000000",
-                                  border: "2px solid #000000", fontWeight: 700,
+                                  border: "2px solid #000000", fontWeight: 800,
+                                  letterSpacing: "0.04em", textTransform: "uppercase",
                                 }}>
-                                  no flags
+                                  ✓ CLEAR
                                 </span>
                               ) : (
                                 <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                                   {flags.map((f: string) => (
                                     <span key={f} style={{
                                       fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
-                                      padding: "4px 9px", borderRadius: 6, fontWeight: 700,
+                                      padding: "4px 9px", borderRadius: 6, fontWeight: 800,
                                       background: "#FFE4E6", color: "#000000",
                                       border: "2px solid #000000",
+                                      display: "inline-flex", alignItems: "center", gap: 3,
+                                      letterSpacing: "0.04em", textTransform: "uppercase",
                                     }}>
-                                      {f}
+                                      ⚠️ {f.replace(/_/g, " ")}
+                                    </span>
+                                  ))}
+                                  {p.tags?.evidence?.map((e: string) => (
+                                    <span key={e} style={{
+                                      fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
+                                      padding: "4px 9px", borderRadius: 6, fontWeight: 800,
+                                      background: "#FFE57F", color: "#000000",
+                                      border: "2px solid #000000",
+                                      display: "inline-flex", alignItems: "center", gap: 3,
+                                      letterSpacing: "0.04em", textTransform: "uppercase",
+                                    }}>
+                                      🛡️ {e.replace(/_/g, " ")}
                                     </span>
                                   ))}
                                 </div>

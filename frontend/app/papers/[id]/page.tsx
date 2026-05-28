@@ -280,11 +280,15 @@ export default function PaperViewerPage() {
                     {/* Cancers */}
                     {paper.tags.cancer && paper.tags.cancer.length > 0 && (
                       <div>
-                        <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#888888", marginBottom: 6, fontWeight: 700 }}>Cancers:</div>
+                        <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#888888", marginBottom: 6, fontWeight: 700, textTransform: "uppercase" }}>Indication / Cancers:</div>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                           {paper.tags.cancer.map((c) => (
-                            <span key={c} style={{ padding: "4px 10px", borderRadius: 6, border: "2px solid #000000", background: "#FFE4E6", fontSize: 11, color: "#000000", fontWeight: 700 }}>
-                              {c.replace(/_/g, " ")}
+                            <span key={c} style={{
+                              padding: "4px 10px", borderRadius: 6, border: "2px solid #000000", background: "#FFE4E6",
+                              fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "#000000", fontWeight: 800,
+                              display: "inline-flex", alignItems: "center", gap: 4, whiteSpace: "nowrap",
+                            }}>
+                              🎗️ {c.replace(/_/g, " ").toUpperCase()}
                             </span>
                           ))}
                         </div>
@@ -294,11 +298,15 @@ export default function PaperViewerPage() {
                     {/* Drugs */}
                     {paper.tags.drugs && paper.tags.drugs.length > 0 && (
                       <div>
-                        <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#888888", marginBottom: 6, fontWeight: 700 }}>Therapeutics:</div>
+                        <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#888888", marginBottom: 6, fontWeight: 700, textTransform: "uppercase" }}>Therapeutics / Drugs:</div>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                           {paper.tags.drugs.map((d) => (
-                            <span key={d} style={{ padding: "4px 10px", borderRadius: 6, border: "2px solid #000000", background: "#EDE9FE", fontSize: 11, color: "#000000", fontWeight: 700 }}>
-                              {d}
+                            <span key={d} style={{
+                              padding: "4px 10px", borderRadius: 6, border: "2px solid #000000", background: "#EDE9FE",
+                              fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "#000000", fontWeight: 800,
+                              display: "inline-flex", alignItems: "center", gap: 4, whiteSpace: "nowrap",
+                            }}>
+                              💊 {d.replace(/_/g, " ").toUpperCase()}
                             </span>
                           ))}
                         </div>
@@ -308,11 +316,15 @@ export default function PaperViewerPage() {
                     {/* Biomarkers */}
                     {paper.tags.biomarkers && paper.tags.biomarkers.length > 0 && (
                       <div>
-                        <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#888888", marginBottom: 6, fontWeight: 700 }}>Mutations / Targets:</div>
+                        <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#888888", marginBottom: 6, fontWeight: 700, textTransform: "uppercase" }}>Mutations / Targets:</div>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                           {paper.tags.biomarkers.map((b) => (
-                            <span key={b} style={{ padding: "4px 10px", borderRadius: 6, border: "2px solid #000000", background: "#DBEAFE", fontSize: 11, color: "#000000", fontWeight: 700 }}>
-                              {b}
+                            <span key={b} style={{
+                              padding: "4px 10px", borderRadius: 6, border: "2px solid #000000", background: "#DBEAFE",
+                              fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "#000000", fontWeight: 800,
+                              display: "inline-flex", alignItems: "center", gap: 4, whiteSpace: "nowrap",
+                            }}>
+                              🧬 {b.replace(/_/g, " ").toUpperCase()}
                             </span>
                           ))}
                         </div>
@@ -322,11 +334,51 @@ export default function PaperViewerPage() {
                     {/* Treatments */}
                     {paper.tags.treatment && paper.tags.treatment.length > 0 && (
                       <div>
-                        <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#888888", marginBottom: 6, fontWeight: 700 }}>Therapeutic Classes:</div>
+                        <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#888888", marginBottom: 6, fontWeight: 700, textTransform: "uppercase" }}>Therapeutic Classes:</div>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                           {paper.tags.treatment.map((t) => (
-                            <span key={t} style={{ padding: "4px 10px", borderRadius: 6, border: "2px solid #000000", background: "#D1FAE5", fontSize: 11, color: "#000000", fontWeight: 700 }}>
-                              {t}
+                            <span key={t} style={{
+                              padding: "4px 10px", borderRadius: 6, border: "2px solid #000000", background: "#D1FAE5",
+                              fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "#000000", fontWeight: 800,
+                              display: "inline-flex", alignItems: "center", gap: 4, whiteSpace: "nowrap",
+                            }}>
+                              🎯 {t.replace(/_/g, " ").toUpperCase()}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Evidence */}
+                    {paper.tags.evidence && paper.tags.evidence.length > 0 && (
+                      <div>
+                        <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#888888", marginBottom: 6, fontWeight: 700, textTransform: "uppercase" }}>Evidence Signals:</div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                          {paper.tags.evidence.map((e) => (
+                            <span key={e} style={{
+                              padding: "4px 10px", borderRadius: 6, border: "2px solid #000000", background: "#FFE57F",
+                              fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "#000000", fontWeight: 800,
+                              display: "inline-flex", alignItems: "center", gap: 4, whiteSpace: "nowrap",
+                            }}>
+                              🛡️ {e.replace(/_/g, " ").toUpperCase()}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Temporal */}
+                    {paper.tags.temporal && paper.tags.temporal.length > 0 && (
+                      <div>
+                        <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: "#888888", marginBottom: 6, fontWeight: 700, textTransform: "uppercase" }}>Recency & Timeline:</div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                          {paper.tags.temporal.map((temp) => (
+                            <span key={temp} style={{
+                              padding: "4px 10px", borderRadius: 6, border: "2px solid #000000", background: "#F3F4F6",
+                              fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "#000000", fontWeight: 800,
+                              display: "inline-flex", alignItems: "center", gap: 4, whiteSpace: "nowrap",
+                            }}>
+                              ⏱️ {temp.replace(/_/g, " ").toUpperCase()}
                             </span>
                           ))}
                         </div>
