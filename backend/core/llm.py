@@ -73,8 +73,7 @@ class GeminiClient(LLMClient):
             role = "user" if msg["role"] in ["user", "system"] else "model"
             contents.append({"role": role, "parts": [msg["content"]]})
 
-        # Run synchronously in an async wrapper since genai blocks slightly
-        response = model.generate_content(contents)
+        response = await model.generate_content_async(contents)
         return response.text.strip()
 
     async def generate_stream(
@@ -102,8 +101,8 @@ class GeminiClient(LLMClient):
             role = "user" if msg["role"] in ["user", "system"] else "model"
             contents.append({"role": role, "parts": [msg["content"]]})
 
-        response = model.generate_content(contents, stream=True)
-        for chunk in response:
+        response = await model.generate_content_async(contents, stream=True)
+        async for chunk in response:
             if chunk.text:
                 yield chunk.text
 

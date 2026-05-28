@@ -145,8 +145,14 @@ class EvidenceReranker:
             sample_boost = self._sample_size_boost(sample_size)
 
             # Molecular biomarker boost
-            # Try to grab biomarkers from paper.tags.biomarkers
-            tags_biomarkers = getattr(paper.tags, "biomarkers", None) if paper.tags else None
+            # Try to grab biomarkers from paper.tags (handles both SQLAlchemy dict and Pydantic PaperTags)
+            tags_biomarkers = None
+            if paper.tags:
+                if isinstance(paper.tags, dict):
+                    tags_biomarkers = paper.tags.get("biomarkers")
+                else:
+                    tags_biomarkers = getattr(paper.tags, "biomarkers", None)
+
             biomarker_boost = self._biomarker_boost(
                 query.query,
                 paper.title,

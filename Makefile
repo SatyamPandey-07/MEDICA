@@ -30,7 +30,7 @@ docker-logs:
 	docker compose logs -f
 
 migrate:
-	cd backend && alembic upgrade head
+	cd backend && python migrate_v2.py
 
 seed:
 	cd backend && python -m knowledge.seeder

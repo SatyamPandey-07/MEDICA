@@ -67,8 +67,8 @@ class OpenAccessProcessor:
         
         # 1. Resolve DOI/URL
         url = url_or_doi
-        if "/" not in url_or_doi and (url_or_doi.startswith("10.") or url_or_doi.startswith("doi:")):
-            # Looks like a direct DOI - resolve using CrossRef or direct proxy
+        if url_or_doi.startswith("10.") or url_or_doi.startswith("doi:") or (not url_or_doi.startswith("http") and "/" in url_or_doi):
+            # Looks like a direct DOI - resolve using standard DOI resolver proxy
             clean_doi = url_or_doi.replace("doi:", "").strip()
             url = f"https://doi.org/{clean_doi}"
 

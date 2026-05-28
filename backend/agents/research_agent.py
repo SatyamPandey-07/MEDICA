@@ -135,7 +135,7 @@ class OncologyResearchAgent:
             else:
                 raise e
 
-    def _parse_react(self, text: str) -> tuple[Optional[str], Optional[str], Optional[str]]:
+    def _parse_react(self, text: str) -> tuple[Optional[str], Optional[str], Optional[str], Optional[str]]:
         """Parse Thought, Action, Action Input, or Final Answer from LLM response."""
         thought = None
         action = None
