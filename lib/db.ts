@@ -14,10 +14,13 @@ declare global {
 
 function getPool(): Pool {
   if (global._pgPool) return global._pgPool;
-  const connectionString = process.env.DATABASE_URL;
+  let connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
     throw new Error("DATABASE_URL environment variable is not set.");
   }
+  // Convert python-specific asyncpg/psycopg2 protocol schemes if they exist
+  connectionString = connectionString.replace("postgresql+asyncpg://", "postgresql://")
+                                     .replace("postgresql+psycopg2://", "postgresql://");
   global._pgPool = new Pool({
     connectionString,
     max: 10,
