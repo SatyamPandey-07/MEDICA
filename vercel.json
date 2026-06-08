@@ -1,15 +1,12 @@
 {
     "experimentalServices": {
         "frontend": {
-            "root": "frontend",
-            "routePrefix": "/",
-            "framework": "nextjs"
+            "entrypoint": "frontend",
+            "routePrefix": "/"
         },
         "backend": {
-            "root": "backend",
-            "routePrefix": "/_/backend",
-            "entrypoint": "api/main.py",
-            "runtime": "@vercel/python"
+            "entrypoint": "backend/api/main.py",
+            "routePrefix": "/_/backend"
         }
     }
 }
