@@ -60,3 +60,5 @@ ehthumbs.db
 /backend/knowledge_data/
 /backend/data/
 /backend/venv/
+
+.vercel
