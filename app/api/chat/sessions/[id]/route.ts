@@ -32,9 +32,9 @@ export async function GET(
       created_at: s.created_at,
       updated_at: s.updated_at,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("get_session_error", err);
-    return NextResponse.json({ detail: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ detail: `Internal server error: ${err.message || String(err)}` }, { status: 500 });
   }
 }
 

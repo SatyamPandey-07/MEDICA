@@ -94,9 +94,9 @@ export async function POST(req: NextRequest) {
        VALUES ($1, $2, $3, $4, 'running', NOW(), NOW())`,
       [jobId, `manual_${searchQueryParam.slice(0, 50).replace(/ /g, "_")}`, source, searchQueryParam]
     );
-  } catch (err) {
+  } catch (err: any) {
     console.error("job_create_error", err);
-    return NextResponse.json({ detail: "Failed to create job record" }, { status: 500 });
+    return NextResponse.json({ detail: `Failed to create job record: ${err.message || String(err)}` }, { status: 500 });
   }
 
   let fetched = 0;
