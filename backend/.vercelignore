@@ -1,0 +1,22 @@
+# Ignore virtual environments
+venv
+.venv
+
+# Ignore python caches
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# Ignore local database and data folders
+.env
+.env.local
+.env.production
+.env.development
+*.db
+*.sqlite3
+data
+knowledge_data

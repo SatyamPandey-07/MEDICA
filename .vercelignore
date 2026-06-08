@@ -1,0 +1,35 @@
+# Ignore virtual environments
+venv
+.venv
+**/venv
+**/.venv
+
+# Ignore python caches
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+
+# Ignore frontend node modules and build outputs
+node_modules
+**/node_modules
+**/node_modules/*
+frontend/.next
+frontend/out
+frontend/build
+.next
+out
+build
+
+# Ignore local database files and environment configurations
+.env
+.env.local
+.env.production
+.env.development
+*.db
+*.sqlite3
+backend/data
+backend/knowledge_data
