@@ -24,10 +24,10 @@ interface Edge {
 
 export default function CitationGraphPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [network, setNetwork] = useState<{ nodes: any[]; edges: any[] } | null>(null);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [hoveredNode, setHoveredNode] = useState<Node | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasGraphNodes, setHasGraphNodes] = useState(false);
   const [rebuilding, setRebuilding] = useState(false);
   const [rebuildMsg, setRebuildMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
@@ -43,13 +43,12 @@ export default function CitationGraphPage() {
     setLoading(true);
     try {
       const data = await getGraphNetwork();
-      setNetwork(data);
 
       // Initialize nodes with positions
       const width = 800;
       const height = 500;
       
-      const initializedNodes = data.nodes.map((n: any, idx: number) => {
+      const initializedNodes = data.nodes.map((n, idx: number) => {
         // Place in a circle layout initially
         const angle = (idx / data.nodes.length) * Math.PI * 2;
         const radius = 12 + Math.min(n.papers_count * 2, 10);
@@ -65,6 +64,7 @@ export default function CitationGraphPage() {
 
       nodesRef.current = initializedNodes;
       edgesRef.current = data.edges;
+      setHasGraphNodes(initializedNodes.length > 0);
     } catch (e) {
       console.error("Failed loading graph network:", e);
     } finally {
@@ -73,7 +73,9 @@ export default function CitationGraphPage() {
   };
 
   useEffect(() => {
-    loadGraph();
+    queueMicrotask(() => {
+      void loadGraph();
+    });
     return () => {
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
@@ -91,8 +93,8 @@ export default function CitationGraphPage() {
         setRebuildMsg({ ok: true, text: `Graph built: ${res.nodes} nodes, ${res.edges} edges from ${res.papers_processed} papers.` });
         await loadGraph();
       }
-    } catch (e: any) {
-      setRebuildMsg({ ok: false, text: e.message || "Rebuild failed." });
+    } catch (e: unknown) {
+      setRebuildMsg({ ok: false, text: e instanceof Error ? e.message : "Rebuild failed." });
     } finally {
       setRebuilding(false);
     }
@@ -116,12 +118,12 @@ export default function CitationGraphPage() {
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
-    // Color definitions — vivid neobrutalist palette visible on light/cream background
+    // Color definitions — sleek dark mode palette
     const colors: Record<string, { fill: string; stroke: string; glow: string }> = {
-      cancer:    { fill: "#7C3AED", stroke: "#000000", glow: "rgba(124,58,237,0.25)" }, // Bold violet
-      drug:      { fill: "#0EA5E9", stroke: "#000000", glow: "rgba(14,165,233,0.25)" }, // Vivid sky blue
-      biomarker: { fill: "#10B981", stroke: "#000000", glow: "rgba(16,185,129,0.25)" }, // Bright emerald
-      treatment: { fill: "#F59E0B", stroke: "#000000", glow: "rgba(245,158,11,0.25)" }, // Vibrant amber
+      cancer:    { fill: "#818cf8", stroke: "#c7d2fe", glow: "rgba(129,140,248,0.25)" }, // Indigo
+      drug:      { fill: "#38bdf8", stroke: "#bae6fd", glow: "rgba(56,189,248,0.25)" }, // Sky
+      biomarker: { fill: "#34d399", stroke: "#a7f3d0", glow: "rgba(52,211,153,0.25)" }, // Emerald
+      treatment: { fill: "#fbbf24", stroke: "#fde68a", glow: "rgba(251,191,36,0.25)" }, // Amber
     };
 
     // Main Physics loop (simple Verlet force-directed)
@@ -217,12 +219,12 @@ export default function CitationGraphPage() {
       // 2. Drawing
       ctx.clearRect(0, 0, w, h);
 
-      // ── Background: warm cream with subtle dot grid ──
-      ctx.fillStyle = "#FAF8F5";
+      // ── Background: sleek dark mode with subtle dot grid ──
+      ctx.fillStyle = "#09090b"; // zinc-950
       ctx.fillRect(0, 0, w, h);
       // Dot grid pattern
       const gridSpacing = 28;
-      ctx.fillStyle = "rgba(0,0,0,0.06)";
+      ctx.fillStyle = "rgba(255,255,255,0.03)";
       for (let gx = 0; gx < w; gx += gridSpacing) {
         for (let gy = 0; gy < h; gy += gridSpacing) {
           ctx.beginPath();
@@ -242,10 +244,10 @@ export default function CitationGraphPage() {
         const isSelectedEdge = selectedNode && (selectedNode.id === n1.id || selectedNode.id === n2.id);
 
         if (isHoveredEdge || isSelectedEdge) {
-          ctx.strokeStyle = "rgba(0, 0, 0, 0.55)";
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
           ctx.lineWidth = 2;
         } else {
-          ctx.strokeStyle = "rgba(0, 0, 0, 0.12)";
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
           ctx.lineWidth = 1;
         }
 
@@ -261,18 +263,19 @@ export default function CitationGraphPage() {
         const isHovered = hoveredNode?.id === n.id;
         const isSelected = selectedNode?.id === n.id;
 
-        // Outer glow (light shadow on cream bg)
+        // Outer glow
         if (isHovered || isSelected) {
-          ctx.shadowBlur = 18;
+          ctx.shadowBlur = 24;
           ctx.shadowColor = c.fill;
         } else {
-          ctx.shadowBlur = 0;
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = "rgba(0,0,0,0.5)";
         }
 
         // Node circle
         ctx.fillStyle = c.fill;
-        ctx.strokeStyle = isHovered || isSelected ? "#000000" : "#000000";
-        ctx.lineWidth = isHovered || isSelected ? 3 : 2;
+        ctx.strokeStyle = isHovered || isSelected ? "#ffffff" : c.stroke;
+        ctx.lineWidth = isHovered || isSelected ? 2 : 1;
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
         ctx.fill();
@@ -281,11 +284,11 @@ export default function CitationGraphPage() {
         ctx.shadowBlur = 0;
 
         // Label
-        ctx.fillStyle = isHovered || isSelected ? "#000000" : "#333333";
-        ctx.font = isHovered || isSelected ? "bold 10px Inter" : "9px Inter";
+        ctx.fillStyle = isHovered || isSelected ? "#f4f4f5" : "#a1a1aa";
+        ctx.font = isHovered || isSelected ? "500 11px Inter" : "10px Inter";
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
-        ctx.fillText(n.label, n.x, n.y + n.radius + 5);
+        ctx.fillText(n.label, n.x, n.y + n.radius + 6);
       }
 
       animationRef.current = requestAnimationFrame(tick);
@@ -352,166 +355,112 @@ export default function CitationGraphPage() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0 }}>
+    <div className="flex flex-col h-full min-h-0 bg-zinc-950">
       {/* Header */}
-      <header className="page-header">
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{
-            width: 28, height: 28, borderRadius: 8,
-            background: "linear-gradient(135deg, hsl(174 80% 36%), hsl(196 80% 46%))",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <GitBranch style={{ width: 14, height: 14, color: "white" }} />
+      <header className="px-6 py-4 flex items-center justify-between border-b border-white/5 bg-zinc-950/50 backdrop-blur-md sticky top-0 z-10 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+            <GitBranch className="w-4 h-4" />
           </div>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "hsl(220 20% 97%)", letterSpacing: "0.03em" }}>
+            <div className="text-[13px] font-semibold text-zinc-100 tracking-wide">
               Citation Graph Network
             </div>
-            <div style={{ fontSize: 10, color: "hsl(220 8% 40%)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em" }}>
-              ONCOLOGY ENTITY PHYSICS MAP
+            <div className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+              Oncology Entity Physics Map
             </div>
           </div>
         </div>
       {/* Header buttons */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div className="flex items-center gap-3">
           {/* Rebuild button */}
           <button
             onClick={handleRebuild}
             disabled={rebuilding}
-            style={{
-              display: "flex", alignItems: "center", gap: 8,
-              padding: "10px 20px", borderRadius: "9999px", cursor: rebuilding ? "not-allowed" : "pointer",
-              background: "#FFE57F",
-              border: "3px solid #000000",
-              color: "#000000", fontSize: 12, fontWeight: 800,
-              boxShadow: rebuilding ? "none" : "4px 4px 0px #000000",
-              transition: "all 0.15s ease", opacity: rebuilding ? 0.6 : 1,
-              letterSpacing: "0.06em", textTransform: "uppercase",
-            }}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all border border-indigo-500/20 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
             title="Rebuild graph from all indexed papers"
           >
-            <Sparkles style={{ width: 13, height: 13, animation: rebuilding ? "spin 1s linear infinite" : "none" }} />
+            <Sparkles className={`w-3.5 h-3.5 ${rebuilding ? 'animate-spin' : ''}`} />
             {rebuilding ? "Building..." : "Rebuild Graph"}
           </button>
 
           {/* Reload button */}
           <button
             onClick={loadGraph}
-            style={{
-              width: 36, height: 36, borderRadius: "9999px", cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              background: "#FFFFFF",
-              border: "3px solid #000000",
-              color: "#000000",
-              boxShadow: "3px 3px 0px #000000",
-              transition: "all 0.15s ease",
-            }}
+            className="flex items-center justify-center w-9 h-9 rounded-xl border border-white/5 bg-zinc-900/40 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-all"
             title="Reload Graph"
           >
-            <RefreshCw style={{ width: 14, height: 14 }} />
+            <RefreshCw className="w-4 h-4" />
           </button>
         </div>
       </header>
 
       {/* Rebuild status message */}
       {rebuildMsg && (
-        <div style={{
-          margin: "0 32px", padding: "14px 22px", borderRadius: 16,
-          background: rebuildMsg.ok ? "#E0F2F1" : "#FFEBEE",
-          border: `3px solid ${rebuildMsg.ok ? "#004D40" : "#B71C1C"}`,
-          color: rebuildMsg.ok ? "#004D40" : "#B71C1C",
-          fontSize: 12, fontFamily: "'JetBrains Mono', monospace",
-          fontWeight: 700,
-          boxShadow: `4px 4px 0px ${rebuildMsg.ok ? "#004D40" : "#B71C1C"}`,
-        }}>
-          {rebuildMsg.text}
+        <div className="px-8 pt-6">
+          <div className={`px-4 py-3 rounded-xl border font-mono text-xs font-semibold tracking-wide ${
+            rebuildMsg.ok ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-red-500/10 border-red-500/20 text-red-400"
+          }`}>
+            {rebuildMsg.text}
+          </div>
         </div>
       )}
 
       {/* Main split view */}
-      <div style={{ flex: 1, display: "flex", minHeight: 0, overflow: "hidden", position: "relative" }}>
+      <div className="flex-1 flex min-h-0 overflow-hidden relative">
         {loading ? (
-          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ textAlign: "center" }}>
-              <GitBranch style={{ width: 28, height: 28, color: "hsl(262 83% 65%)", margin: "0 auto 12px", animation: "spin 1.5s linear infinite" }} />
-              <p style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: "hsl(220 8% 35%)" }}>Mapping molecular graph nodes...</p>
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center animate-fade-in">
+              <GitBranch className="w-8 h-8 text-indigo-400/50 mx-auto mb-4 animate-pulse" />
+              <p className="text-[11px] font-mono tracking-widest uppercase text-zinc-500 font-semibold">Mapping molecular graph nodes...</p>
             </div>
           </div>
-        ) : nodesRef.current.length === 0 ? (
+        ) : !hasGraphNodes ? (
           /* ── EMPTY STATE ── */
-          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ textAlign: "center", maxWidth: 420 }}>
-              <div style={{
-                display: "inline-flex", width: 56, height: 56, borderRadius: 16, marginBottom: 20,
-                background: "linear-gradient(135deg, hsl(174 80% 20%), hsl(196 80% 25%))",
-                alignItems: "center", justifyContent: "center",
-                boxShadow: "0 8px 32px hsl(174 70% 20% / 0.3)",
-              }}>
-                <Database style={{ width: 24, height: 24, color: "hsl(174 80% 55%)" }} />
+          <div className="flex-1 flex items-center justify-center p-8">
+            <div className="text-center max-w-md animate-fade-in">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-6 bg-indigo-500/10 border border-indigo-500/20 shadow-[0_0_30px_rgba(99,102,241,0.2)]">
+                <Database className="w-6 h-6 text-indigo-400" />
               </div>
-              <h2 style={{
-                fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", marginBottom: 10,
-                color: "hsl(220 20% 90%)",
-              }}>
+              <h2 className="text-xl font-bold tracking-tight mb-3 text-zinc-100">
                 Graph is Empty
               </h2>
-              <p style={{ fontSize: 12, color: "hsl(220 8% 42%)", lineHeight: 1.7, marginBottom: 24 }}>
-                The knowledge graph has no nodes yet. Click <strong style={{ color: "hsl(174 80% 52%)" }}>Rebuild Graph</strong> to extract
+              <p className="text-[13px] text-zinc-400 leading-relaxed mb-8">
+                The knowledge graph has no nodes yet. Click <strong className="text-indigo-400">Rebuild Graph</strong> to extract
                 cancer, drug, and biomarker entities from all papers already in your database.
-                Or go to <strong style={{ color: "hsl(220 15% 75%)" }}>System Operator</strong> to ingest papers first.
+                Or go to <strong className="text-zinc-200">System Operator</strong> to ingest papers first.
               </p>
               <button
                 onClick={handleRebuild}
                 disabled={rebuilding}
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  padding: "11px 22px", borderRadius: 10, cursor: rebuilding ? "not-allowed" : "pointer",
-                  background: "linear-gradient(135deg, hsl(174 80% 35%), hsl(196 80% 42%))",
-                  border: "none", color: "white", fontSize: 13, fontWeight: 600,
-                  boxShadow: "0 4px 20px hsl(174 70% 30% / 0.4)",
-                  opacity: rebuilding ? 0.6 : 1,
-                }}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-[13px] font-semibold transition-all shadow-lg shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Sparkles style={{ width: 15, height: 15, animation: rebuilding ? "spin 1s linear infinite" : "none" }} />
+                <Sparkles className={`w-4 h-4 ${rebuilding ? 'animate-spin' : ''}`} />
                 {rebuilding ? "Building graph..." : "Rebuild Graph Now"}
               </button>
             </div>
           </div>
         ) : (
           <>
-            {/* Physics canvas — warm cream background applied in canvas draw loop */}
-            <div style={{
-              flex: 1, height: "100%", position: "relative", overflow: "hidden",
-              background: "#FAF8F5",
-              border: "3px solid #000000",
-              borderRadius: 20,
-              margin: 20,
-              boxShadow: "8px 8px 0px #000000",
-            }}>
-              {/* Legend HUD — neobrutalist card */}
-              <div style={{
-                position: "absolute", top: 20, left: 20, zIndex: 10,
-                padding: "18px 22px", borderRadius: 16,
-                background: "#FFFFFF",
-                border: "3px solid #000000",
-                boxShadow: "4px 4px 0px #000000",
-                pointerEvents: "none",
-              }}>
-                <div style={{ fontSize: 11, fontFamily: "'JetBrains Mono', monospace", color: "#000000", fontWeight: 800, marginBottom: 12, display: "flex", alignItems: "center", gap: 6, letterSpacing: "0.05em", textTransform: "uppercase" }}>
-                  <Info style={{ width: 12, height: 12, color: "#7C3AED" }} />
+            {/* Physics canvas */}
+            <div className="flex-1 h-full relative overflow-hidden bg-zinc-950 border border-white/5 rounded-2xl m-6 shadow-2xl">
+              {/* Legend HUD */}
+              <div className="absolute top-6 left-6 z-10 px-5 py-4 rounded-xl bg-zinc-900/80 backdrop-blur border border-white/10 pointer-events-none shadow-xl">
+                <div className="text-[10px] font-mono font-semibold text-zinc-300 mb-3 flex items-center gap-2 tracking-widest uppercase">
+                  <Info className="w-3.5 h-3.5 text-indigo-400" />
                   Map Key
                 </div>
                 {[
-                  { label: "Cancer Types",      dot: "#7C3AED" },
-                  { label: "Drugs / Inhibitors", dot: "#0EA5E9" },
-                  { label: "Biomarkers / Genes", dot: "#10B981" },
+                  { label: "Cancer Types",      dot: "#818cf8" },
+                  { label: "Drugs / Inhibitors", dot: "#38bdf8" },
+                  { label: "Biomarkers / Genes", dot: "#34d399" },
                 ].map((item) => (
-                  <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, fontSize: 11, fontFamily: "'JetBrains Mono', monospace", color: "#000000", fontWeight: 600 }}>
-                    <span style={{ width: 10, height: 10, borderRadius: "50%", background: item.dot, flexShrink: 0, border: "2px solid #000000" }} />
+                  <div key={item.label} className="flex items-center gap-3 mb-2 text-[10px] font-mono text-zinc-400 font-medium tracking-wide">
+                    <span className="w-2.5 h-2.5 rounded-full shrink-0 shadow-[0_0_8px_currentColor]" style={{ background: item.dot, color: item.dot }} />
                     {item.label}
                   </div>
                 ))}
-                <div style={{ fontSize: 9, color: "#555555", fontFamily: "'JetBrains Mono', monospace", borderTop: "2px solid #000000", paddingTop: 10, marginTop: 6, lineHeight: 1.8 }}>
+                <div className="text-[9px] text-zinc-500 font-mono border-t border-white/5 pt-3 mt-3 leading-relaxed">
                   * Drag nodes to adjust physics<br />* Click a node to inspect it
                 </div>
               </div>
@@ -522,62 +471,38 @@ export default function CitationGraphPage() {
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
-                style={{ width: "100%", height: "100%", cursor: "grab" }}
+                className="w-full h-full cursor-grab active:cursor-grabbing"
               />
             </div>
 
-            {/* Node detail drawer — neobrutalist white card */}
+            {/* Node detail drawer */}
             {selectedNode && (
-              <div style={{
-                width: 320, flexShrink: 0, zIndex: 10,
-                borderLeft: "none",
-                background: "#FFFFFF",
-                border: "3px solid #000000",
-                borderRadius: 20,
-                boxShadow: "8px 8px 0px #000000",
-                margin: 20,
-                marginLeft: 0,
-                overflowY: "auto", padding: 28,
-              }}>
-                <div style={{ marginBottom: 20, paddingBottom: 18, borderBottom: "3px solid #000000" }}>
-                  <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.12em", color: "#7C3AED", textTransform: "uppercase", marginBottom: 10, fontWeight: 700 }}>
+              <div className="w-80 shrink-0 z-10 bg-zinc-900/40 border border-white/5 rounded-2xl shadow-xl m-6 ml-0 overflow-y-auto p-6 animate-fade-in flex flex-col">
+                <div className="mb-6 pb-6 border-b border-white/5">
+                  <div className="text-[10px] font-mono tracking-widest text-indigo-400 uppercase mb-3 font-semibold">
                     {typeLabels[selectedNode.type] || "Node Entity"}
                   </div>
-                  <h3 style={{ fontSize: 18, fontWeight: 800, color: "#000000", lineHeight: 1.35, marginBottom: 14, letterSpacing: "-0.02em" }}>
+                  <h3 className="text-xl font-bold text-zinc-100 leading-snug mb-4 tracking-tight">
                     {selectedNode.label}
                   </h3>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#444444", fontWeight: 600 }}>
-                    <Activity style={{ width: 14, height: 14, color: "#10B981" }} />
-                    Active in <strong style={{ color: "#000000", marginLeft: 4 }}>{selectedNode.papers_count}</strong>&nbsp;clinical trials
+                  <div className="flex items-center gap-2 text-[11px] text-zinc-400 font-medium">
+                    <Activity className="w-4 h-4 text-emerald-400" />
+                    Active in <strong className="text-zinc-200">{selectedNode.papers_count}</strong> clinical trials
                   </div>
                 </div>
 
-                <div>
-                  <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.12em", color: "#555555", textTransform: "uppercase", marginBottom: 14, fontWeight: 700 }}>
+                <div className="flex-1">
+                  <div className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase mb-4 font-semibold">
                     Associated Knowledge
                   </div>
-                  <div style={{
-                    padding: "18px 20px", borderRadius: 16,
-                    border: "3px solid #000000",
-                    background: "#FAF8F5",
-                    fontSize: 12, color: "#333333", lineHeight: 1.7,
-                    boxShadow: "3px 3px 0px #000000",
-                  }}>
-                    <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 16, color: "#000000", fontWeight: 600 }}>
-                      <Info style={{ width: 13, height: 13, color: "#7C3AED", marginTop: 2, flexShrink: 0 }} />
+                  <div className="p-5 rounded-xl border border-white/5 bg-zinc-950/50">
+                    <div className="flex items-start gap-3 mb-5 text-[11px] text-zinc-400 leading-relaxed font-medium">
+                      <Info className="w-4 h-4 text-indigo-400 mt-0.5 shrink-0" />
                       Explore papers matching this node in the Knowledge Explorer.
                     </div>
                     <a
-                      href={`/explorer`}
-                      style={{
-                        display: "block", textAlign: "center",
-                        padding: "10px 0", borderRadius: 9999, textDecoration: "none",
-                        background: "#FFE57F",
-                        border: "3px solid #000000",
-                        color: "#000000", fontSize: 12, fontWeight: 800,
-                        boxShadow: "3px 3px 0px #000000",
-                        letterSpacing: "0.05em", textTransform: "uppercase",
-                      }}
+                      href={`/explorer?q=${encodeURIComponent(selectedNode.label)}`}
+                      className="block text-center py-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold tracking-wide uppercase hover:bg-indigo-500/20 transition-colors"
                     >
                       Open Explorer →
                     </a>
@@ -588,7 +513,6 @@ export default function CitationGraphPage() {
           </>
         )}
       </div>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

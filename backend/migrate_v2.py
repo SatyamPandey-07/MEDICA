@@ -1,13 +1,15 @@
-"""One-shot migration: adds columns introduced in v2.0 that were missed by init_db."""
+"""One-shot migration: creates schema and adds v2.0 columns if needed."""
 import asyncio
 import sys
 sys.path.insert(0, ".")
 
-from shared.database import engine
+from shared.database import engine, init_db
 from sqlalchemy import text
 
 
 async def migrate():
+    await init_db()
+
     async with engine.connect() as conn:
 
         # ── chat_sessions ────────────────────────────────────────────────────
@@ -39,6 +41,7 @@ async def migrate():
             ("sample_size",    "INTEGER"),
             ("biomarkers",     "JSONB NOT NULL DEFAULT '[]'"),
             ("is_open_access", "BOOLEAN NOT NULL DEFAULT FALSE"),
+            ("adversarial_review", "TEXT"),
         ]
         for col, typedef in migrations:
             if col not in paper_cols:

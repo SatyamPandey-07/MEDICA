@@ -144,14 +144,15 @@ class IngestionPipeline:
                 paper.verification_status = verification.status
                 paper.confidence_score = verification.confidence_score
                 paper.evidence_level = verification.evidence_level
+                paper.adversarial_review = verification.adversarial_review
 
                 # 5. STORE to knowledge filesystem
-                knowledge_path = await self.knowledge_store.store(paper)
+                knowledge_path = await self.knowledge_store.store(paper, adversarial_review=verification.adversarial_review)
                 paper.knowledge_path = str(knowledge_path)
 
                 # 6. EMBED + INDEX
-                await self.vector_index.index_paper(paper)
                 await self.metadata_index.upsert_paper(paper)
+                await self.vector_index.index_paper(paper)
 
                 # 7. Register in knowledge graph
                 kg_graph.add_paper(paper)

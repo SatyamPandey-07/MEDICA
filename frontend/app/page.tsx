@@ -7,93 +7,13 @@ import {
   Terminal,
   Activity,
   User,
-  ShieldCheck,
-  FileText,
-  Link as LinkIcon,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
 
 import { getSession, streamChat } from "@/lib/api";
 import { ChatMessage, ReasoningStep } from "@/lib/types";
-
-// ============================================================
-// LIGHTWEIGHT MARKDOWN + CITATION PARSER
-// ============================================================
-function ClinicalTextRenderer({ text }: { text: string }) {
-  if (!text) return null;
-
-  // 1. Process PMID & DOI references
-  let formatted = text;
-  
-  // Format PMID [PMID: 12345] -> Clickable link
-  formatted = formatted.replace(
-    /\[PMID:\s*(\d+)\]/g,
-    '<a href="https://pubmed.ncbi.nlm.nih.gov/$1/" target="_blank" rel="noopener noreferrer" class="px-1.5 py-0.5 rounded bg-purple-950/40 hover:bg-purple-900/60 border border-purple-500/20 text-purple-400 text-xs font-mono inline-flex items-center gap-0.5 transition-colors">📄 PMID: $1</a>'
-  );
-
-  // Format DOI [DOI: 10.1002/...] -> Clickable link
-  formatted = formatted.replace(
-    /\[DOI:\s*([^\s\]]+)\]/g,
-    '<a href="https://doi.org/$1" target="_blank" rel="noopener noreferrer" style="padding:2px 6px;border:2px solid #000000;background:#FFF;border-radius:6px;font-size:11px;font-family:monospace;color:#000;text-decoration:none;display:inline-flex;align-items:center;gap:4px">🔗 DOI: $1</a>'
-  );
-
-  // Split into paragraphs / lines
-  const lines = formatted.split("\n");
-
-  return (
-    <div style={{ lineHeight: 1.8, fontSize: 13, color: "#111111" }}>
-      {lines.map((line, lineIdx) => {
-        let trimmed = line.trim();
-
-        if (!trimmed) return <div key={lineIdx} style={{ height: 8 }} />;
-
-        // Header Check
-        if (trimmed.startsWith("### ")) {
-          return (
-            <h4 key={lineIdx} style={{ fontSize: 14, fontWeight: 800, color: "#000000", marginTop: 16, marginBottom: 8 }}>
-              {trimmed.replace("### ", "")}
-            </h4>
-          );
-        }
-        if (trimmed.startsWith("## ")) {
-          return (
-            <h3 key={lineIdx} style={{ fontSize: 16, fontWeight: 800, color: "#000000", marginTop: 20, marginBottom: 8, borderBottom: "3px solid #000000", paddingBottom: 4 }}>
-              {trimmed.replace("## ", "")}
-            </h3>
-          );
-        }
-
-        // Bullet Check
-        if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
-          const content = trimmed.substring(2);
-          return (
-            <ul key={lineIdx} style={{ paddingLeft: 20, margin: "4px 0" }}>
-              <li dangerouslySetInnerHTML={{ __html: parseInlineStyles(content) }} />
-            </ul>
-          );
-        }
-
-        // Standard Paragraph
-        return (
-          <p
-            key={lineIdx}
-            style={{ margin: "4px 0" }}
-            dangerouslySetInnerHTML={{ __html: parseInlineStyles(trimmed) }}
-          />
-        );
-      })}
-    </div>
-  );
-}
-
-function parseInlineStyles(htmlText: string): string {
-  // Bold **text**
-  let parsed = htmlText.replace(/\*\*(.*?)\*\*/g, '<strong style="font-weight:800;color:#000000">$1</strong>');
-  // Inline code `code`
-  parsed = parsed.replace(/`(.*?)`/g, '<code style="padding:1px 6px;font-family:monospace;color:#5B21B6;font-size:11px;background:#EDE9FE;border:1px solid #000000;border-radius:4px">$1</code>');
-  return parsed;
-}
+import { ClinicalTextRenderer } from "@/lib/formatters";
 
 // ============================================================
 // CORE CHAT COMPONENT
@@ -110,9 +30,9 @@ function ChatPageContent() {
   const [currentAnswer, setCurrentAnswer] = useState("");
   const [activeReasoningOpen, setActiveReasoningOpen] = useState(true);
 
+  const lastLoadedSessionId = useRef<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Suggested research triggers
   const suggestions = [
     "Review pembrolizumab efficacy in mismatch repair-deficient (dMMR) colorectal cancer.",
     "Verify osimertinib resistance mechanisms in EGFR-mutant lung cancer.",
@@ -120,28 +40,31 @@ function ChatPageContent() {
     "Verify claim: chemotherapy combined with immunotherapy improves overall survival.",
   ];
 
-  // Load session history on ID change
   useEffect(() => {
-    if (sessionId) {
+    if (sessionId && sessionId !== lastLoadedSessionId.current) {
       const loadHistory = async () => {
         try {
           const res = await getSession(sessionId);
-          setMessages(res.messages || []);
-          setCurrentAnswer("");
-          setCurrentReasoning([]);
+          // Only update state if the user hasn't switched sessions while we were fetching
+          if (sessionId === new URLSearchParams(window.location.search).get("session_id")) {
+            setMessages(res.messages || []);
+            lastLoadedSessionId.current = sessionId;
+            setCurrentAnswer("");
+            setCurrentReasoning([]);
+          }
         } catch (e) {
           console.error("Failed loading session history:", e);
         }
       };
       loadHistory();
-    } else {
+    } else if (!sessionId) {
       setMessages([]);
+      lastLoadedSessionId.current = null;
       setCurrentAnswer("");
       setCurrentReasoning([]);
     }
   }, [sessionId]);
 
-  // Autoscroll to bottom
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, currentAnswer, currentReasoning]);
@@ -149,43 +72,46 @@ function ChatPageContent() {
   const handleSend = async (textToSend: string) => {
     if (!textToSend.trim() || isStreaming) return;
 
-    // Reset stream state
     setInput("");
     setIsStreaming(true);
     setCurrentAnswer("");
     setCurrentReasoning([]);
 
-    // 1. Add User message
     const userMsg: ChatMessage = { role: "user", content: textToSend };
     setMessages((prev) => [...prev, userMsg]);
 
     let activeSessionId = sessionId;
+    let accumulatedAnswer = "";
+    let accumulatedReasoning: ReasoningStep[] = [];
 
-    // 2. Consume SSE stream
     await streamChat(
       textToSend,
       activeSessionId,
       (event) => {
         if (event.type === "session_init" && event.session_id) {
           activeSessionId = event.session_id;
+          lastLoadedSessionId.current = activeSessionId; // Mark as loaded to prevent useEffect reload
           router.replace(`/?session_id=${activeSessionId}`);
         } else if (event.type === "thought" && event.content) {
-          setCurrentReasoning((prev) => [...prev, { type: "thought", content: event.content! }]);
+          accumulatedReasoning = [...accumulatedReasoning, { type: "thought", content: event.content! }];
+          setCurrentReasoning(accumulatedReasoning);
         } else if (event.type === "call" && event.content) {
-          setCurrentReasoning((prev) => [...prev, { type: "call", content: event.content! }]);
+          accumulatedReasoning = [...accumulatedReasoning, { type: "call", content: event.content! }];
+          setCurrentReasoning(accumulatedReasoning);
         } else if (event.type === "observation" && event.content) {
-          setCurrentReasoning((prev) => [...prev, { type: "observation", content: event.content! }]);
+          accumulatedReasoning = [...accumulatedReasoning, { type: "observation", content: event.content! }];
+          setCurrentReasoning(accumulatedReasoning);
         } else if (event.type === "chunk" && event.content) {
-          setCurrentAnswer((prev) => prev + event.content);
+          accumulatedAnswer += event.content;
+          setCurrentAnswer(accumulatedAnswer);
         } else if (event.type === "done") {
           setIsStreaming(false);
-          // Commit current stream to full list
           setMessages((prev) => [
             ...prev,
             {
               role: "assistant",
-              content: currentAnswer,
-              reasoning_path: currentReasoning,
+              content: accumulatedAnswer,
+              reasoning_path: accumulatedReasoning,
             },
           ]);
           setCurrentAnswer("");
@@ -194,7 +120,6 @@ function ChatPageContent() {
       },
       (err) => {
         setIsStreaming(false);
-        console.error("Chat streaming error:", err);
         setMessages((prev) => [
           ...prev,
           {
@@ -207,140 +132,96 @@ function ChatPageContent() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0 }}>
+    <div className="flex flex-col h-full min-h-0 bg-zinc-950">
       {/* Header */}
-      <header className="page-header">
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{
-            width: 28, height: 28, borderRadius: 8,
-            background: "linear-gradient(135deg, hsl(262 83% 55%), hsl(300 70% 50%))",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <Activity style={{ width: 14, height: 14, color: "white" }} />
+      <header className="px-6 py-4 flex items-center justify-between border-b border-white/5 bg-zinc-950/50 backdrop-blur-md sticky top-0 z-10">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400">
+            <Activity className="w-4 h-4" />
           </div>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "hsl(220 20% 97%)", letterSpacing: "0.03em" }}>
+            <div className="text-[13px] font-semibold text-zinc-100 tracking-wide">
               Oncology Research Copilot
             </div>
-            <div style={{ fontSize: 10, color: "hsl(220 8% 40%)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em" }}>
-              AGENTIC REASONING ENGINE
+            <div className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+              Agentic Reasoning Engine
             </div>
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{
-            width: 7, height: 7, borderRadius: "50%",
-            background: "hsl(150 76% 50%)",
-            boxShadow: "0 0 8px hsl(150 76% 50% / 0.7)",
-            display: "inline-block",
-            animation: "pulse-glow 2s infinite ease-in-out",
-          }} />
-          <span style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "hsl(150 76% 55%)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-            Agentic Runtime Active
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span className="text-[10px] font-mono text-emerald-500 tracking-widest uppercase">
+            Runtime Active
           </span>
         </div>
       </header>
 
-      {/* ============================================================
-          CHAT MESSAGES THREAD CONTAINER
-         ============================================================ */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "40px 52px" }}>
+      {/* Chat Messages */}
+      <div className="flex-1 overflow-y-auto px-6 py-8">
         {messages.length === 0 && !currentAnswer && !isStreaming ? (
-          /* Welcome Screen */
-          <div style={{ maxWidth: 680, margin: "0 auto", paddingTop: 40 }}>
-            {/* Hero */}
-            <div style={{ textAlign: "center", marginBottom: 48 }}>
-              <div style={{
-                display: "inline-flex", alignItems: "center", justifyContent: "center",
-                width: 64, height: 64, borderRadius: 20, marginBottom: 24,
-                background: "#FFE57F",
-                border: "3px solid #000000",
-                boxShadow: "6px 6px 0px #000000",
-              }}>
-                <Activity style={{ width: 28, height: 28, color: "#000000" }} />
+          <div className="max-w-2xl mx-auto pt-12 animate-fade-in">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-zinc-900 border border-white/5 shadow-xl shadow-black/50 mb-6">
+                <Activity className="w-7 h-7 text-blue-400" />
               </div>
-              <h1 style={{
-                fontSize: 32, fontWeight: 800, marginBottom: 14, letterSpacing: "-0.03em",
-                color: "#000000", lineHeight: 1.2,
-              }}>
+              <h1 className="text-3xl font-bold mb-4 tracking-tight text-white">
                 Welcome to MEDICA Intelligence
               </h1>
-              <p style={{ fontSize: 14, color: "#555555", lineHeight: 1.7, maxWidth: 460, margin: "0 auto", fontWeight: 500 }}>
-                An autonomous oncology research system powered by <strong style={{ color: "#7C3AED" }}>Llama 3.3 70B on Groq</strong>.
+              <p className="text-[14px] text-zinc-400 leading-relaxed max-w-md mx-auto">
+                An autonomous oncology research system powered by <strong className="text-blue-400 font-medium">Llama 3.3</strong>.
                 Query trials, verify claims, and cross-link clinical evidence.
               </p>
             </div>
 
-            {/* Suggestion cards */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            <div className="grid grid-cols-2 gap-4">
               {suggestions.map((s, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleSend(s)}
-                  style={{
-                    padding: "22px 24px", borderRadius: 20, cursor: "pointer",
-                    border: "3px solid #000000",
-                    background: "#FFFFFF",
-                    textAlign: "left", display: "flex", flexDirection: "column",
-                    justifyContent: "space-between", minHeight: 120,
-                    boxShadow: "5px 5px 0px #000000",
-                    transition: "all 0.15s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "#FAF8F5";
-                    e.currentTarget.style.transform = "translate(-2px,-2px)";
-                    e.currentTarget.style.boxShadow = "7px 7px 0px #000000";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "#FFFFFF";
-                    e.currentTarget.style.transform = "";
-                    e.currentTarget.style.boxShadow = "5px 5px 0px #000000";
-                  }}
+                  className="p-5 rounded-2xl border border-white/5 bg-zinc-900/50 hover:bg-zinc-800/80 hover:border-white/10 text-left flex flex-col justify-between min-h-[120px] transition-all group"
                 >
-                  <span style={{ fontSize: 13, color: "#111111", lineHeight: 1.6, fontWeight: 600, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                  <span className="text-[13px] text-zinc-300 leading-relaxed line-clamp-3">
                     {s}
                   </span>
-                  <span style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "#7C3AED", marginTop: 14, fontWeight: 700 }}>
-                    SUBMIT QUERY →
+                  <span className="text-[10px] font-mono text-blue-500 mt-4 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                    SUBMIT QUERY &rarr;
                   </span>
                 </button>
               ))}
             </div>
           </div>
         ) : (
-          /* Message List */
-          <div style={{ maxWidth: 760, margin: "0 auto" }}>
+          <div className="max-w-3xl mx-auto">
             {messages.map((m, idx) => (
-              <div key={idx} style={{ marginBottom: 24 }}>
-                {/* Chat message */}
-                <div style={{
-                  display: "flex", gap: 16, padding: "24px 28px", borderRadius: 20,
-                  border: "3px solid #000000",
-                  background: m.role === "user" ? "#FAF8F5" : "#FFFFFF",
-                  boxShadow: "5px 5px 0px #000000",
-                  marginBottom: m.reasoning_path && m.reasoning_path.length > 0 ? 12 : 0,
-                }}>
-                  {/* Avatar */}
-                  <div style={{
-                    width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 13, fontWeight: 800,
-                    background: m.role === "user" ? "#E5E7EB" : "#FFE57F",
-                    color: "#000000",
-                    border: "2px solid #000000",
-                  }}>
-                    {m.role === "user" ? <User style={{ width: 16, height: 16 }} /> : "M"}
+              <div key={idx} className="mb-6 animate-fade-in">
+                <div className={`flex gap-4 p-6 rounded-2xl border ${
+                  m.role === "user" 
+                    ? "bg-zinc-900 border-white/5" 
+                    : "bg-zinc-900/40 border-white/[0.02]"
+                }`}>
+                  <div className={`w-8 h-8 rounded-lg shrink-0 flex items-center justify-center text-[12px] font-bold border ${
+                    m.role === "user"
+                      ? "bg-zinc-800 border-white/10 text-zinc-300"
+                      : "bg-blue-500/10 border-blue-500/20 text-blue-400"
+                  }`}>
+                    {m.role === "user" ? <User className="w-4 h-4" /> : "M"}
                   </div>
 
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.1em", color: "#888888", textTransform: "uppercase", marginBottom: 10, fontWeight: 700 }}>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase mb-2">
                       {m.role === "user" ? "Researcher" : "MEDICA Intelligence"}
                     </div>
-                    <ClinicalTextRenderer text={m.content} />
+                    {m.role === "user" ? (
+                      <div className="text-[14px] text-zinc-200">{m.content}</div>
+                    ) : (
+                      <ClinicalTextRenderer text={m.content} />
+                    )}
                   </div>
                 </div>
 
-                {/* Reasoning path */}
                 {m.role === "assistant" && m.reasoning_path && m.reasoning_path.length > 0 && (
                   <ReasoningLogsVisualizer steps={m.reasoning_path} />
                 )}
@@ -349,59 +230,43 @@ function ChatPageContent() {
 
             {/* LIVE STREAMING */}
             {isStreaming && (
-              <div style={{ marginTop: 8 }}>
-                {/* Live reasoning */}
+              <div className="mt-2 animate-fade-in">
                 {currentReasoning.length > 0 && (
-                  <div style={{
-                    padding: 16, borderRadius: 16, marginBottom: 12,
-                    border: "3px solid #000000",
-                    background: "#EDE9FE",
-                    boxShadow: "4px 4px 0px #000000",
-                  }}>
+                  <div className="p-4 rounded-xl mb-4 bg-zinc-900/60 border border-white/5">
                     <button
-                      data-icon-btn
                       onClick={() => setActiveReasoningOpen(!activeReasoningOpen)}
-                      style={{
-                        display: "flex", alignItems: "center", justifyContent: "space-between",
-                        width: "100%", background: "none", border: "none", cursor: "pointer",
-                        marginBottom: 8,
-                        fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
-                        color: "#000000", fontWeight: 800,
-                      }}
+                      className="flex items-center justify-between w-full text-[10px] font-mono text-zinc-400 hover:text-zinc-200 uppercase tracking-widest"
                     >
-                      <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <Terminal style={{ width: 12, height: 12 }} />
+                      <span className="flex items-center gap-2">
+                        <Terminal className="w-3 h-3" />
                         REASONING LOOP · {currentReasoning.length} STEPS
                       </span>
-                      {activeReasoningOpen ? <ChevronUp style={{ width: 12, height: 12 }} /> : <ChevronDown style={{ width: 12, height: 12 }} />}
+                      {activeReasoningOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                     </button>
 
                     {activeReasoningOpen && (
-                      <div style={{ paddingLeft: 12, borderLeft: "3px solid #000000", maxHeight: 280, overflowY: "auto" }}>
+                      <div className="mt-3 pl-3 border-l border-zinc-800 max-h-[280px] overflow-y-auto space-y-2">
                         {currentReasoning.map((step, sIdx) => (
-                          <div key={sIdx} style={{ fontSize: 11, fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 }}>
+                          <div key={sIdx} className="text-[11px] font-mono">
                             {step.type === "thought" && (
-                              <div style={{ color: "#5B21B6", fontWeight: 600 }}>
-                                <span style={{ color: "#7C3AED", fontWeight: 800 }}>→ Thought:</span> {step.content}
+                              <div className="text-zinc-400">
+                                <span className="text-indigo-400 font-semibold mr-1">&rarr; Thought:</span>
+                                {step.content}
                               </div>
                             )}
                             {step.type === "call" && (
-                              <div style={{ color: "#B45309", fontWeight: 600 }}>
-                                <span style={{ color: "#D97706", fontWeight: 800 }}>⚡ Action:</span> {step.content}
+                              <div className="text-zinc-400">
+                                <span className="text-amber-400 font-semibold mr-1">&#9889; Action:</span>
+                                {step.content}
                               </div>
                             )}
                             {step.type === "observation" && (
-                              <details style={{ color: "#555555" }}>
-                                <summary style={{ cursor: "pointer", listStyle: "none", display: "flex", alignItems: "center", gap: 6, fontWeight: 700 }}>
-                                  <span>📊 Observation (expand)</span>
-                                  <ChevronDown style={{ width: 10, height: 10 }} />
+                              <details className="text-zinc-500 mt-1">
+                                <summary className="cursor-pointer flex items-center gap-1 hover:text-zinc-300 transition-colors">
+                                  <span>&#128202; Observation (expand)</span>
+                                  <ChevronDown className="w-3 h-3" />
                                 </summary>
-                                <pre style={{
-                                  marginTop: 6, padding: "8px 10px", borderRadius: 6,
-                                  background: "#FFFFFF", border: "2px solid #000000",
-                                  fontSize: 10, color: "#333333",
-                                  overflowX: "auto", whiteSpace: "pre-wrap", maxHeight: 180, overflowY: "auto",
-                                }}>
+                                <pre className="mt-2 p-2.5 rounded-lg bg-zinc-950 border border-white/5 text-[10px] text-zinc-400 overflow-x-auto whitespace-pre-wrap max-h-[180px]">
                                   {step.content}
                                 </pre>
                               </details>
@@ -413,23 +278,13 @@ function ChatPageContent() {
                   </div>
                 )}
 
-                {/* Streaming content */}
                 {currentAnswer && (
-                  <div style={{
-                    display: "flex", gap: 16, padding: "24px 28px", borderRadius: 20,
-                    border: "3px solid #000000",
-                    background: "#FFFFFF",
-                    boxShadow: "5px 5px 0px #000000",
-                  }}>
-                    <div style={{
-                      width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-                      background: "#FFE57F",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 13, fontWeight: 800, color: "#000000",
-                      border: "2px solid #000000",
-                    }}>M</div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.1em", color: "#7C3AED", textTransform: "uppercase", marginBottom: 10, fontWeight: 800 }}>
+                  <div className="flex gap-4 p-6 rounded-2xl border border-white/5 bg-zinc-900/40">
+                    <div className="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center text-[12px] font-bold bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                      M
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[10px] font-mono tracking-widest text-blue-400 uppercase mb-2 animate-pulse">
                         MEDICA · Streaming...
                       </div>
                       <ClinicalTextRenderer text={currentAnswer} />
@@ -437,15 +292,14 @@ function ChatPageContent() {
                   </div>
                 )}
 
-                {/* Thinking dots */}
                 {!currentAnswer && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, paddingLeft: 48, marginTop: 8 }}>
-                    <div style={{ display: "flex", gap: 5 }}>
-                      <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#7C3AED", border: "2px solid #000" }} className="dot-bounce" />
-                      <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#7C3AED", border: "2px solid #000" }} className="dot-bounce" />
-                      <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#7C3AED", border: "2px solid #000" }} className="dot-bounce" />
+                  <div className="flex items-center gap-3 pl-12 mt-4">
+                    <div className="flex gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce [animation-delay:-0.3s]"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce [animation-delay:-0.15s]"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce"></span>
                     </div>
-                    <span style={{ fontSize: 11, fontFamily: "'JetBrains Mono', monospace", color: "#7C3AED", fontWeight: 700 }}>Agent in thought loop...</span>
+                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Agent processing...</span>
                   </div>
                 )}
               </div>
@@ -456,13 +310,8 @@ function ChatPageContent() {
       </div>
 
       {/* Input footer */}
-      <footer style={{
-        padding: "20px 40px 28px",
-        borderTop: "3px solid #000000",
-        background: "#FAF8F5",
-        flexShrink: 0,
-      }}>
-        <div style={{ maxWidth: 760, margin: "0 auto", position: "relative" }}>
+      <footer className="p-4 md:p-6 shrink-0 bg-zinc-950 border-t border-white/5">
+        <div className="max-w-3xl mx-auto relative">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -475,39 +324,21 @@ function ChatPageContent() {
             placeholder="Query clinical evidence, run trial searches, or verify oncological claims..."
             disabled={isStreaming}
             rows={1}
-            style={{
-              width: "100%", paddingLeft: 20, paddingRight: 68, paddingTop: 14, paddingBottom: 14,
-              borderRadius: 14, resize: "none",
-              border: "3px solid #000000",
-              background: "#FFFFFF",
-              color: "#000000", fontSize: 13, lineHeight: 1.5,
-              outline: "none", minHeight: 52,
-              boxShadow: "4px 4px 0px #000000",
-              transition: "box-shadow 0.15s ease",
-            }}
+            className="w-full pl-5 pr-14 py-4 bg-zinc-900 border border-zinc-800 rounded-2xl text-[14px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 resize-none min-h-[56px] transition-all"
           />
           <button
             onClick={() => handleSend(input)}
             disabled={isStreaming || !input.trim()}
-            data-icon-btn
-            style={{
-              position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
-              width: 42, height: 42, borderRadius: 12,
-              cursor: isStreaming || !input.trim() ? "not-allowed" : "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              border: "3px solid #000000",
-              background: isStreaming || !input.trim() ? "#E5E7EB" : "#FFE57F",
-              color: "#000000",
-              boxShadow: !isStreaming && input.trim() ? "3px 3px 0px #000000" : "none",
-              transition: "all 0.15s ease",
-            }}
-            title="Send"
+            className={`absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+              isStreaming || !input.trim()
+                ? "bg-zinc-800/50 text-zinc-600 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-400 text-white shadow-lg shadow-blue-500/20"
+            }`}
           >
-            <Send style={{ width: 16, height: 16 }} />
+            <Send className="w-4 h-4" />
           </button>
         </div>
       </footer>
-      <style>{`@keyframes pulse-glow { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
     </div>
   );
 }
@@ -519,55 +350,39 @@ function ReasoningLogsVisualizer({ steps }: { steps: ReasoningStep[] }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div style={{
-      maxWidth: 760, margin: "0 auto",
-      paddingLeft: 14, borderLeft: "3px solid #000000",
-      marginTop: 8,
-    }}>
+    <div className="max-w-3xl mx-auto pl-4 border-l border-zinc-800 mt-2">
       <button
-        data-icon-btn
         onClick={() => setIsOpen(!isOpen)}
-        style={{
-          display: "flex", alignItems: "center", gap: 8,
-          background: "none", border: "none", cursor: "pointer",
-          fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
-          color: "#555555", fontWeight: 700,
-          transition: "color 0.15s ease",
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "#7C3AED")}
-        onMouseLeave={(e) => (e.currentTarget.style.color = "#555555")}
+        className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 hover:text-zinc-300 uppercase tracking-widest transition-colors"
       >
-        <Terminal style={{ width: 11, height: 11 }} />
-        REACTION TRACE · {steps.length} STEPS
-        {isOpen ? <ChevronUp style={{ width: 11, height: 11 }} /> : <ChevronDown style={{ width: 11, height: 11 }} />}
+        <Terminal className="w-3 h-3" />
+        Reaction Trace · {steps.length} Steps
+        {isOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
       </button>
 
       {isOpen && (
-        <div style={{ marginTop: 8, paddingLeft: 8, borderLeft: "2px solid #000000" }}>
+        <div className="mt-3 pl-2 border-l border-zinc-800/50 space-y-1.5 animate-fade-in">
           {steps.map((step, idx) => (
-            <div key={idx} style={{ fontSize: 11, fontFamily: "'JetBrains Mono', monospace", marginBottom: 5 }}>
+            <div key={idx} className="text-[11px] font-mono">
               {step.type === "thought" && (
-                <div style={{ color: "#5B21B6", fontWeight: 600 }}>
-                  <span style={{ color: "#7C3AED", fontWeight: 800 }}>→ Thought:</span> {step.content}
+                <div className="text-zinc-400">
+                  <span className="text-indigo-400 font-semibold mr-1">&rarr; Thought:</span>
+                  {step.content}
                 </div>
               )}
               {step.type === "call" && (
-                <div style={{ color: "#B45309", fontWeight: 600 }}>
-                  <span style={{ color: "#D97706", fontWeight: 800 }}>⚡ Action:</span> {step.content}
+                <div className="text-zinc-400">
+                  <span className="text-amber-400 font-semibold mr-1">&#9889; Action:</span>
+                  {step.content}
                 </div>
               )}
               {step.type === "observation" && (
-                <details style={{ color: "#555555" }}>
-                  <summary style={{ cursor: "pointer", listStyle: "none", display: "flex", alignItems: "center", gap: 6, fontWeight: 700 }}>
-                    <span>📊 Observation</span>
-                    <ChevronDown style={{ width: 10, height: 10 }} />
+                <details className="text-zinc-500 mt-1">
+                  <summary className="cursor-pointer flex items-center gap-1 hover:text-zinc-300 transition-colors">
+                    <span>&#128202; Observation</span>
+                    <ChevronDown className="w-3 h-3" />
                   </summary>
-                  <pre style={{
-                    marginTop: 4, padding: "8px 10px", borderRadius: 6,
-                    background: "#FFFFFF", border: "2px solid #000000",
-                    fontSize: 10, color: "#333333",
-                    overflowX: "auto", whiteSpace: "pre-wrap", maxHeight: 160, overflowY: "auto",
-                  }}>
+                  <pre className="mt-2 p-2.5 rounded-lg bg-zinc-950 border border-white/5 text-[10px] text-zinc-400 overflow-x-auto whitespace-pre-wrap max-h-[160px]">
                     {step.content}
                   </pre>
                 </details>
@@ -583,11 +398,12 @@ function ReasoningLogsVisualizer({ steps }: { steps: ReasoningStep[] }) {
 export default function ChatPage() {
   return (
     <React.Suspense fallback={
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: "#FAF8F5", fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 700, color: "#000000" }}>
-        <span>⏳ INITIATING MEDICA CONSOLE...</span>
+      <div className="flex items-center justify-center h-full bg-zinc-950 text-[11px] font-mono text-zinc-500 tracking-widest">
+        <span className="animate-pulse">INITIATING MEDICA CONSOLE...</span>
       </div>
     }>
       <ChatPageContent />
     </React.Suspense>
   );
 }
+

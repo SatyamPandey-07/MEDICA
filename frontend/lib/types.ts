@@ -64,13 +64,17 @@ export interface PaperMetadata {
   citation_count: number;
   abstract?: string | null;
   keywords: string[];
+  adversarial_review?: string | null;
   knowledge_path?: string | null;
 }
+
+export type KnowledgePaper = PaperMetadata;
 
 export interface RetrievalResult {
   score: number;
   strategy: string;
   paper: PaperMetadata;
+  snippet?: string | null;
 }
 
 export interface ReasoningStep {
@@ -101,6 +105,7 @@ export interface IngestionJob {
   processed: number;
   failed: number;
   error_message?: string | null;
+  expanded_terms?: string[];
   created_at: string;
   started_at?: string | null;
   completed_at?: string | null;
@@ -116,4 +121,50 @@ export interface VerificationStats {
     pending: number;
   };
   evidence_level_distribution: Record<string, number>;
+}
+
+export interface VerificationPaper {
+  id: string;
+  title: string;
+  pmid?: string;
+  doi?: string;
+  journal?: string;
+  published?: string;
+  verification_status: VerificationStatus;
+  confidence_score: number;
+  evidence_level: EvidenceLevel;
+  flags: string[];
+  tags?: PaperTags;
+}
+
+export interface GraphNetworkNode {
+  id: string;
+  label: string;
+  type: string;
+  papers_count: number;
+}
+
+export interface GraphNetworkEdge {
+  source: string;
+  target: string;
+}
+
+export interface GraphNetwork {
+  nodes: GraphNetworkNode[];
+  edges: GraphNetworkEdge[];
+}
+
+export interface GraphStats {
+  total_nodes: number;
+  total_edges: number;
+  cancer_nodes: number;
+  drug_nodes: number;
+  biomarker_nodes: number;
+}
+
+export interface GraphRebuildResult extends GraphStats {
+  status: string;
+  papers_processed: number;
+  nodes: number;
+  edges: number;
 }

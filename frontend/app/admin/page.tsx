@@ -18,6 +18,9 @@ import {
 import { listIngestionJobs, triggerIngestionJob, triggerOptimization } from "@/lib/api";
 import { IngestionJob } from "@/lib/types";
 
+const errorMessage = (error: unknown, fallback: string) =>
+  error instanceof Error ? error.message : fallback;
+
 export default function AdminDashboardPage() {
   const [jobs, setJobs] = useState<IngestionJob[]>([]);
   const [query, setQuery] = useState("");
@@ -48,8 +51,8 @@ export default function AdminDashboardPage() {
       setTriggerMsg({ type: "success", text: res.message });
       setQuery("");
       await loadJobs();
-    } catch (err: any) {
-      setTriggerMsg({ type: "error", text: err.message || "Failed to trigger ingestion." });
+    } catch (err: unknown) {
+      setTriggerMsg({ type: "error", text: errorMessage(err, "Failed to trigger ingestion.") });
     } finally {
       setSubmitting(false);
     }
@@ -61,8 +64,8 @@ export default function AdminDashboardPage() {
     try {
       const res = await triggerOptimization();
       setTriggerMsg({ type: "success", text: res.message });
-    } catch (err: any) {
-      setTriggerMsg({ type: "error", text: `Optimization failed: ${err.message}` });
+    } catch (err: unknown) {
+      setTriggerMsg({ type: "error", text: `Optimization failed: ${errorMessage(err, "Unknown error.")}` });
     } finally {
       setOptimizing(false);
     }
@@ -70,20 +73,14 @@ export default function AdminDashboardPage() {
 
   const statusBadge = (status: string) => {
     const styles: Record<string, { bg: string; color: string; border: string; icon: React.ReactNode }> = {
-      done:    { bg: "#D1FAE5", color: "#000000", border: "#000000", icon: <CheckCircle style={{ width: 10, height: 10 }} /> },
-      running: { bg: "#EDE9FE", color: "#000000", border: "#000000", icon: <Activity style={{ width: 10, height: 10 }} /> },
-      failed:  { bg: "#FFE4E6", color: "#000000", border: "#000000", icon: <XCircle style={{ width: 10, height: 10 }} /> },
-      pending: { bg: "#F3F4F6", color: "#000000", border: "#000000", icon: <RefreshCw style={{ width: 10, height: 10, animation: "spin 1.5s linear infinite" }} /> },
+      done:    { bg: "bg-emerald-500/10", color: "text-emerald-400", border: "border-emerald-500/20", icon: <CheckCircle className="w-3 h-3" /> },
+      running: { bg: "bg-blue-500/10", color: "text-blue-400", border: "border-blue-500/20", icon: <Activity className="w-3 h-3 animate-pulse" /> },
+      failed:  { bg: "bg-red-500/10", color: "text-red-400", border: "border-red-500/20", icon: <XCircle className="w-3 h-3" /> },
+      pending: { bg: "bg-zinc-800", color: "text-zinc-400", border: "border-zinc-700", icon: <RefreshCw className="w-3 h-3 animate-spin" /> },
     };
     const s = styles[status.toLowerCase()] || styles.pending;
     return (
-      <span style={{
-        display: "inline-flex", alignItems: "center", gap: 5,
-        padding: "4px 10px", borderRadius: 6, fontSize: 10,
-        fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
-        background: s.bg, color: s.color, border: `2px solid ${s.border}`,
-        textTransform: "uppercase", letterSpacing: "0.06em",
-      }}>
+      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono font-medium border uppercase tracking-widest ${s.bg} ${s.color} ${s.border}`}>
         {s.icon} {status}
       </span>
     );
@@ -93,338 +90,295 @@ export default function AdminDashboardPage() {
   const totalFetched  = jobs.reduce((acc, j) => acc + (j.fetched  || 0), 0);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0 }}>
+    <div className="flex flex-col h-full min-h-0 bg-zinc-950">
       {/* Header */}
-      <header className="page-header">
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{
-            width: 28, height: 28, borderRadius: 8,
-            background: "linear-gradient(135deg, hsl(262 83% 50%), hsl(300 70% 45%))",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <Cpu style={{ width: 14, height: 14, color: "white" }} />
+      <header className="px-6 py-4 flex items-center justify-between border-b border-white/5 bg-zinc-950/50 backdrop-blur-md sticky top-0 z-10">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+            <Cpu className="w-4 h-4" />
           </div>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "hsl(220 20% 97%)", letterSpacing: "0.03em" }}>
+            <div className="text-[13px] font-semibold text-zinc-100 tracking-wide">
               System Operator
             </div>
-            <div style={{ fontSize: 10, color: "hsl(220 8% 40%)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em" }}>
-              PIPELINE CONTROL PANEL
+            <div className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+              Pipeline Control Panel
             </div>
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{
-            padding: "6px 14px", borderRadius: 9999,
-            background: "#FFE57F", border: "2px solid #000000",
-            boxShadow: "3px 3px 0px #000000",
-            fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
-            color: "#000000", fontWeight: 800,
-            display: "flex", alignItems: "center", gap: 6,
-            letterSpacing: "0.08em",
-          }}>
-            <Activity style={{ width: 10, height: 10 }} />
+        <div className="flex items-center gap-2">
+          <div className="px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-mono text-blue-400 font-semibold flex items-center gap-2 tracking-widest">
+            <Activity className="w-3 h-3 animate-pulse" />
             {jobs.filter(j => j.status === "running").length} RUNNING
           </div>
         </div>
       </header>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "40px 52px" }}>
-        {/* Hero heading */}
-        <div style={{ marginBottom: 32 }}>
-          <h1 style={{
-            fontSize: 26, fontWeight: 700, letterSpacing: "-0.02em", marginBottom: 8,
-            background: "linear-gradient(135deg, hsl(220 20% 97%), hsl(220 10% 70%))",
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-          }}>
-            Medica Pipeline Operator
-          </h1>
-          <p style={{ fontSize: 13, color: "hsl(220 8% 45%)", lineHeight: 1.6 }}>
-            Manual scheduler console — scrape PubMed, ingest raw papers, index embeddings, and run optimization scripts.
-          </p>
-        </div>
+      <div className="flex-1 overflow-y-auto px-6 py-8">
+        <div className="max-w-6xl mx-auto">
+          {/* Hero heading */}
+          <div className="mb-8 animate-fade-in">
+            <h1 className="text-2xl font-bold tracking-tight mb-2 text-white">
+              Medica Pipeline Operator
+            </h1>
+            <p className="text-[13px] text-zinc-400 leading-relaxed max-w-2xl">
+              Manual scheduler console &mdash; scrape PubMed, ingest raw papers, index embeddings, and run optimization scripts.
+            </p>
+          </div>
 
-        {/* Quick stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 28 }}>
-          {[
-            { label: "Total Runs", value: jobs.length, icon: Terminal, color: "hsl(262 83% 68%)" },
-            { label: "Papers Fetched", value: totalFetched, icon: Database, color: "hsl(217 91% 65%)" },
-            { label: "Papers Indexed", value: totalIndexed, icon: CheckCircle, color: "hsl(150 76% 55%)" },
-          ].map((c) => {
-            const IconComponent = c.icon;
-            return (
-              <div key={c.label} className="stat-card">
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-                  <span style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em", color: "hsl(220 8% 38%)", textTransform: "uppercase" }}>
-                    {c.label}
-                  </span>
-                  <IconComponent style={{ width: 14, height: 14, color: c.color }} />
+          {/* Quick stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 animate-fade-in">
+            {[
+              { label: "Total Runs", value: jobs.length, icon: Terminal, color: "text-indigo-400", bg: "bg-indigo-500/10" },
+              { label: "Papers Fetched", value: totalFetched, icon: Database, color: "text-blue-400", bg: "bg-blue-500/10" },
+              { label: "Papers Indexed", value: totalIndexed, icon: CheckCircle, color: "text-emerald-400", bg: "bg-emerald-500/10" },
+            ].map((c) => {
+              const IconComponent = c.icon;
+              return (
+                <div key={c.label} className="p-6 rounded-2xl border border-white/5 bg-zinc-900/40">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+                      {c.label}
+                    </span>
+                    <div className={`p-2 rounded-lg ${c.bg}`}>
+                      <IconComponent className={`w-4 h-4 ${c.color}`} />
+                    </div>
+                  </div>
+                  <div className="text-3xl font-bold tracking-tight text-white">
+                    {c.value}
+                  </div>
                 </div>
-                <div style={{ fontSize: 28, fontWeight: 700, color: "hsl(220 20% 97%)", letterSpacing: "-0.03em" }}>
-                  {c.value}
-                </div>
+              );
+            })}
+          </div>
+
+          {/* Control cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 animate-fade-in" style={{ animationDelay: "100ms" }}>
+            {/* Scraper form */}
+            <div className="lg:col-span-2 p-6 rounded-2xl border border-white/5 bg-zinc-900/40">
+              <div className="flex items-center gap-2 mb-6 pb-4 border-b border-white/5">
+                <Search className="w-4 h-4 text-indigo-400" />
+                <span className="text-[11px] font-mono tracking-widest text-zinc-300 uppercase font-semibold">
+                  Ingest Research Adapter
+                </span>
               </div>
-            );
-          })}
-        </div>
 
-        {/* Control cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 20, marginBottom: 28 }}>
-          {/* Scraper form */}
-          <div style={{
-            padding: "32px 36px", borderRadius: 20,
-            border: "3px solid #000000",
-            background: "#FFFFFF",
-            boxShadow: "8px 8px 0px #000000",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, paddingBottom: 16, borderBottom: "3px solid #000000" }}>
-              <Search style={{ width: 15, height: 15, color: "#7C3AED" }} />
-              <span style={{ fontSize: 12, fontWeight: 800, color: "#000000", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                Ingest Research Adapter
-              </span>
-            </div>
+              <form onSubmit={handleTriggerIngestion}>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                  {/* Query input */}
+                  <div className="md:col-span-3">
+                    <label className="block mb-2 text-[10px] font-mono tracking-widest text-zinc-500 uppercase font-semibold">
+                      Search Terms
+                    </label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                      <input
+                        type="text"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="e.g. osimertinib NSCLC targeted therapy..."
+                        disabled={submitting}
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-200 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all placeholder:text-zinc-600 disabled:opacity-50"
+                      />
+                    </div>
+                  </div>
 
-            <form onSubmit={handleTriggerIngestion}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, marginBottom: 16 }}>
-                {/* Query input */}
-                <div>
-                  <label style={{ display: "block", marginBottom: 6, fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "#000000", letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 700 }}>
-                    Search Terms
-                  </label>
-                  <div style={{ position: "relative" }}>
-                    <Search style={{
-                      position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)",
-                      width: 12, height: 12, color: "hsl(220 8% 30%)",
-                    }} />
-                    <input
-                      type="text"
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      placeholder="e.g. osimertinib NSCLC targeted therapy..."
+                  {/* Limit */}
+                  <div>
+                    <label className="block mb-2 text-[10px] font-mono tracking-widest text-zinc-500 uppercase font-semibold">
+                      Limit
+                    </label>
+                    <select
+                      value={limit}
+                      onChange={(e) => setLimit(Number(e.target.value))}
                       disabled={submitting}
-                      style={{
-                        width: "100%", paddingLeft: 32, paddingRight: 12, paddingTop: 10, paddingBottom: 10,
-                        borderRadius: 9, border: "2px solid #000000",
-                        background: "#FFFFFF", color: "#000000",
-                        fontSize: 12, outline: "none",
-                      }}
-                    />
+                      className="w-full px-3 py-2.5 rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-200 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500/50 appearance-none disabled:opacity-50"
+                    >
+                      {[5, 10, 25, 50].map((v) => (
+                        <option key={v} value={v}>{v} papers</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
-                {/* Limit */}
-                <div>
-                  <label style={{ display: "block", marginBottom: 6, fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "#000000", letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 700 }}>
-                    Limit
-                  </label>
-                  <select
-                    value={limit}
-                    onChange={(e) => setLimit(Number(e.target.value))}
-                    disabled={submitting}
-                    style={{
-                      padding: "10px 12px", borderRadius: 9, border: "2px solid #000000",
-                      background: "#FFFFFF", color: "#000000",
-                      fontSize: 12, outline: "none", cursor: "pointer",
-                    }}
-                  >
-                    {[5, 10, 25, 50].map((v) => (
-                      <option key={v} value={v}>{v} papers</option>
-                    ))}
-                  </select>
+                {/* Status message */}
+                {triggerMsg && (
+                  <div className={`px-4 py-3 rounded-xl mb-4 text-[12px] font-medium border flex items-center gap-2 ${
+                    triggerMsg.type === "success" 
+                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" 
+                      : "bg-red-500/10 text-red-400 border-red-500/20"
+                  }`}>
+                    {triggerMsg.type === "success" ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+                    {triggerMsg.text}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={submitting || !query.trim()}
+                  className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                    submitting || !query.trim()
+                      ? "bg-zinc-800/50 text-zinc-500 cursor-not-allowed"
+                      : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20"
+                  }`}
+                >
+                  <Play className="w-4 h-4" />
+                  {submitting ? "Initializing pipeline..." : "Launch Ingestion Run"}
+                </button>
+              </form>
+            </div>
+
+            {/* Optimizer card */}
+            <div className="p-6 rounded-2xl border border-white/5 bg-zinc-900/40 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-6 pb-4 border-b border-white/5">
+                  <Zap className="w-4 h-4 text-emerald-400" />
+                  <span className="text-[11px] font-mono tracking-widest text-zinc-300 uppercase font-semibold">
+                    Memory Optimizer
+                  </span>
                 </div>
+                <p className="text-[13px] text-zinc-400 leading-relaxed">
+                  Trigger the weekly relinking script to compute semantic controversies, rebuild pgvector index files, and cross-reference citations.
+                </p>
               </div>
-
-              {/* Status message */}
-              {triggerMsg && (
-                <div style={{
-                  padding: "12px 16px", borderRadius: 12, marginBottom: 16, fontSize: 12,
-                  fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
-                  background: triggerMsg.type === "success" ? "#D1FAE5" : "#FFE4E6",
-                  border: `2px solid #000000`,
-                  color: "#000000",
-                  boxShadow: "3px 3px 0px #000000",
-                }}>
-                  {triggerMsg.text}
-                </div>
-              )}
-
               <button
-                type="submit"
-                disabled={submitting || !query.trim()}
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  padding: "10px 20px", borderRadius: 9, cursor: "pointer",
-                  background: submitting || !query.trim()
-                    ? "hsl(240 8% 12%)"
-                    : "linear-gradient(135deg, hsl(262 83% 55%), hsl(234 89% 60%))",
-                  border: "none",
-                  color: submitting || !query.trim() ? "hsl(220 8% 35%)" : "white",
-                  fontSize: 12, fontWeight: 600,
-                  boxShadow: !submitting && query.trim() ? "0 4px 16px hsl(262 83% 40% / 0.3)" : "none",
-                  transition: "all 0.15s ease",
-                }}
+                onClick={handleTriggerOptimize}
+                disabled={optimizing}
+                className={`mt-6 w-full py-2.5 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-all ${
+                  optimizing
+                    ? "bg-zinc-800/50 text-zinc-500 cursor-not-allowed"
+                    : "bg-zinc-800 hover:bg-zinc-700 text-zinc-200"
+                }`}
               >
-                <Play style={{ width: 13, height: 13, fill: "currentColor" }} />
-                {submitting ? "Initializing pipeline..." : "Launch Ingestion Run"}
+                <RefreshCw className={`w-4 h-4 ${optimizing ? "animate-spin" : ""}`} />
+                {optimizing ? "Analyzing nodes..." : "Trigger Relinking Run"}
               </button>
-            </form>
+            </div>
           </div>
 
-          {/* Optimizer card */}
-          <div style={{
-            padding: "32px 36px", borderRadius: 20, display: "flex", flexDirection: "column", justifyContent: "space-between",
-            border: "3px solid #000000",
-            background: "#FFFFFF",
-            boxShadow: "8px 8px 0px #000000",
-          }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, paddingBottom: 14, borderBottom: "3px solid #000000" }}>
-                <Zap style={{ width: 15, height: 15, color: "#7C3AED" }} />
-                <span style={{ fontSize: 12, fontWeight: 800, color: "#000000", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                  Memory Optimizer
+          {/* Job ledger */}
+          <div className="rounded-2xl border border-white/5 bg-zinc-900/40 overflow-hidden animate-fade-in" style={{ animationDelay: "200ms" }}>
+            <div className="px-6 py-4 border-b border-white/5 bg-zinc-950/30 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Terminal className="w-4 h-4 text-zinc-400" />
+                <span className="text-[11px] font-mono tracking-widest text-zinc-300 uppercase font-semibold">
+                  Background Ingestion Runs
                 </span>
               </div>
-              <p style={{ fontSize: 12, color: "#555555", lineHeight: 1.7, fontWeight: 500 }}>
-                Trigger the weekly relinking script to compute semantic controversies, rebuild pgvector index files, and cross-reference citations.
-              </p>
+              <button
+                onClick={loadJobs}
+                className="w-8 h-8 rounded-lg flex items-center justify-center bg-zinc-800/50 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 transition-colors"
+                title="Refresh"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
             </div>
-            <button
-              onClick={handleTriggerOptimize}
-              disabled={optimizing}
-              style={{
-                marginTop: 20, width: "100%",
-                padding: "12px 0", borderRadius: 9999, cursor: "pointer",
-                background: "#FFE57F", border: "3px solid #000000",
-                color: "#000000", fontSize: 12, fontWeight: 800,
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                boxShadow: "4px 4px 0px #000000",
-                letterSpacing: "0.06em", textTransform: "uppercase",
-                transition: "all 0.15s ease",
-              }}
-            >
-              <RefreshCw style={{ width: 13, height: 13, color: "#000000", animation: optimizing ? "spin 1s linear infinite" : "none" }} />
-              {optimizing ? "Analyzing nodes..." : "Trigger Relinking Run"}
-            </button>
-          </div>
-        </div>
 
-        {/* Job ledger */}
-        <div style={{
-          borderRadius: 20, border: "3px solid #000000",
-          background: "#FFFFFF", overflow: "hidden",
-          boxShadow: "8px 8px 0px #000000",
-        }}>
-          <div style={{
-            padding: "20px 28px", borderBottom: "3px solid #000000",
-            background: "#FAF8F5",
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Terminal style={{ width: 15, height: 15, color: "#7C3AED" }} />
-              <span style={{ fontSize: 12, fontWeight: 800, color: "#000000", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                Background Ingestion Runs
-              </span>
+            <div className="overflow-x-auto min-h-[250px]">
+              {loading ? (
+                <div className="flex items-center justify-center py-20 gap-2 text-[12px] text-zinc-500">
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  Querying operator runs...
+                </div>
+              ) : jobs.length === 0 ? (
+                <div className="text-center py-20 text-[12px] text-zinc-500 italic">
+                  No ingestion runs triggered yet.
+                </div>
+              ) : (
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="border-b border-white/5 bg-zinc-950/20">
+                      {["Job ID", "Query Terms", "Semantic Expansion", "Status", "Indexed Stats", "Initialized", "Diagnostics"].map((h) => (
+                        <th key={h} className="px-5 py-4 text-left text-[10px] font-mono tracking-widest text-zinc-500 uppercase font-semibold">
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {jobs.map((j) => {
+                      const startStr = j.started_at
+                        ? new Date(j.started_at).toLocaleTimeString()
+                        : "Pending";
+                      const expandedTerms = j.expanded_terms || [];
+                      const extraTerms = expandedTerms.filter(
+                        (t) => t.toLowerCase() !== j.query.toLowerCase()
+                      );
+                      
+                      return (
+                        <tr
+                          key={j.id}
+                          className="border-b border-white/5 hover:bg-white/[0.02] transition-colors"
+                        >
+                          <td className="px-5 py-4 font-mono text-[11px] text-zinc-400" title={j.id}>
+                            {j.id.substring(0, 8)}…
+                          </td>
+                          <td className="px-5 py-4 text-[13px] font-medium text-zinc-200 max-w-[200px] truncate" title={j.query}>
+                            {j.query}
+                          </td>
+                          <td className="px-5 py-4 max-w-[280px]">
+                            {j.status === "running" ? (
+                              <span className="inline-flex items-center gap-1.5 text-[10px] font-mono text-indigo-400">
+                                <RefreshCw className="w-3 h-3 animate-spin" />
+                                expanding…
+                              </span>
+                            ) : extraTerms.length > 0 ? (
+                              <div className="flex flex-wrap gap-1.5">
+                                {extraTerms.map((term, tIdx) => (
+                                  <span
+                                    key={tIdx}
+                                    className="px-2 py-1 rounded-md text-[10px] font-mono bg-zinc-800 text-zinc-300 border border-white/5 truncate max-w-[120px]"
+                                    title={term}
+                                  >
+                                    {term}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-[10px] font-mono text-zinc-600 italic">
+                                {j.status === "pending" ? "queued" : "no expansion"}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-5 py-4">
+                            {statusBadge(j.status)}
+                          </td>
+                          <td className="px-5 py-4 font-mono text-[11px] text-zinc-400">
+                            {j.status === "running" ? (
+                              <span className="text-zinc-500">processing…</span>
+                            ) : (
+                              <div className="flex items-center gap-3">
+                                <span>Fetched: <span className="text-zinc-200">{j.fetched}</span></span>
+                                <span>Indexed: <span className="text-indigo-400">{j.processed}</span></span>
+                                {(j.failed ?? 0) > 0 && <span className="text-red-400">Failed: {j.failed}</span>}
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-5 py-4 text-[11px] font-mono text-zinc-500">
+                            <div className="flex items-center gap-1.5">
+                              <Clock className="w-3 h-3" />
+                              {startStr}
+                            </div>
+                          </td>
+                          <td className="px-5 py-4 font-mono text-[10px] max-w-[180px] truncate" title={j.error_message || ""}>
+                            {j.status === "failed" ? (
+                              <span className="text-red-400">{j.error_message}</span>
+                            ) : j.status === "done" ? (
+                              <span className="text-emerald-500/70">✓ pipeline completed</span>
+                            ) : (
+                              <span className="text-zinc-600">waiting…</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
             </div>
-            <button
-              data-sidebar-delete
-              onClick={loadJobs}
-              style={{
-                width: 32, height: 32, borderRadius: 9999, display: "flex", alignItems: "center", justifyContent: "center",
-                background: "#FFFFFF", border: "2px solid #000000",
-                boxShadow: "2px 2px 0px #000000",
-                cursor: "pointer", color: "#000000",
-                transition: "all 0.15s ease",
-              }}
-              title="Refresh"
-            >
-              <RefreshCw style={{ width: 13, height: 13 }} />
-            </button>
-          </div>
-
-          <div style={{ overflowX: "auto", minHeight: 250 }}>
-            {loading ? (
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "64px 0", gap: 10, color: "hsl(220 8% 35%)", fontSize: 12 }}>
-                <RefreshCw style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} />
-                Querying operator runs...
-              </div>
-            ) : jobs.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "56px 0", color: "hsl(220 8% 32%)", fontSize: 12, fontStyle: "italic" }}>
-                No ingestion runs triggered yet.
-              </div>
-            ) : (
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr style={{ borderBottom: "3px solid #000000", background: "#FAF8F5" }}>
-                    {["Job ID", "Query Terms", "Status", "Indexed Stats", "Initialized", "Diagnostics"].map((h) => (
-                      <th key={h} style={{
-                        padding: "14px 20px", textAlign: "left",
-                        fontSize: 9, fontFamily: "'JetBrains Mono', monospace",
-                        letterSpacing: "0.1em", color: "#000000",
-                        textTransform: "uppercase", fontWeight: 800,
-                      }}>
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {jobs.map((j) => {
-                    const startStr = j.started_at
-                      ? new Date(j.started_at).toLocaleTimeString()
-                      : "Pending";
-                    return (
-                      <tr
-                        key={j.id}
-                        style={{ borderBottom: "2px solid #E5E7EB", transition: "background 0.15s ease" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "#FAF8F5")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                      >
-                        <td style={{ padding: "16px 22px", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#555555", fontWeight: 600 }} title={j.id}>
-                          {j.id.substring(0, 8)}…
-                        </td>
-                        <td style={{ padding: "16px 22px", fontSize: 12, fontWeight: 600, color: "#111111", maxWidth: 220, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={j.query}>
-                          {j.query}
-                        </td>
-                        <td style={{ padding: "16px 22px" }}>
-                          {statusBadge(j.status)}
-                        </td>
-                        <td style={{ padding: "13px 20px", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#333333" }}>
-                          {j.status === "running" ? (
-                            <span style={{ color: "#555555", fontWeight: 600 }}>processing…</span>
-                          ) : (
-                            <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                              <span>Fetched: <strong style={{ color: "#000000" }}>{j.fetched}</strong></span>
-                              <span>Indexed: <strong style={{ color: "#7C3AED" }}>{j.processed}</strong></span>
-                              {(j.failed ?? 0) > 0 && <span style={{ color: "#DC2626", fontWeight: 700 }}>Failed: {j.failed}</span>}
-                            </span>
-                          )}
-                        </td>
-                        <td style={{ padding: "13px 20px" }}>
-                          <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "#555555", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>
-                            <Clock style={{ width: 11, height: 11 }} />
-                            {startStr}
-                          </span>
-                        </td>
-                        <td style={{ padding: "13px 20px", fontFamily: "'JetBrains Mono', monospace", fontSize: 10, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={j.error_message || ""}>
-                          {j.status === "failed" ? (
-                            <span style={{ color: "#DC2626", fontWeight: 700 }}>{j.error_message}</span>
-                          ) : j.status === "done" ? (
-                            <span style={{ color: "#059669", fontWeight: 700 }}>✓ pipeline completed</span>
-                          ) : (
-                            <span style={{ color: "#888888" }}>waiting…</span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
           </div>
         </div>
       </div>
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

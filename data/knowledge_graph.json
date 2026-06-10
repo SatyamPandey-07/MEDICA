@@ -1,0 +1,113 @@
+{
+  "nodes": {
+    "cancer:non_small_cell_lung_cancer": {
+      "name": "non_small_cell_lung_cancer",
+      "entity_type": "cancer",
+      "paper_ids": [
+        "paper:37937763",
+        "paper:41104938"
+      ],
+      "related": []
+    },
+    "cancer:small_cell_lung_cancer": {
+      "name": "small_cell_lung_cancer",
+      "entity_type": "cancer",
+      "paper_ids": [
+        "paper:37937763",
+        "paper:41104938"
+      ],
+      "related": []
+    },
+    "cancer:lung_cancer": {
+      "name": "lung_cancer",
+      "entity_type": "cancer",
+      "paper_ids": [
+        "paper:37937763",
+        "paper:41104938"
+      ],
+      "related": []
+    },
+    "drug:osimertinib": {
+      "name": "osimertinib",
+      "entity_type": "drug",
+      "paper_ids": [
+        "paper:37937763",
+        "paper:41104938"
+      ],
+      "related": []
+    },
+    "drug:cisplatin": {
+      "name": "cisplatin",
+      "entity_type": "drug",
+      "paper_ids": [
+        "paper:37937763",
+        "paper:41104938"
+      ],
+      "related": []
+    },
+    "drug:carboplatin": {
+      "name": "carboplatin",
+      "entity_type": "drug",
+      "paper_ids": [
+        "paper:37937763",
+        "paper:41104938"
+      ],
+      "related": []
+    },
+    "biomarker:egfr": {
+      "name": "egfr",
+      "entity_type": "biomarker",
+      "paper_ids": [
+        "paper:37937763",
+        "paper:41104938"
+      ],
+      "related": []
+    }
+  },
+  "edges": {
+    "drug:osimertinib": [
+      "cancer:small_cell_lung_cancer",
+      "biomarker:egfr",
+      "cancer:lung_cancer",
+      "cancer:non_small_cell_lung_cancer"
+    ],
+    "cancer:non_small_cell_lung_cancer": [
+      "drug:cisplatin",
+      "drug:carboplatin",
+      "biomarker:egfr",
+      "drug:osimertinib"
+    ],
+    "cancer:small_cell_lung_cancer": [
+      "drug:cisplatin",
+      "drug:carboplatin",
+      "biomarker:egfr",
+      "drug:osimertinib"
+    ],
+    "cancer:lung_cancer": [
+      "drug:cisplatin",
+      "drug:carboplatin",
+      "biomarker:egfr",
+      "drug:osimertinib"
+    ],
+    "drug:cisplatin": [
+      "cancer:small_cell_lung_cancer",
+      "biomarker:egfr",
+      "cancer:lung_cancer",
+      "cancer:non_small_cell_lung_cancer"
+    ],
+    "drug:carboplatin": [
+      "cancer:small_cell_lung_cancer",
+      "biomarker:egfr",
+      "cancer:lung_cancer",
+      "cancer:non_small_cell_lung_cancer"
+    ],
+    "biomarker:egfr": [
+      "drug:carboplatin",
+      "cancer:lung_cancer",
+      "cancer:small_cell_lung_cancer",
+      "drug:cisplatin",
+      "cancer:non_small_cell_lung_cancer",
+      "drug:osimertinib"
+    ]
+  }
+}

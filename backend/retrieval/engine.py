@@ -63,6 +63,7 @@ def _record_to_metadata(record: PaperRecord) -> PaperMetadata:
         citation_count=record.citation_count or 0,
         abstract=record.abstract,
         keywords=record.keywords or [],
+        adversarial_review=record.adversarial_review,
         knowledge_path=record.knowledge_path,
     )
 

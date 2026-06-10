@@ -10,9 +10,18 @@ import {
   ChatMessage,
   IngestionJob,
   VerificationStats,
+  KnowledgePaper,
+  VerificationPaper,
+  GraphNetwork,
+  GraphStats,
+  GraphRebuildResult,
 } from "./types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+
+function toError(error: unknown): Error {
+  return error instanceof Error ? error : new Error(String(error));
+}
 
 // Generic fetch wrapper
 async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
@@ -119,9 +128,9 @@ export async function streamChat(
         }
       }
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (onError) {
-      onError(error);
+      onError(toError(error));
     } else {
       console.error("SSE stream error:", error);
     }
@@ -153,29 +162,17 @@ export async function listCancerTypes(): Promise<string[]> {
   return apiFetch<string[]>("/knowledge/cancer-types");
 }
 
-export async function listKnowledgePapers(cancerType?: string): Promise<any[]> {
+export async function listKnowledgePapers(cancerType?: string): Promise<KnowledgePaper[]> {
   const suffix = cancerType ? `?cancer_type=${encodeURIComponent(cancerType)}` : "";
-  return apiFetch<any[]>(`/knowledge/papers${suffix}`);
+  return apiFetch<KnowledgePaper[]>(`/knowledge/papers${suffix}`);
 }
 
-export async function getGraphStats(): Promise<{
-  total_nodes: number;
-  total_edges: number;
-  cancer_nodes: number;
-  drug_nodes: number;
-  biomarker_nodes: number;
-}> {
-  return apiFetch<any>("/knowledge/graph/stats");
+export async function getGraphStats(): Promise<GraphStats> {
+  return apiFetch<GraphStats>("/knowledge/graph/stats");
 }
 
-export async function getGraphNetwork(): Promise<{
-  nodes: Array<{ id: string; label: string; type: string; papers_count: number }>;
-  edges: Array<{ source: string; target: string }>;
-}> {
-  return apiFetch<{
-    nodes: Array<{ id: string; label: string; type: string; papers_count: number }>;
-    edges: Array<{ source: string; target: string }>;
-  }>("/knowledge/graph");
+export async function getGraphNetwork(): Promise<GraphNetwork> {
+  return apiFetch<GraphNetwork>("/knowledge/graph");
 }
 
 // ============================================================
@@ -203,21 +200,8 @@ export async function getVerificationStats(): Promise<VerificationStats> {
 
 export async function listVerificationPapers(
   status: string = "all"
-): Promise<
-  Array<{
-    id: string;
-    title: string;
-    pmid?: string;
-    doi?: string;
-    journal?: string;
-    published?: string;
-    verification_status: string;
-    confidence_score: number;
-    evidence_level: string;
-    flags: string[];
-  }>
-> {
-  return apiFetch<any[]>(`/admin/verification/papers?status=${status}`);
+): Promise<VerificationPaper[]> {
+  return apiFetch<VerificationPaper[]>(`/admin/verification/papers?status=${status}`);
 }
 
 export async function triggerOptimization(): Promise<{ status: string; message: string }> {
@@ -226,14 +210,24 @@ export async function triggerOptimization(): Promise<{ status: string; message: 
   });
 }
 
-export async function rebuildKnowledgeGraph(): Promise<{
+export async function rebuildKnowledgeGraph(): Promise<GraphRebuildResult> {
+  return apiFetch<GraphRebuildResult>("/admin/graph/rebuild", { method: "POST" });
+}
+
+export async function getHealth(): Promise<{
   status: string;
-  papers_processed: number;
-  nodes: number;
-  edges: number;
-  cancer_nodes: number;
-  drug_nodes: number;
-  biomarker_nodes: number;
+  environment: string;
+  database: string;
+  llm_provider: string;
+  embedding_provider: string;
+  knowledge_graph: GraphStats;
 }> {
-  return apiFetch<any>("/admin/graph/rebuild", { method: "POST" });
+  return apiFetch<{
+    status: string;
+    environment: string;
+    database: string;
+    llm_provider: string;
+    embedding_provider: string;
+    knowledge_graph: GraphStats;
+  }>("/health");
 }

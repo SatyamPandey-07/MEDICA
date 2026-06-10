@@ -61,6 +61,7 @@ class PaperRecord(Base):
     related_papers: Mapped[list] = mapped_column(JSON, default=list)
     contradictory_papers: Mapped[list] = mapped_column(JSON, default=list)
     citation_count: Mapped[int] = mapped_column(Integer, default=0)
+    adversarial_review: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     # Filesystem path to markdown file
     knowledge_path: Mapped[str | None] = mapped_column(String(1000), nullable=True)

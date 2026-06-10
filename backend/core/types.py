@@ -108,6 +108,7 @@ class PaperMetadata(BaseModel):
     citation_count: int = 0
     abstract: str | None = None
     keywords: list[str] = Field(default_factory=list)
+    adversarial_review: str | None = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     knowledge_path: str | None = None

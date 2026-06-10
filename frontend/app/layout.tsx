@@ -14,11 +14,10 @@ import {
   Activity,
   Trash2,
   Dna,
-  Sparkles,
   Circle,
 } from "lucide-react";
 
-import { listSessions, deleteSession } from "@/lib/api";
+import { listSessions, deleteSession, getHealth } from "@/lib/api";
 import { ChatSession } from "@/lib/types";
 import "./globals.css";
 
@@ -30,17 +29,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   const loadSessionsList = async () => {
     try {
-      const list = await listSessions();
+      const [list, health] = await Promise.all([
+        listSessions(),
+        getHealth()
+      ]);
       setSessions(list);
-      setSystemHealth("healthy");
+      setSystemHealth(health.status === "healthy" ? "healthy" : "unhealthy");
     } catch (e) {
-      console.error("Failed loading chat sessions:", e);
+      console.error("Failed loading system state:", e);
       setSystemHealth("unhealthy");
     }
   };
 
   useEffect(() => {
-    loadSessionsList();
+    queueMicrotask(() => {
+      void loadSessionsList();
+    });
     const interval = setInterval(() => { loadSessionsList(); }, 10000);
     return () => clearInterval(interval);
   }, [pathname]);
@@ -76,176 +80,70 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           name="description"
           content="Production-grade AI-native oncology research intelligence. Continuously ingests, verifies, indexes and links cancer research knowledge."
         />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&family=JetBrains+Mono:wght@400;500&display=swap"
-          rel="stylesheet"
-        />
       </head>
-      <body
-        className="antialiased select-none"
-        style={{
-          background: "hsl(240 12% 2%)",
-          color: "hsl(220 20% 97%)",
-          fontFamily: "'Inter', system-ui, sans-serif",
-        }}
-      >
-        <div className="flex h-screen overflow-hidden">
-          {/* Ambient glow spheres */}
-          <div
-            className="glow-sphere glow-sphere--violet pointer-events-none"
-            style={{ width: 500, height: 500, top: -100, left: -80, zIndex: 0 }}
-          />
-          <div
-            className="glow-sphere glow-sphere--teal pointer-events-none"
-            style={{ width: 400, height: 400, bottom: -80, right: 200, zIndex: 0 }}
-          />
-
+      <body className="antialiased bg-zinc-950 text-zinc-50 font-sans h-screen overflow-hidden flex">
+        <div className="flex w-full h-full">
           {/* ============================================================
               SIDEBAR
              ============================================================ */}
-          <aside
-            className="relative z-10 flex flex-col shrink-0"
-            style={{
-              width: 288,
-              borderRight: "1px solid hsl(240 8% 10%)",
-              background: "linear-gradient(180deg, hsl(240 10% 3%) 0%, hsl(240 10% 2%) 100%)",
-            }}
-          >
+          <aside className="relative z-10 flex flex-col shrink-0 w-72 bg-zinc-900/50 border-r border-white/5 backdrop-blur-xl">
             {/* ── Logo ── */}
-            <div className="px-5 py-5" style={{ borderBottom: "1px solid hsl(240 8% 8%)" }}>
-              <div className="flex items-center gap-3">
-                {/* Hexagonal logo mark */}
-                <div
-                  className="relative flex items-center justify-center shrink-0"
-                  style={{
-                    width: 36, height: 36,
-                    background: "linear-gradient(135deg, hsl(262 83% 60%) 0%, hsl(234 89% 65%) 100%)",
-                    borderRadius: 10,
-                    boxShadow: "0 4px 20px hsl(262 83% 50% / 0.35)",
-                  }}
-                >
-                  <Dna className="w-4 h-4 text-white" />
+            <div className="px-6 py-6 border-b border-white/5">
+              <div className="flex items-center gap-4">
+                <div className="relative flex items-center justify-center shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg shadow-blue-500/20">
+                  <Dna className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <div
-                    className="font-bold tracking-wide"
-                    style={{ fontSize: 16, letterSpacing: "0.05em", color: "hsl(220 20% 97%)" }}
-                  >
+                  <div className="font-bold text-base tracking-wide text-zinc-100">
                     MEDICA
                   </div>
-                  <div
-                    style={{
-                      fontSize: 9,
-                      fontFamily: "'JetBrains Mono', monospace",
-                      letterSpacing: "0.12em",
-                      background: "linear-gradient(90deg, hsl(262 83% 72%), hsl(196 80% 72%))",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                    }}
-                  >
-                    ONCOLOGY OS v1.0
+                  <div className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
+                    Oncology OS v1.0
                   </div>
                 </div>
               </div>
             </div>
 
             {/* ── Navigation ── */}
-            <nav className="px-3 py-4" style={{ borderBottom: "1px solid hsl(240 8% 8%)" }}>
-              <div
-                className="px-2 mb-3"
-                style={{
-                  fontSize: 9,
-                  fontFamily: "'JetBrains Mono', monospace",
-                  letterSpacing: "0.15em",
-                  color: "hsl(220 8% 35%)",
-                  textTransform: "uppercase",
-                }}
-              >
-                Core Systems
-              </div>
-              <div className="space-y-1">
+            <div className="flex-1 overflow-y-auto px-4 py-6">
+              <nav className="space-y-1 mb-8">
                 {navLinks.map((link) => {
                   const isActive = pathname === link.href;
+                  const Icon = link.icon;
                   return (
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 group relative"
-                      style={{
-                        background: isActive ? "hsl(262 50% 25% / 0.4)" : "transparent",
-                        border: `1px solid ${isActive ? "hsl(262 50% 40% / 0.3)" : "transparent"}`,
-                        color: isActive ? "hsl(220 20% 97%)" : "hsl(220 8% 50%)",
-                        fontWeight: isActive ? 500 : 400,
-                        fontSize: 13,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        minWidth: 0,
-                      }}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+                        isActive
+                          ? "bg-indigo-500/10 text-indigo-400 font-semibold border border-indigo-500/20 shadow-sm"
+                          : "text-zinc-400 hover:bg-white/[0.02] hover:text-zinc-200 border border-transparent"
+                      }`}
                     >
-                      {/* Active indicator line */}
-                      {isActive && (
-                        <div
-                          className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 rounded-r-full"
-                          style={{
-                            height: "60%",
-                            background: "linear-gradient(180deg, hsl(262 83% 65%), hsl(196 80% 65%))",
-                          }}
-                        />
-                      )}
-                      <link.icon
-                        className="w-4 h-4 shrink-0 transition-all duration-150"
-                        style={{ color: isActive ? "hsl(262 83% 72%)" : "hsl(220 8% 40%)" }}
-                      />
-                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
-                        {link.name}
-                      </span>
+                      <Icon className="w-4 h-4 shrink-0" />
+                      <span className="text-sm tracking-wide">{link.name}</span>
                     </Link>
                   );
                 })}
-              </div>
-            </nav>
+              </nav>
 
-            {/* ── Research Streams ── */}
-            <div className="flex-1 flex flex-col min-h-0">
-              <div
-                className="px-5 py-3 flex items-center justify-between"
-                style={{ borderBottom: "1px solid hsl(240 8% 7%)" }}
-              >
-                <span
-                  style={{
-                    fontSize: 9,
-                    fontFamily: "'JetBrains Mono', monospace",
-                    letterSpacing: "0.15em",
-                    color: "hsl(220 8% 30%)",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  Research Streams
-                </span>
-                <Link
-                  href="/"
-                  className="flex items-center justify-center rounded-md transition-all"
-                  style={{
-                    width: 22,
-                    height: 22,
-                    border: "1px solid hsl(240 8% 14%)",
-                    background: "transparent",
-                    color: "hsl(220 8% 40%)",
-                  }}
-                  title="New Session"
-                >
-                  <Plus className="w-3 h-3" />
-                </Link>
-              </div>
-              <div className="flex-1 overflow-y-auto px-3 py-2">
-                {sessions.length === 0 ? (
-                  <div
-                    className="text-center py-6"
-                    style={{ fontSize: 11, color: "hsl(220 8% 30%)", fontStyle: "italic" }}
+              {/* ── Chat Sessions ── */}
+              <div className="mt-4">
+                <div className="flex items-center justify-between px-3 mb-3">
+                  <div className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase font-semibold">
+                    Recent Sessions
+                  </div>
+                  <button
+                    onClick={() => router.push("/")}
+                    className="p-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 transition-colors border border-indigo-500/20"
+                    title="New Research Session"
                   >
-                    No active streams.
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                {sessions.length === 0 ? (
+                  <div className="px-3 py-4 text-[11px] text-zinc-600 italic">
+                    No active sessions
                   </div>
                 ) : (
                   <div className="space-y-1">

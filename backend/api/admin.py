@@ -70,6 +70,9 @@ async def _bg_run_pipeline(
 
         stats = await pipeline.run(query, max_results=limit, job_id=str(job_uuid), resume=False)
 
+        # Capture the LLM-expanded search terms from the adapter
+        expanded_terms = getattr(adapter, "last_expanded_terms", [query])
+
         # Mark done
         async with get_session() as session:
             res = await session.execute(select(IngestionJobRecord).where(IngestionJobRecord.id == job_uuid))
@@ -80,9 +83,10 @@ async def _bg_run_pipeline(
                 job.processed = stats.indexed
                 job.failed = stats.failed
                 job.completed_at = datetime.utcnow()
+                job.checkpoint_data = {"expanded_terms": expanded_terms}
                 await session.commit()
 
-        logger.info("bg_ingestion_trigger_success", job_id=str(job_uuid), fetched=stats.fetched)
+        logger.info("bg_ingestion_trigger_success", job_id=str(job_uuid), fetched=stats.fetched, expanded_terms=expanded_terms)
 
     except Exception as e:
         logger.error("bg_ingestion_trigger_failed", job_id=str(job_uuid), error=str(e))
@@ -158,6 +162,7 @@ async def list_ingestion_jobs(db: AsyncSession = Depends(get_db)):
             "processed": j.processed,
             "failed": j.failed,
             "error_message": j.error_message,
+            "expanded_terms": (j.checkpoint_data or {}).get("expanded_terms", []),
             "created_at": j.created_at.isoformat(),
             "started_at": j.started_at.isoformat() if j.started_at else None,
             "completed_at": j.completed_at.isoformat() if j.completed_at else None,

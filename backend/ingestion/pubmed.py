@@ -8,11 +8,13 @@ import asyncio
 import xml.etree.ElementTree as ET
 from typing import AsyncGenerator
 
+import json
 import httpx
 
 from core.config import settings
 from core.logging import get_logger
 from core.types import DataSource, RawPaper
+from core.llm import LLMFactory
 from ingestion.base import SourceAdapter
 from shared.utils import normalize_pmid, parse_date
 
@@ -204,35 +206,86 @@ class PubMedAdapter(SourceAdapter):
             raw_data={"pmid": pmid},
         )
 
+    async def _expand_query(self, query: str) -> list[str]:
+        """Expand the query into similar medical/oncology keywords and phrases using LLM."""
+        if not settings.active_llm_key:
+            logger.info("pubmed_query_expansion_skipped", reason="no_llm_key")
+            return [query]
+
+        try: 
+            client = LLMFactory.get_client()
+            
+            system_prompt = (
+                "You are a medical search optimizer. Expand the given oncology/medical keyword "
+                "or phrase into a list of 3 to 5 highly relevant alternative search terms, synonyms, "
+                "drug names (brand/generic), or clinical phrases to improve PubMed search coverage. "
+                "Respond ONLY with a valid JSON array of strings. Do not include markdown code block formatting or explanations."
+            )
+            
+            messages = [{"role": "user", "content": f"Expand this query: {query}"}]
+            
+            resp_text = await client.generate(
+                messages=messages,
+                temperature=0.1,
+                max_tokens=500,
+                system_prompt=system_prompt,
+            )
+            
+            # Remove possible markdown formatting (like ```json ... ```)
+            resp_text = resp_text.strip()
+            if resp_text.startswith("```"):
+                lines = resp_text.splitlines()
+                if lines[0].startswith("```"):
+                    lines = lines[1:]
+                if lines and lines[-1].startswith("```"):
+                    lines = lines[:-1]
+                resp_text = "\n".join(lines).strip()
+            
+            expanded = json.loads(resp_text)
+            if isinstance(expanded, list):
+                expanded_terms = [str(t).strip() for t in expanded if t]
+                if query not in expanded_terms:
+                    expanded_terms.insert(0, query)
+                logger.info("pubmed_query_expansion_success", query=query, expanded=expanded_terms)
+                return expanded_terms
+            else:
+                logger.warning("pubmed_query_expansion_invalid_type", response=resp_text)
+                return [query]
+        except Exception as e:
+            logger.warning("pubmed_query_expansion_failed", query=query, error=str(e))
+            return [query]
+
     async def fetch_papers(
         self,
         query: str,
         max_results: int = 100,
         offset: int = 0,
     ) -> AsyncGenerator[RawPaper, None]:
-        """Fetch papers from PubMed matching the query."""
-        batch_size = min(50, max_results)
-        fetched = 0
+        """Fetch papers from PubMed matching the query, with LLM query expansion."""
+        expanded_terms = await self._expand_query(query)
+        # Store on instance so callers (e.g. admin pipeline) can read them
+        self.last_expanded_terms = expanded_terms
+        logger.info("pubmed_fetch_expanded_terms", original=query, expanded=expanded_terms)
 
-        while fetched < max_results:
-            current_offset = offset + fetched
-            pmids = await self._search_pmids(
-                query,
-                max_results=min(batch_size, max_results - fetched),
-                offset=current_offset,
-            )
-            if not pmids:
-                break
+        seen_pmids = set()
+        deduped_pmids = []
+        for term in expanded_terms:
+            search_limit = max(max_results + offset, 100)
+            pmids = await self._search_pmids(term, max_results=search_limit, offset=0)
+            for pmid in pmids:
+                if pmid not in seen_pmids:
+                    seen_pmids.add(pmid)
+                    deduped_pmids.append(pmid)
 
-            papers = await self._fetch_details(pmids)
+        paginated_pmids = deduped_pmids[offset : offset + max_results]
+        logger.info("pubmed_fetch_pmids_sliced", total_deduped=len(deduped_pmids), offset=offset, limit=max_results, to_fetch=len(paginated_pmids))
+
+        batch_size = 50
+        for i in range(0, len(paginated_pmids), batch_size):
+            batch = paginated_pmids[i : i + batch_size]
+            papers = await self._fetch_details(batch)
             for paper in papers:
                 yield paper
-                fetched += 1
-                if fetched >= max_results:
-                    break
-
-            if len(pmids) < batch_size:
-                break  # No more results
 
     async def fetch_by_id(self, pmid: str) -> RawPaper | None:
         """Fetch a single paper by PMID."""

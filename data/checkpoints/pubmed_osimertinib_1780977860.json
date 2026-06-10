@@ -1,0 +1,14 @@
+{
+  "job_id": "pubmed_osimertinib_1780977860",
+  "source": "pubmed",
+  "query": "osimertinib",
+  "total_fetched": 2,
+  "total_processed": 2,
+  "total_failed": 0,
+  "processed_ids": [
+    "pmid:37937763",
+    "pmid:41104938"
+  ],
+  "last_updated": "2026-06-09T09:52:01.259833",
+  "completed": true
+}
