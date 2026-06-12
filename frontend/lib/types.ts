@@ -135,6 +135,10 @@ export interface VerificationPaper {
   evidence_level: EvidenceLevel;
   flags: string[];
   tags?: PaperTags;
+  abstract?: string;
+  adversarial_review?: string;
+  sample_size?: number;
+  created_at?: string;
 }
 
 export interface GraphNetworkNode {

@@ -15,6 +15,8 @@ import {
   Trash2,
   Dna,
   Circle,
+  LayoutDashboard,
+  Newspaper,
 } from "lucide-react";
 
 import { listSessions, deleteSession, getHealth } from "@/lib/api";
@@ -65,6 +67,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   const navLinks = [
     { name: "Chat Copilot", href: "/", icon: MessageSquare, color: "text-violet-400" },
+    { name: "Intelligence Dashboard", href: "/dashboard", icon: LayoutDashboard, color: "text-rose-400" },
+    { name: "Topic Clinical News", href: "/news", icon: Newspaper, color: "text-pink-400" },
     { name: "Knowledge Explorer", href: "/explorer", icon: Compass, color: "text-blue-400" },
     { name: "Citation Graph", href: "/graph", icon: GitBranch, color: "text-cyan-400" },
     { name: "Research Timeline", href: "/timeline", icon: Clock, color: "text-indigo-400" },

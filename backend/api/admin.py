@@ -215,6 +215,8 @@ async def get_verification_stats(db: AsyncSession = Depends(get_db)):
 @router.get("/verification/papers")
 async def list_verification_papers(
     status: str = Query("all", description="Filter: all, verified, unverified, disputed, pending"),
+    sort_by: str = Query("confidence", description="Sort by: confidence, date, published"),
+    limit: int = Query(100, ge=1, le=200),
     db: AsyncSession = Depends(get_db),
 ):
     """List paper records filtered by verification status to audit oncology claims."""
@@ -222,7 +224,14 @@ async def list_verification_papers(
     if status != "all":
         stmt = stmt.where(PaperRecord.verification_status == status)
 
-    stmt = stmt.order_by(desc(PaperRecord.confidence_score)).limit(100)
+    if sort_by == "date":
+        stmt = stmt.order_by(desc(PaperRecord.created_at))
+    elif sort_by == "published":
+        stmt = stmt.order_by(desc(PaperRecord.published))
+    else:
+        stmt = stmt.order_by(desc(PaperRecord.confidence_score))
+
+    stmt = stmt.limit(limit)
     
     res = await db.execute(stmt)
     papers = res.scalars().all()
@@ -239,6 +248,11 @@ async def list_verification_papers(
             "confidence_score": p.confidence_score,
             "evidence_level": p.evidence_level,
             "flags": p.tags.get("evidence", []) if p.tags else [],
+            "abstract": p.abstract,
+            "tags": p.tags,
+            "adversarial_review": p.adversarial_review,
+            "sample_size": p.sample_size,
+            "created_at": p.created_at.isoformat() if p.created_at else None,
         }
         for p in papers
     ]

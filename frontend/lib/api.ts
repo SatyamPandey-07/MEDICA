@@ -199,9 +199,11 @@ export async function getVerificationStats(): Promise<VerificationStats> {
 }
 
 export async function listVerificationPapers(
-  status: string = "all"
+  status: string = "all",
+  sortBy: string = "confidence",
+  limit: number = 100
 ): Promise<VerificationPaper[]> {
-  return apiFetch<VerificationPaper[]>(`/admin/verification/papers?status=${status}`);
+  return apiFetch<VerificationPaper[]>(`/admin/verification/papers?status=${status}&sort_by=${sortBy}&limit=${limit}`);
 }
 
 export async function triggerOptimization(): Promise<{ status: string; message: string }> {

@@ -5,11 +5,11 @@ Defines background jobs for daily research ingestion and weekly graph optimizati
 from __future__ import annotations
 
 from datetime import datetime
+from pathlib import Path
 from uuid import UUID
 
 from sqlalchemy import select
 
-from core.config import settings
 from core.logging import get_logger
 from core.events import bus
 from ingestion.pubmed import PubMedAdapter
@@ -136,9 +136,9 @@ async def weekly_optimize_job() -> None:
             records = result.scalars().all()
 
         logger.info("scheduler_rebuilding_graph", total_papers=len(records))
+        # Local import to avoid circular: retrieval.engine → retrieval.strategies → retrieval.engine
+        from retrieval.engine import _record_to_metadata  # noqa: PLC0415
         for record in records:
-            # We can build a dummy PaperMetadata to feed into graph
-            from retrieval.engine import _record_to_metadata
             try:
                 paper_meta = _record_to_metadata(record)
                 graph.add_paper(paper_meta)
