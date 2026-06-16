@@ -24,7 +24,13 @@ interface WidgetConfig {
   id: string;
   title: string;
   visible: boolean;
+  width?: "full" | "half" | "third";
   lastUpdated?: string;
+  config?: {
+    limit?: number;
+    sortBy?: string;
+    customQuery?: string;
+  };
 }
 
 interface Toast {
@@ -35,15 +41,22 @@ interface Toast {
 }
 
 const DEFAULT_WIDGETS: WidgetConfig[] = [
-  { id: "kpis",              title: "Summary KPIs",               visible: true },
-  { id: "evidence_dist",     title: "Evidence Distribution",      visible: true },
-  { id: "latest_literature", title: "New Papers & Guidelines",    visible: true },
-  { id: "takeaway_preview",  title: "Clinical Insight Preview",   visible: true },
-  { id: "topic_news",        title: "Topic-Specific Feed",        visible: true },
-  { id: "graph_preview",     title: "Knowledge Base Preview",     visible: true },
-  { id: "ingestion_console", title: "Ingestion Console",          visible: true },
-  { id: "system_summary",    title: "System Summary",             visible: true },
+  { id: "kpis",              title: "Summary KPIs",               visible: true,  width: "full" },
+  { id: "evidence_dist",     title: "Evidence Distribution",      visible: true,  width: "half" },
+  { id: "system_summary",    title: "System Summary",             visible: true,  width: "third" },
+  { id: "latest_literature", title: "New Papers & Guidelines",    visible: true,  width: "half", config: { limit: 50, sortBy: "date" } },
+  { id: "takeaway_preview",  title: "Clinical Insight Preview",   visible: true,  width: "half" },
+  { id: "topic_news",        title: "Topic-Specific Feed",        visible: true,  width: "third" },
+  { id: "graph_preview",     title: "Knowledge Base Preview",     visible: true,  width: "third" },
+  { id: "ingestion_console", title: "Ingestion Console",          visible: true,  width: "third", config: { limit: 10 } },
 ];
+
+const formatCancerName = (name: string) => {
+  return name
+    .split("_")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
 
 const CANCER_TYPES = [
   "colorectal_cancer","breast_cancer","lung_cancer","non_small_cell_lung_cancer",
@@ -118,15 +131,34 @@ export default function ClinicalDashboardPage() {
     try {
       const w = localStorage.getItem("mdc_widgets");
       const m = localStorage.getItem("mdc_expert");
-      if (w) setWidgets(JSON.parse(w));
+      const c = localStorage.getItem("mdc_selected_topic");
+      if (w) {
+        const parsed = JSON.parse(w) as WidgetConfig[];
+        const merged = DEFAULT_WIDGETS.map(def => {
+          const stored = parsed.find(x => x.id === def.id);
+          return stored ? { ...def, ...stored } : def;
+        });
+        setWidgets(merged);
+      } else {
+        setWidgets(DEFAULT_WIDGETS);
+      }
       if (m) setIsExpertMode(m === "true");
-    } catch { /* ignore */ }
+      if (c) setSelectedTopic(c);
+    } catch {
+      setWidgets(DEFAULT_WIDGETS);
+    }
   }, []);
 
   const saveWidgets = (w: WidgetConfig[]) => {
     setWidgets(w);
     localStorage.setItem("mdc_widgets", JSON.stringify(w));
   };
+
+  const changeSelectedTopic = (topic: string) => {
+    setSelectedTopic(topic);
+    localStorage.setItem("mdc_selected_topic", topic);
+  };
+
   const toggleExpert = () => {
     const n = !isExpertMode;
     setIsExpertMode(n);
@@ -210,14 +242,19 @@ export default function ClinicalDashboardPage() {
       || p.evidence_level === "systematic_review" || p.evidence_level === "meta_analysis";
   };
 
-  const totalGuidelines = papers.filter(isGuideline).length;
+  const topicPapers = papers.filter(p =>
+    p.tags?.cancer?.includes(selectedTopic)
+    || p.title.toLowerCase().includes(selectedTopic.replace(/_/g, " "))
+  );
+
+  const totalGuidelines = topicPapers.filter(isGuideline).length;
   const runningJobs = jobs.filter(j => j.status === "running" || j.status === "pending");
-  const recentNewPapers = papers.filter(p => {
+  const recentNewPapers = topicPapers.filter(p => {
     if (!p.created_at) return false;
     return Date.now() - new Date(p.created_at).getTime() < 7 * 24 * 60 * 60 * 1000; // last 7 days
   });
 
-  const filteredPapers = papers.filter(p => {
+  const filteredPapers = topicPapers.filter(p => {
     const q = searchQuery.toLowerCase();
     const matchSearch = !q || p.title.toLowerCase().includes(q)
       || (p.pmid?.includes(q)) || (p.journal?.toLowerCase().includes(q));
@@ -227,13 +264,27 @@ export default function ClinicalDashboardPage() {
     return matchSearch && matchConf && matchTab;
   });
 
-  const topicPapers = papers.filter(p =>
-    p.tags?.cancer?.includes(selectedTopic)
-    || p.title.toLowerCase().includes(selectedTopic.replace(/_/g, " "))
-  );
+  // Calculate dynamic stats for selected topic
+  const dynamicAvgConfidence = topicPapers.length > 0
+    ? topicPapers.reduce((sum, p) => sum + p.confidence_score, 0) / topicPapers.length
+    : 0.0;
+
+  const dynamicStatusDistribution = topicPapers.reduce((acc, p) => {
+    const s = p.verification_status;
+    if (s === "verified" || s === "disputed" || s === "pending") {
+      acc[s]++;
+    }
+    return acc;
+  }, { verified: 0, disputed: 0, pending: 0 });
+
+  const dynamicEvidenceLevelDistribution = topicPapers.reduce((acc: Record<string, number>, p) => {
+    const el = p.evidence_level || "unknown";
+    acc[el] = (acc[el] || 0) + 1;
+    return acc;
+  }, {});
 
   // Evidence distribution for bar chart
-  const evidenceDist = stats?.evidence_level_distribution ?? {};
+  const evidenceDist = dynamicEvidenceLevelDistribution;
   const evidenceEntries = Object.entries(evidenceDist).sort((a, b) => b[1] - a[1]);
   const maxEvCount = Math.max(...Object.values(evidenceDist), 1);
 
@@ -277,10 +328,10 @@ export default function ClinicalDashboardPage() {
   // ── Widget renderers ─────────────────────────────────────────
 
   // ① KPIs ────────────────────────────────────────────────────
-  const renderKPIs = () => {
+  const renderKPIs = (w: WidgetConfig) => {
     const kpis = [
       {
-        id: "total_papers", label: "Total Papers", value: fmt(papers.length),
+        id: "total_papers", label: "Total Papers", value: fmt(topicPapers.length),
         sub: `${fmt(recentNewPapers.length)} new this week`,
         icon: FileText, color: "text-rose-400", bg: "bg-rose-500/8 border-rose-500/15",
         badge: recentNewPapers.length > 0 ? `+${recentNewPapers.length} NEW` : null
@@ -292,16 +343,16 @@ export default function ClinicalDashboardPage() {
         badge: null
       },
       {
-        id: "avg_conf", label: "Avg. Confidence", value: stats ? `${(stats.average_confidence_score * 100).toFixed(1)}%` : "—",
-        sub: `${fmt(stats?.status_distribution.verified ?? 0)} verified`,
+        id: "avg_conf", label: "Avg. Confidence", value: `${(dynamicAvgConfidence * 100).toFixed(1)}%`,
+        sub: `${fmt(dynamicStatusDistribution.verified)} verified`,
         icon: ShieldCheck, color: "text-emerald-400", bg: "bg-emerald-500/8 border-emerald-500/15",
         badge: null
       },
       {
-        id: "conflicts", label: "Conflicts Detected", value: fmt(stats?.status_distribution.disputed ?? 0),
-        sub: `${fmt(stats?.status_distribution.pending ?? 0)} pending audit`,
+        id: "conflicts", label: "Conflicts Detected", value: fmt(dynamicStatusDistribution.disputed),
+        sub: `${fmt(dynamicStatusDistribution.pending)} pending audit`,
         icon: TriangleAlert, color: "text-amber-400", bg: "bg-amber-500/8 border-amber-500/15",
-        badge: (stats?.status_distribution.disputed ?? 0) > 0 ? "REVIEW" : null
+        badge: dynamicStatusDistribution.disputed > 0 ? "REVIEW" : null
       },
       {
         id: "active_jobs", label: "Active Pipelines", value: fmt(runningJobs.length),
@@ -319,37 +370,40 @@ export default function ClinicalDashboardPage() {
     ];
 
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
-        {kpis.map(k => {
-          const Icon = k.icon;
-          return (
-            <div key={k.id} className={`relative p-4 rounded-2xl border ${k.bg} flex flex-col gap-2`}>
-              {k.badge && (
-                <span className={`absolute top-2 right-2 text-[7px] font-mono font-bold tracking-widest px-1.5 py-0.5 rounded-full ${
-                  k.badge === "LIVE" ? "bg-indigo-500/20 text-indigo-300" :
-                  k.badge === "REVIEW" ? "bg-amber-500/20 text-amber-300" :
-                  "bg-rose-500/20 text-rose-300"
-                }`}>{k.badge}</span>
-              )}
-              <div className={`p-2 rounded-xl self-start ${k.bg}`}>
-                <Icon className={`w-4 h-4 ${k.color} ${k.id === "active_jobs" && runningJobs.length > 0 ? "animate-pulse" : ""}`} />
+      <div className="rounded-2xl border border-white/5 bg-zinc-900/40 p-5">
+        <WidgetHeader id="kpis" icon={BarChart3} color="text-rose-400" title={w.title || "Summary KPIs"} />
+        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
+          {kpis.map(k => {
+            const Icon = k.icon;
+            return (
+              <div key={k.id} className={`relative p-4 rounded-2xl border ${k.bg} flex flex-col gap-2`}>
+                {k.badge && (
+                  <span className={`absolute top-2 right-2 text-[7px] font-mono font-bold tracking-widest px-1.5 py-0.5 rounded-full ${
+                    k.badge === "LIVE" ? "bg-indigo-500/20 text-indigo-300" :
+                    k.badge === "REVIEW" ? "bg-amber-500/20 text-amber-300" :
+                    "bg-rose-500/20 text-rose-300"
+                  }`}>{k.badge}</span>
+                )}
+                <div className={`p-2 rounded-xl self-start ${k.bg}`}>
+                  <Icon className={`w-4 h-4 ${k.color} ${k.id === "active_jobs" && runningJobs.length > 0 ? "animate-pulse" : ""}`} />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold tracking-tight text-white leading-none">{k.value}</div>
+                  <div className="text-[9px] font-mono uppercase tracking-widest text-zinc-500 mt-1">{k.label}</div>
+                  <div className="text-[10px] text-zinc-500 mt-0.5">{k.sub}</div>
+                </div>
               </div>
-              <div>
-                <div className="text-2xl font-bold tracking-tight text-white leading-none">{k.value}</div>
-                <div className="text-[9px] font-mono uppercase tracking-widest text-zinc-500 mt-1">{k.label}</div>
-                <div className="text-[10px] text-zinc-500 mt-0.5">{k.sub}</div>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     );
   };
 
   // ② Evidence Distribution ────────────────────────────────────
-  const renderEvidenceDist = () => (
+  const renderEvidenceDist = (w: WidgetConfig) => (
     <div className="rounded-2xl border border-white/5 bg-zinc-900/40 p-5">
-      <WidgetHeader id="evidence_dist" icon={BarChart3} color="text-violet-400" title="Evidence Distribution">
+      <WidgetHeader id="evidence_dist" icon={BarChart3} color="text-violet-400" title={w.title || "Evidence Distribution"}>
         <Link href="/verification" className="text-[9px] font-mono text-zinc-500 hover:text-violet-400 transition-colors flex items-center gap-1">
           Full Audit <ChevronRight className="w-3 h-3" />
         </Link>
@@ -372,12 +426,12 @@ export default function ClinicalDashboardPage() {
               </div>
             </div>
           ))}
-          {isExpertMode && stats && (
+          {isExpertMode && (
             <div className="mt-3 pt-3 border-t border-white/5 grid grid-cols-3 gap-2">
               {[
-                { l: "Verified", v: stats.status_distribution.verified, c: "text-emerald-400" },
-                { l: "Disputed", v: stats.status_distribution.disputed, c: "text-red-400" },
-                { l: "Pending",  v: stats.status_distribution.pending,  c: "text-amber-400" },
+                { l: "Verified", v: dynamicStatusDistribution.verified, c: "text-emerald-400" },
+                { l: "Disputed", v: dynamicStatusDistribution.disputed, c: "text-red-400" },
+                { l: "Pending",  v: dynamicStatusDistribution.pending,  c: "text-amber-400" },
               ].map(x => (
                 <div key={x.l} className="text-center">
                   <div className={`text-lg font-bold ${x.c}`}>{x.v}</div>
@@ -392,97 +446,102 @@ export default function ClinicalDashboardPage() {
   );
 
   // ③ Latest Literature ────────────────────────────────────────
-  const renderLatestLiterature = () => (
-    <div className="rounded-2xl border border-white/5 bg-zinc-900/40 p-5 flex flex-col" style={{ height: 520 }}>
-      <WidgetHeader id="latest_literature" icon={Newspaper} color="text-rose-400" title="New Papers & Guidelines">
-        <div className="flex gap-1">
-          {(["all", "guideline", "paper"] as const).map(t => (
-            <button key={t} onClick={() => setActiveTab(t)}
-              className={`px-2 py-0.5 rounded text-[8px] font-mono capitalize border transition-all ${
-                activeTab === t ? "bg-zinc-700 text-zinc-200 border-white/10" : "text-zinc-500 border-transparent hover:text-zinc-300"
-              }`}>
-              {t === "all" ? "All" : t === "guideline" ? "Guidelines" : "Papers"}
-            </button>
-          ))}
-        </div>
-      </WidgetHeader>
+  const renderLatestLiterature = (w: WidgetConfig) => {
+    const limit = w.config?.limit || 50;
+    const slicedPapers = filteredPapers.slice(0, limit);
 
-      {/* Search + Confidence */}
-      <div className="flex gap-2 mb-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-zinc-500" />
-          <input type="text" placeholder="Search title, PMID, journal..."
-            value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-            className="w-full pl-7 pr-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-950 text-[11px] text-zinc-300 focus:outline-none focus:ring-1 focus:ring-rose-500/40 placeholder:text-zinc-600"
-          />
-        </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          <Filter className="w-3 h-3 text-zinc-500" />
-          <input type="range" min={0} max={90} step={10} value={minConfidence * 100}
-            onChange={e => setMinConfidence(Number(e.target.value) / 100)}
-            className="w-20 accent-rose-500 cursor-pointer" />
-          <span className="text-[9px] font-mono text-zinc-400 w-7">{(minConfidence * 100).toFixed(0)}%</span>
-        </div>
-      </div>
-
-      {/* Count indicator */}
-      <div className="text-[9px] font-mono text-zinc-600 mb-2">
-        Showing <span className="text-zinc-400">{filteredPapers.length}</span> of {papers.length} records
-      </div>
-
-      {/* List */}
-      <div className="flex-1 overflow-y-auto space-y-1.5 pr-0.5">
-        {filteredPapers.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <Microscope className="w-8 h-8 text-zinc-700 mb-2" />
-            <div className="text-[11px] text-zinc-600">No papers match filters</div>
+    return (
+      <div className="rounded-2xl border border-white/5 bg-zinc-900/40 p-5 flex flex-col" style={{ height: 520 }}>
+        <WidgetHeader id="latest_literature" icon={Newspaper} color="text-rose-400" title={w.title || "New Papers & Guidelines"}>
+          <div className="flex gap-1">
+            {(["all", "guideline", "paper"] as const).map(t => (
+              <button key={t} onClick={() => setActiveTab(t)}
+                className={`px-2 py-0.5 rounded text-[8px] font-mono capitalize border transition-all ${
+                  activeTab === t ? "bg-zinc-700 text-zinc-200 border-white/10" : "text-zinc-500 border-transparent hover:text-zinc-300"
+                }`}>
+                {t === "all" ? "All" : t === "guideline" ? "Guidelines" : "Papers"}
+              </button>
+            ))}
           </div>
-        ) : filteredPapers.map(p => {
-          const active = selectedPaper?.id === p.id;
-          const isG = isGuideline(p);
-          const sc = p.confidence_score;
-          const isNew = p.created_at && Date.now() - new Date(p.created_at).getTime() < 3 * 24 * 60 * 60 * 1000;
+        </WidgetHeader>
 
-          return (
-            <div key={p.id} onClick={() => setSelectedPaper(p)}
-              className={`p-2.5 rounded-xl border cursor-pointer transition-all ${
-                active ? "bg-rose-500/8 border-rose-500/25" : "bg-zinc-950/30 border-white/5 hover:bg-zinc-900/50 hover:border-white/8"
-              }`}>
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                    <span className={`inline-flex px-1.5 py-0.5 rounded text-[7px] font-mono font-bold uppercase border ${
-                      isG ? "bg-violet-500/10 text-violet-400 border-violet-500/20" : "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                    }`}>
-                      {isG ? "Guideline" : "Paper"}
-                    </span>
-                    {isNew && <span className="inline-flex px-1.5 py-0.5 rounded text-[7px] font-mono font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">NEW</span>}
-                    {p.published && (
-                      <span className="text-[8px] font-mono text-zinc-600">
-                        {new Date(p.published).getFullYear()}
+        {/* Search + Confidence */}
+        <div className="flex gap-2 mb-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-zinc-500" />
+            <input type="text" placeholder="Search title, PMID, journal..."
+              value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+              className="w-full pl-7 pr-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-950 text-[11px] text-zinc-300 focus:outline-none focus:ring-1 focus:ring-rose-500/40 placeholder:text-zinc-600"
+            />
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <Filter className="w-3 h-3 text-zinc-500" />
+            <input type="range" min={0} max={90} step={10} value={minConfidence * 100}
+              onChange={e => setMinConfidence(Number(e.target.value) / 100)}
+              className="w-20 accent-rose-500 cursor-pointer" />
+            <span className="text-[9px] font-mono text-zinc-400 w-7">{(minConfidence * 100).toFixed(0)}%</span>
+          </div>
+        </div>
+
+        {/* Count indicator */}
+        <div className="text-[9px] font-mono text-zinc-600 mb-2">
+          Showing <span className="text-zinc-400">{slicedPapers.length}</span> of {topicPapers.length} records
+        </div>
+
+        {/* List */}
+        <div className="flex-1 overflow-y-auto space-y-1.5 pr-0.5">
+          {slicedPapers.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <Microscope className="w-8 h-8 text-zinc-700 mb-2" />
+              <div className="text-[11px] text-zinc-600">No papers match filters</div>
+            </div>
+          ) : slicedPapers.map(p => {
+            const active = selectedPaper?.id === p.id;
+            const isG = isGuideline(p);
+            const sc = p.confidence_score;
+            const isNew = p.created_at && Date.now() - new Date(p.created_at).getTime() < 3 * 24 * 60 * 60 * 1000;
+
+            return (
+              <div key={p.id} onClick={() => setSelectedPaper(p)}
+                className={`p-2.5 rounded-xl border cursor-pointer transition-all ${
+                  active ? "bg-rose-500/8 border-rose-500/25" : "bg-zinc-950/30 border-white/5 hover:bg-zinc-900/50 hover:border-white/8"
+                }`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                      <span className={`inline-flex px-1.5 py-0.5 rounded text-[7px] font-mono font-bold uppercase border ${
+                        isG ? "bg-violet-500/10 text-violet-400 border-violet-500/20" : "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                      }`}>
+                        {isG ? "Guideline" : "Paper"}
                       </span>
-                    )}
+                      {isNew && <span className="inline-flex px-1.5 py-0.5 rounded text-[7px] font-mono font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">NEW</span>}
+                      {p.published && (
+                        <span className="text-[8px] font-mono text-zinc-600">
+                          {new Date(p.published).getFullYear()}
+                        </span>
+                      )}
+                    </div>
+                    <h4 className="text-[11px] font-medium text-zinc-200 line-clamp-2 leading-snug">{p.title}</h4>
+                    <div className="text-[8px] font-mono text-zinc-600 mt-1 truncate">{p.journal}</div>
                   </div>
-                  <h4 className="text-[11px] font-medium text-zinc-200 line-clamp-2 leading-snug">{p.title}</h4>
-                  <div className="text-[8px] font-mono text-zinc-600 mt-1 truncate">{p.journal}</div>
-                </div>
-                <div className="text-right shrink-0">
-                  <div className={`text-[11px] font-mono font-bold ${scoreColor(sc)}`}>{(sc * 100).toFixed(0)}%</div>
-                  <div className="w-8 h-1 rounded-full bg-zinc-800 overflow-hidden mt-1">
-                    <div className={`h-full ${sc >= 0.8 ? "bg-emerald-500" : sc >= 0.6 ? "bg-blue-500" : "bg-amber-500"}`}
-                      style={{ width: `${sc * 100}%` }} />
+                  <div className="text-right shrink-0">
+                    <div className={`text-[11px] font-mono font-bold ${scoreColor(sc)}`}>{(sc * 100).toFixed(0)}%</div>
+                    <div className="w-8 h-1 rounded-full bg-zinc-800 overflow-hidden mt-1">
+                      <div className={`h-full ${sc >= 0.8 ? "bg-emerald-500" : sc >= 0.6 ? "bg-blue-500" : "bg-amber-500"}`}
+                        style={{ width: `${sc * 100}%` }} />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // ④ Clinical Insight Preview ─────────────────────────────────
-  const renderInsightPreview = () => {
+  const renderInsightPreview = (w: WidgetConfig) => {
     if (!selectedPaper) return (
       <div className="rounded-2xl border border-white/5 bg-zinc-900/40 p-5 flex flex-col items-center justify-center text-center" style={{ height: 520 }}>
         <Stethoscope className="w-10 h-10 text-zinc-700 mb-3" />
@@ -499,7 +558,7 @@ export default function ClinicalDashboardPage() {
 
     return (
       <div className="rounded-2xl border border-white/5 bg-zinc-900/40 p-5 flex flex-col" style={{ height: 520 }}>
-        <WidgetHeader id="takeaway_preview" icon={Compass} color="text-emerald-400" title="Clinical Insight Preview">
+        <WidgetHeader id="takeaway_preview" icon={Compass} color="text-emerald-400" title={w.title || "Clinical Insight Preview"}>
           <Link href={`/papers/${p.id}`}
             className="flex items-center gap-1 px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[9px] font-mono border border-white/5 transition-colors">
             <Eye className="w-3 h-3" /> Full Audit
@@ -630,14 +689,14 @@ export default function ClinicalDashboardPage() {
   };
 
   // ⑤ Topic News ───────────────────────────────────────────────
-  const renderTopicNews = () => (
+  const renderTopicNews = (w: WidgetConfig) => (
     <div className="rounded-2xl border border-white/5 bg-zinc-900/40 p-5 flex flex-col" style={{ height: 420 }}>
-      <WidgetHeader id="topic_news" icon={HeartPulse} color="text-pink-400" title="Topic-Specific Feed">
+      <WidgetHeader id="topic_news" icon={HeartPulse} color="text-pink-400" title={w.title || "Topic-Specific Feed"}>
         <div className="flex items-center gap-2">
-          <select value={selectedTopic} onChange={e => setSelectedTopic(e.target.value)}
+          <select value={selectedTopic} onChange={e => changeSelectedTopic(e.target.value)}
             className="px-2 py-1 rounded-lg border border-zinc-800 bg-zinc-950 text-[9px] font-mono text-zinc-300 focus:outline-none">
             {CANCER_TYPES.map(c => (
-              <option key={c} value={c}>{c.replace(/_/g, " ")}</option>
+              <option key={c} value={c}>{formatCancerName(c)}</option>
             ))}
           </select>
           <Link href="/news" className="text-[8px] font-mono text-zinc-500 hover:text-pink-400 flex items-center gap-0.5 transition-colors">
@@ -651,13 +710,14 @@ export default function ClinicalDashboardPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto space-y-1.5 pr-0.5">
-        {topicPapers.length === 0 ? (
+        {topicPapers.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <FlaskConical className="w-7 h-7 text-zinc-700 mb-2" />
             <div className="text-[11px] text-zinc-600">No data for this topic yet.</div>
             <div className="text-[10px] text-zinc-700 mt-1">Trigger an ingestion run below.</div>
           </div>
-        ) : topicPapers.map(p => {
+        )}
+        {topicPapers.map(p => {
           const isG = isGuideline(p);
           return (
             <div key={p.id} onClick={() => setSelectedPaper(p)}
@@ -678,7 +738,7 @@ export default function ClinicalDashboardPage() {
   );
 
   // ⑥ Knowledge Graph Preview ──────────────────────────────────
-  const renderGraphPreview = () => {
+  const renderGraphPreview = (w: WidgetConfig) => {
     const items = [
       { l: "Cancer Types",  v: graphStats?.cancer_nodes ?? 0,   c: "from-rose-500 to-pink-500" },
       { l: "Drugs",         v: graphStats?.drug_nodes ?? 0,     c: "from-blue-500 to-cyan-500" },
@@ -690,13 +750,13 @@ export default function ClinicalDashboardPage() {
     return (
       <div className="rounded-2xl border border-white/5 bg-zinc-900/40 p-5 flex flex-col justify-between" style={{ height: 420 }}>
         <div>
-          <WidgetHeader id="graph_preview" icon={Database} color="text-cyan-400" title="Knowledge Base Preview">
+          <WidgetHeader id="graph_preview" icon={Database} color="text-cyan-400" title={w.title || "Knowledge Base Preview"}>
             <Link href="/explorer" className="text-[8px] font-mono text-zinc-500 hover:text-cyan-400 flex items-center gap-0.5 transition-colors">
               Explorer <ChevronRight className="w-3 h-3" />
             </Link>
           </WidgetHeader>
           <p className="text-[10px] text-zinc-500 mb-4 leading-relaxed">
-            Canonical entity graph built from {papers.length} indexed oncology papers across {graphStats?.cancer_nodes ?? 0} cancer types.
+            Canonical entity graph built from {topicPapers.length} indexed oncology papers across {graphStats?.cancer_nodes ?? 0} cancer types.
           </p>
           <div className="space-y-3">
             {items.map(item => (
@@ -726,10 +786,10 @@ export default function ClinicalDashboardPage() {
   };
 
   // ⑦ Ingestion Console ───────────────────────────────────────
-  const renderIngestionConsole = () => (
+  const renderIngestionConsole = (w: WidgetConfig) => (
     <div className="rounded-2xl border border-white/5 bg-zinc-900/40 p-5 flex flex-col justify-between" style={{ height: 420 }}>
       <div>
-        <WidgetHeader id="ingestion_console" icon={Zap} color="text-indigo-400" title="Ingestion Console">
+        <WidgetHeader id="ingestion_console" icon={Zap} color="text-indigo-400" title={w.title || "Ingestion Console"}>
           <Link href="/admin" className="text-[8px] font-mono text-zinc-500 hover:text-indigo-400 flex items-center gap-0.5 transition-colors">
             Control Panel <ChevronRight className="w-3 h-3" />
           </Link>
@@ -781,15 +841,15 @@ export default function ClinicalDashboardPage() {
   );
 
   // ⑧ System Summary ──────────────────────────────────────────
-  const renderSystemSummary = () => {
-    const verifiedPct = stats && stats.total_papers > 0
-      ? ((stats.status_distribution.verified / stats.total_papers) * 100).toFixed(0) : "0";
+  const renderSystemSummary = (w: WidgetConfig) => {
+    const verifiedPct = topicPapers.length > 0
+      ? ((dynamicStatusDistribution.verified / topicPapers.length) * 100).toFixed(0) : "0";
     const completedJobs = jobs.filter(j => j.status === "done");
     const totalIndexed = completedJobs.reduce((a, j) => a + (j.processed || 0), 0);
 
     return (
       <div className="rounded-2xl border border-white/5 bg-zinc-900/40 p-5">
-        <WidgetHeader id="system_summary" icon={Star} color="text-amber-400" title="System Summary" />
+        <WidgetHeader id="system_summary" icon={Star} color="text-amber-400" title={w.title || "System Summary"} />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             { l: "Total Indexed",    v: fmt(totalIndexed),     icon: Database,     c: "text-cyan-400" },
@@ -822,15 +882,15 @@ export default function ClinicalDashboardPage() {
   };
 
   // ── Widget dispatcher ────────────────────────────────────────
-  const renderWidget = (id: string) => ({
-    kpis:              renderKPIs(),
-    evidence_dist:     renderEvidenceDist(),
-    latest_literature: renderLatestLiterature(),
-    takeaway_preview:  renderInsightPreview(),
-    topic_news:        renderTopicNews(),
-    graph_preview:     renderGraphPreview(),
-    ingestion_console: renderIngestionConsole(),
-    system_summary:    renderSystemSummary(),
+  const renderWidget = (id: string, w: WidgetConfig) => ({
+    kpis:              renderKPIs(w),
+    evidence_dist:     renderEvidenceDist(w),
+    latest_literature: renderLatestLiterature(w),
+    takeaway_preview:  renderInsightPreview(w),
+    topic_news:        renderTopicNews(w),
+    graph_preview:     renderGraphPreview(w),
+    ingestion_console: renderIngestionConsole(w),
+    system_summary:    renderSystemSummary(w),
   }[id] ?? null);
 
   // ── Render ───────────────────────────────────────────────────
@@ -858,11 +918,28 @@ export default function ClinicalDashboardPage() {
       <header className="px-6 py-3.5 flex items-center justify-between border-b border-white/5 bg-zinc-950/60 backdrop-blur-xl sticky top-0 z-20 shrink-0">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-rose-600 to-pink-600 shadow-lg shadow-rose-500/20">
-            <LayoutDashboard className="w-4 h-4 text-white" />
+            <HeartPulse className="w-4 h-4 text-white animate-pulse" />
           </div>
           <div>
-            <div className="text-[13px] font-bold text-zinc-100 tracking-wide">Intelligence Dashboard</div>
-            <div className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase">Clinical Evidence Center · {lastGlobalUpdate || "connecting…"}</div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-sm sm:text-base font-extrabold text-zinc-100 tracking-wide">
+                {formatCancerName(selectedTopic)} Hub
+              </h1>
+              <select
+                value={selectedTopic}
+                onChange={e => changeSelectedTopic(e.target.value)}
+                className="ml-2 px-2 py-1 rounded-lg border border-zinc-800 bg-zinc-900 text-[10px] font-mono text-zinc-300 focus:outline-none focus:ring-1 focus:ring-rose-500/40 cursor-pointer"
+              >
+                {CANCER_TYPES.map(c => (
+                  <option key={c} value={c}>
+                    {formatCancerName(c)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase mt-0.5">
+              Community Oncology Workspace · Updated {lastGlobalUpdate || "connecting…"}
+            </div>
           </div>
         </div>
 
@@ -912,52 +989,106 @@ export default function ClinicalDashboardPage() {
       <div className="flex-1 overflow-y-auto px-6 py-6">
         <div className="max-w-screen-2xl mx-auto space-y-5">
 
-          {/* Settings drawer */}
+          {/* Settings drawer / Widget Studio */}
           {showSettings && (
-            <div className="rounded-2xl border border-rose-500/20 bg-zinc-900/80 backdrop-blur-xl p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[11px] font-mono uppercase tracking-widest text-rose-400 font-semibold flex items-center gap-2">
-                  <Sliders className="w-4 h-4" /> Widget Customisation
-                </h3>
+            <div className="rounded-2xl border border-rose-500/20 bg-zinc-900/80 backdrop-blur-xl p-5 space-y-6">
+              <div className="flex items-center justify-between pb-3 border-b border-white/5">
+                <div>
+                  <h3 className="text-xs font-bold text-rose-400 flex items-center gap-2">
+                    <Sliders className="w-4 h-4" /> Oncology Widget Studio
+                  </h3>
+                  <p className="text-[10px] text-zinc-500 mt-0.5">Configure, resize, rename, and publish dashboard widgets for the {formatCancerName(selectedTopic)} community.</p>
+                </div>
                 <button onClick={() => setShowSettings(false)} className="p-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200">
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {widgets.map((w, i) => (
-                  <div key={w.id} className="p-3 rounded-xl bg-zinc-950 border border-white/5 flex items-center justify-between">
-                    <label className="flex items-center gap-2 cursor-pointer flex-1 min-w-0">
-                      <input type="checkbox" checked={w.visible}
-                        onChange={() => {
-                          const n = widgets.map((x, j) => i === j ? { ...x, visible: !x.visible } : x);
+                  <div key={w.id} className="p-4 rounded-xl bg-zinc-950 border border-white/5 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <input type="checkbox" checked={w.visible}
+                          id={`visible-${w.id}`}
+                          onChange={() => {
+                            const n = widgets.map((x, j) => i === j ? { ...x, visible: !x.visible } : x);
+                            saveWidgets(n);
+                          }}
+                          className="w-3.5 h-3.5 rounded accent-rose-500 cursor-pointer"
+                        />
+                        <label htmlFor={`visible-${w.id}`} className="text-[11px] font-mono uppercase tracking-widest text-zinc-300 font-semibold cursor-pointer">
+                          {w.title}
+                        </label>
+                      </div>
+                      <div className="flex gap-1">
+                        <button onClick={() => {
+                          if (i === 0) return;
+                          const n = [...widgets];
+                          [n[i-1], n[i]] = [n[i], n[i-1]];
                           saveWidgets(n);
-                        }}
-                        className="w-3.5 h-3.5 rounded accent-rose-500"
-                      />
-                      <span className="text-[10px] font-medium text-zinc-300 truncate">{w.title}</span>
-                    </label>
-                    <div className="flex gap-1 shrink-0 ml-2">
-                      <button onClick={() => {
-                        if (i === 0) return;
-                        const n = [...widgets];
-                        [n[i-1], n[i]] = [n[i], n[i-1]];
-                        saveWidgets(n);
-                      }} disabled={i === 0} className="p-0.5 rounded bg-zinc-800 text-zinc-500 hover:text-zinc-200 disabled:opacity-20">
-                        <ArrowUp className="w-3 h-3" />
-                      </button>
-                      <button onClick={() => {
-                        if (i === widgets.length - 1) return;
-                        const n = [...widgets];
-                        [n[i+1], n[i]] = [n[i], n[i+1]];
-                        saveWidgets(n);
-                      }} disabled={i === widgets.length - 1} className="p-0.5 rounded bg-zinc-800 text-zinc-500 hover:text-zinc-200 disabled:opacity-20">
-                        <ArrowDown className="w-3 h-3" />
-                      </button>
+                        }} disabled={i === 0} className="p-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 disabled:opacity-20">
+                          <ArrowUp className="w-3 h-3" />
+                        </button>
+                        <button onClick={() => {
+                          if (i === widgets.length - 1) return;
+                          const n = [...widgets];
+                          [n[i+1], n[i]] = [n[i], n[i+1]];
+                          saveWidgets(n);
+                        }} disabled={i === widgets.length - 1} className="p-1 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 disabled:opacity-20">
+                          <ArrowDown className="w-3 h-3" />
+                        </button>
+                      </div>
                     </div>
+
+                    {w.visible && (
+                      <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/5">
+                        <div className="col-span-2">
+                          <label className="text-[9px] font-mono text-zinc-500 uppercase block mb-1">Widget Title</label>
+                          <input type="text" value={w.title}
+                            onChange={(e) => {
+                              const n = widgets.map((x, j) => i === j ? { ...x, title: e.target.value } : x);
+                              saveWidgets(n);
+                            }}
+                            className="w-full px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-[10px] text-zinc-200 focus:outline-none focus:border-rose-500/40"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[9px] font-mono text-zinc-500 uppercase block mb-1">Grid Width</label>
+                          <select value={w.width || "third"}
+                            onChange={(e) => {
+                              const n = widgets.map((x, j) => i === j ? { ...x, width: e.target.value as WidgetConfig["width"] } : x);
+                              saveWidgets(n);
+                            }}
+                            className="w-full px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-[10px] text-zinc-200 focus:outline-none"
+                          >
+                            <option value="full">Full Width</option>
+                            <option value="half">Half Width</option>
+                            <option value="third">Third Width</option>
+                          </select>
+                        </div>
+
+                        {(w.id === "latest_literature" || w.id === "ingestion_console") && (
+                          <div>
+                            <label className="text-[9px] font-mono text-zinc-500 uppercase block mb-1">Item Limit</label>
+                            <input type="number" min={1} max={100}
+                              value={w.config?.limit || 10}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value) || 10;
+                                const n = widgets.map((x, j) => i === j ? { ...x, config: { ...x.config, limit: val } } : x);
+                                saveWidgets(n);
+                              }}
+                              className="w-full px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-[10px] text-zinc-200 focus:outline-none"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
-              <p className="text-[9px] font-mono text-zinc-600 mt-3">Preferences saved automatically to browser local storage.</p>
+              <p className="text-[9px] font-mono text-zinc-600 mt-2">All customized workspace configurations are saved in local storage.</p>
             </div>
           )}
 
@@ -968,40 +1099,30 @@ export default function ClinicalDashboardPage() {
               <div className="text-[11px] font-mono text-zinc-600 uppercase tracking-widest">Loading clinical intelligence…</div>
             </div>
           ) : (
-            <div className="space-y-5">
-              {/* KPIs always at top */}
-              {widgets.find(w => w.id === "kpis")?.visible && (
-                <section>{renderKPIs()}</section>
-              )}
+            <div className="grid grid-cols-12 gap-5">
+              {widgets
+                .filter(w => w.visible)
+                .map(w => {
+                  let spanClass = "col-span-12";
+                  if (w.width === "half") {
+                    spanClass = "col-span-12 xl:col-span-6";
+                    if (w.id === "evidence_dist") {
+                      spanClass = "col-span-12 lg:col-span-8";
+                    }
+                  } else if (w.width === "third") {
+                    spanClass = "col-span-12 md:col-span-6 xl:col-span-4";
+                    if (w.id === "system_summary") {
+                      // Adjust to fit neatly next to evidence_dist
+                      spanClass = "col-span-12 lg:col-span-4";
+                    }
+                  }
 
-              {/* Evidence dist + summary — full width row */}
-              {(widgets.find(w => w.id === "evidence_dist")?.visible || widgets.find(w => w.id === "system_summary")?.visible) && (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                  {widgets.find(w => w.id === "evidence_dist")?.visible && (
-                    <div className="lg:col-span-2">{renderEvidenceDist()}</div>
-                  )}
-                  {widgets.find(w => w.id === "system_summary")?.visible && (
-                    <div>{renderSystemSummary()}</div>
-                  )}
-                </div>
-              )}
-
-              {/* Literature + Insight — main 2-col */}
-              {(widgets.find(w => w.id === "latest_literature")?.visible || widgets.find(w => w.id === "takeaway_preview")?.visible) && (
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-                  {widgets.find(w => w.id === "latest_literature")?.visible && renderLatestLiterature()}
-                  {widgets.find(w => w.id === "takeaway_preview")?.visible && renderInsightPreview()}
-                </div>
-              )}
-
-              {/* Topic news + graph + console — 3-col */}
-              {(widgets.find(w => w.id === "topic_news")?.visible || widgets.find(w => w.id === "graph_preview")?.visible || widgets.find(w => w.id === "ingestion_console")?.visible) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {widgets.find(w => w.id === "topic_news")?.visible && renderTopicNews()}
-                  {widgets.find(w => w.id === "graph_preview")?.visible && renderGraphPreview()}
-                  {widgets.find(w => w.id === "ingestion_console")?.visible && renderIngestionConsole()}
-                </div>
-              )}
+                  return (
+                    <div key={w.id} className={spanClass}>
+                      {renderWidget(w.id, w)}
+                    </div>
+                  );
+                })}
             </div>
           )}
         </div>
