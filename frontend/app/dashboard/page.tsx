@@ -131,6 +131,7 @@ export default function ClinicalDashboardPage() {
     const n = !isExpertMode;
     setIsExpertMode(n);
     localStorage.setItem("mdc_expert", String(n));
+    window.dispatchEvent(new CustomEvent("expert-mode-change", { detail: n }));
   };
 
   // ── Toast helpers ───────────────────────────────────────────

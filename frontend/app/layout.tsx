@@ -28,6 +28,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const router = useRouter();
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [systemHealth, setSystemHealth] = useState<"healthy" | "unhealthy" | "loading">("loading");
+  const [isExpertMode, setIsExpertMode] = useState<boolean>(false);
+
+  useEffect(() => {
+    const syncExpertMode = () => {
+      try {
+        const m = localStorage.getItem("mdc_expert");
+        setIsExpertMode(m === "true");
+      } catch { /* ignore */ }
+    };
+
+    syncExpertMode();
+
+    const handleCustomEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<boolean>;
+      setIsExpertMode(customEvent.detail);
+    };
+
+    window.addEventListener("expert-mode-change", handleCustomEvent as EventListener);
+    window.addEventListener("storage", syncExpertMode);
+    return () => {
+      window.removeEventListener("expert-mode-change", handleCustomEvent as EventListener);
+      window.removeEventListener("storage", syncExpertMode);
+    };
+  }, []);
 
   const loadSessionsList = async () => {
     try {
@@ -76,6 +100,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     { name: "System Operator", href: "/admin", icon: Cpu, color: "text-purple-400" },
   ];
 
+  const visibleLinks = isExpertMode
+    ? navLinks
+    : navLinks.filter((link) => link.href === "/dashboard");
+
   return (
     <html lang="en">
       <head>
@@ -111,7 +139,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {/* ── Navigation ── */}
             <div className="flex-1 overflow-y-auto px-4 py-6">
               <nav className="space-y-1 mb-8">
-                {navLinks.map((link) => {
+                {visibleLinks.map((link) => {
                   const isActive = pathname === link.href;
                   const Icon = link.icon;
                   return (
@@ -132,7 +160,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </nav>
 
               {/* ── Chat Sessions ── */}
-              <div className="mt-4">
+              {isExpertMode && (
+                <div className="mt-4">
                 <div className="flex items-center justify-between px-3 mb-3">
                   <div className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase font-semibold">
                     Recent Sessions
@@ -211,6 +240,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   </div>
                 )}
               </div>
+              )}
             </div>
 
             {/* ── Node Status ── */}
