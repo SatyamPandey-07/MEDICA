@@ -176,3 +176,22 @@ class HybridStrategy(RetrievalStrategy):
             )
             for r in records
         ]
+
+
+class KeywordStrategy(RetrievalStrategy):
+    """Pure keyword full-text search using PostgreSQL full-text index."""
+
+    def __init__(self, metadata_index: MetadataIndex) -> None:
+        self.metadata_index = metadata_index
+
+    async def retrieve(self, query: SearchQuery) -> list[RetrievalResult]:
+        records = await self.metadata_index.full_text_search(query.query, limit=query.limit * 2)
+        return [
+            RetrievalResult(
+                paper=_record_to_metadata(r),
+                score=0.8,  # Base keyword relevance score
+                strategy="keyword",
+                snippet=r.abstract[:300] if r.abstract else None,
+            )
+            for r in records
+        ]

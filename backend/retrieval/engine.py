@@ -18,6 +18,7 @@ from retrieval.strategies import (
     SemanticStrategy,
     TagStrategy,
     TemporalStrategy,
+    KeywordStrategy,
 )
 from shared.models import PaperRecord
 
@@ -93,7 +94,7 @@ class RetrievalEngine:
 
         self._strategies: dict[str, RetrievalStrategy] = {
             "semantic": SemanticStrategy(self.vector_index, self.metadata_index),
-            "keyword": None,  # Initialized lazily
+            "keyword": KeywordStrategy(self.metadata_index),
             "tag": TagStrategy(self.metadata_index),
             "temporal": TemporalStrategy(self.metadata_index),
             "hybrid": HybridStrategy(self.vector_index, self.metadata_index),
