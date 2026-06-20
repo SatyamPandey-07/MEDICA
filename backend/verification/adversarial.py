@@ -81,7 +81,7 @@ class AdversarialVerifier:
         import google.generativeai as genai
         genai.configure(api_key=settings.gemini_api_key)
         model = genai.GenerativeModel(settings.gemini_model)
-        response = model.generate_content(prompt)
+        response = await model.generate_content_async(prompt)
         return response.text.strip()
 
     async def _openai_review(self, prompt: str) -> str:
@@ -96,8 +96,8 @@ class AdversarialVerifier:
 
     async def _anthropic_review(self, prompt: str) -> str:
         import anthropic
-        client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-        response = client.messages.create(
+        client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
+        response = await client.messages.create(
             model=settings.anthropic_model,
             max_tokens=600,
             messages=[{"role": "user", "content": prompt}],

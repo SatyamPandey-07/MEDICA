@@ -176,7 +176,7 @@ class AnthropicClient(LLMClient):
         system_prompt: Optional[str] = None,
     ) -> str:
         import anthropic
-        client = anthropic.Anthropic(api_key=self.api_key)
+        client = anthropic.AsyncAnthropic(api_key=self.api_key)
 
         # Anthropic messages must not include system prompt, and must alternate roles
         user_messages = []
@@ -186,7 +186,7 @@ class AnthropicClient(LLMClient):
             role = m["role"] if m["role"] != "model" else "assistant"
             user_messages.append({"role": role, "content": m["content"]})
 
-        response = client.messages.create(
+        response = await client.messages.create(
             model=self.model_name,
             system=system_prompt or "",
             max_tokens=max_tokens,
@@ -203,8 +203,7 @@ class AnthropicClient(LLMClient):
         system_prompt: Optional[str] = None,
     ) -> AsyncGenerator[str, None]:
         import anthropic
-        # Using anthropic's standard sync stream inside async generator
-        client = anthropic.Anthropic(api_key=self.api_key)
+        client = anthropic.AsyncAnthropic(api_key=self.api_key)
 
         user_messages = []
         for m in messages:
@@ -213,14 +212,14 @@ class AnthropicClient(LLMClient):
             role = m["role"] if m["role"] != "model" else "assistant"
             user_messages.append({"role": role, "content": m["content"]})
 
-        with client.messages.stream(
+        async with client.messages.stream(
             model=self.model_name,
             system=system_prompt or "",
             max_tokens=max_tokens,
             temperature=temperature,
             messages=user_messages,
         ) as stream:
-            for text in stream.text_stream:
+            async for text in stream.text_stream:
                 yield text
 
 
