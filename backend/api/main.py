@@ -11,7 +11,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import settings
-from core.logging import get_logger
+from core.logging import configure_logging, get_logger
 from shared.database import get_db
 from scheduler.runner import scheduler_runner
 from api.chat import router as chat_router
@@ -19,6 +19,7 @@ from api.search import router as search_router
 from api.admin import router as admin_router
 from knowledge.graph import graph
 
+configure_logging()
 logger = get_logger(__name__)
 
 
