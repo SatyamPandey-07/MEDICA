@@ -156,7 +156,6 @@ class IngestionPipeline:
 
                 # 7. Register in knowledge graph
                 kg_graph.add_paper(paper)
-                kg_graph.save()
 
                 # Mark processed
                 checkpoint.processed_ids.append(fp)
@@ -190,6 +189,9 @@ class IngestionPipeline:
             if (stats.fetched % 10) == 0:
                 checkpoint.last_updated = datetime.utcnow()
                 self._save_checkpoint(checkpoint)
+
+        # Save final knowledge graph
+        kg_graph.save()
 
         # Final checkpoint
         checkpoint.completed = True
