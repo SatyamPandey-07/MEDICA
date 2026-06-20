@@ -128,7 +128,7 @@ class EuropePMCAdapter(SourceAdapter):
     async def fetch_by_id(self, external_id: str) -> RawPaper | None:
         """Fetch a single paper by its DOI or PMID."""
         client = await self._get_client()
-        query = f"ext_id:{external_id}" if external_id.isdigit() else f"doi:{external_id}"
+        query = f"ext_id:{external_id}" if external_id.isdigit() else f'doi:"{external_id}"'
         params = {
             "query": query,
             "format": "json",
