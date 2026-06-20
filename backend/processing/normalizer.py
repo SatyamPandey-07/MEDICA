@@ -90,10 +90,22 @@ class Normalizer:
         study_type = self._detect_study_type(title, abstract)
         evidence_level = _STUDY_TO_EVIDENCE.get(study_type, EvidenceLevel.UNKNOWN)
 
-        published = parse_date(raw.published_date)
-        doi = normalize_doi(raw.doi) if raw.doi else None
-        pmid = normalize_pmid(raw.pmid) if raw.pmid else None
-        keywords = self._normalize_keywords(raw.keywords)
+        from core.types import TrialPhase
+
+        raw_trial_phase = raw.raw_data.get("trial_phase")
+        trial_phase = None
+        if raw_trial_phase:
+            try:
+                trial_phase = TrialPhase(raw_trial_phase)
+            except ValueError:
+                pass
+
+        sample_size = raw.raw_data.get("sample_size")
+        if sample_size is not None:
+            try:
+                sample_size = int(sample_size)
+            except (ValueError, TypeError):
+                sample_size = None
 
         paper = PaperMetadata(
             id=uuid4(),
@@ -108,6 +120,8 @@ class Normalizer:
             confidence_score=0.0,
             evidence_level=evidence_level,
             study_type=study_type,
+            trial_phase=trial_phase,
+            sample_size=sample_size,
             abstract=abstract,
             keywords=keywords,
             citation_count=raw.citation_count,
