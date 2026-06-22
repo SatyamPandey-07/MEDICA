@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "react-grid-layout/css/styles.css";
+@import "react-resizable/css/styles.css";
 
 @theme {
   --color-background: #09090b; /* Zinc 950 */
@@ -85,4 +87,62 @@
 }
 .animate-pulse-subtle {
   animation: pulse-subtle 2s infinite;
+}
+
+/* React Grid Layout Overrides */
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top;
+}
+.react-grid-item.cssTransforms {
+  transition-property: transform;
+}
+.react-grid-item.resizing {
+  z-index: 100;
+  will-change: width, height;
+}
+.react-grid-item.react-draggable-dragging {
+  transition: none;
+  z-index: 100;
+  will-change: transform;
+}
+
+.react-grid-item > .react-resizable-handle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+}
+
+.react-grid-item > .react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid rgba(255, 255, 255, 0.4);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+  border-bottom-right-radius: 1px;
+}
+
+.react-grid-placeholder {
+  background: rgba(244, 63, 94, 0.1) !important;
+  border: 2px dashed rgba(244, 63, 94, 0.4) !important;
+  border-radius: 1rem;
+  transition-duration: 100ms;
+  z-index: 2;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Grid overlay background */
+.dashboard-grid-bg {
+  background-size: calc(100% / 12) 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-position: left -10px;
 }
