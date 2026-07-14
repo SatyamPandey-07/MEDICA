@@ -22,8 +22,8 @@ export const GraphPreviewWidget: React.FC<WidgetProps> = ({ instanceId, title, l
   return (
     <>
       <div className="flex-1 flex flex-col min-h-0">
-        <WidgetHeader id={instanceId} icon={Database} color="text-cyan-400" title={title} lastUpdated={lastUpdated}>
-          <Link href="/explorer" className="text-[8px] font-mono text-zinc-500 hover:text-cyan-400 flex items-center gap-0.5 transition-colors">
+        <WidgetHeader id={instanceId} icon={Database} color="text-cyan-600" title={title} lastUpdated={lastUpdated}>
+          <Link href="/explorer" className="text-[8px] font-mono text-zinc-400 hover:text-cyan-600 flex items-center gap-0.5 transition-colors">
             Explorer <ChevronRight className="w-3 h-3" />
           </Link>
         </WidgetHeader>
@@ -35,9 +35,9 @@ export const GraphPreviewWidget: React.FC<WidgetProps> = ({ instanceId, title, l
             <div key={item.l}>
               <div className="flex justify-between text-[10px] font-mono mb-1">
                 <span className="text-zinc-500">{item.l}</span>
-                <span className="text-zinc-200 font-semibold">{fmt(item.v)}</span>
+                <span className="text-zinc-800 font-semibold">{fmt(item.v)}</span>
               </div>
-              <div className="h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+              <div className="h-1.5 rounded-full bg-zinc-100 overflow-hidden">
                 <div className={`h-full bg-gradient-to-r ${item.c} transition-all duration-700`}
                   style={{ width: `${(item.v / max) * 100}%` }} />
               </div>
@@ -46,10 +46,10 @@ export const GraphPreviewWidget: React.FC<WidgetProps> = ({ instanceId, title, l
         </div>
       </div>
       <div className="flex gap-2 mt-4 shrink-0">
-        <Link href="/graph" className="flex-1 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[10px] font-semibold transition-colors flex items-center justify-center gap-1.5 border border-white/5">
+        <Link href="/graph" className="flex-1 py-2 rounded-xl bg-zinc-50 hover:bg-zinc-100 text-zinc-700 text-[10px] font-semibold transition-colors flex items-center justify-center gap-1.5 border border-zinc-200 shadow-sm">
           <GitBranch className="w-3.5 h-3.5" /> Citation Graph
         </Link>
-        <Link href="/explorer" className="flex-1 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[10px] font-semibold transition-colors flex items-center justify-center gap-1.5 border border-white/5">
+        <Link href="/explorer" className="flex-1 py-2 rounded-xl bg-zinc-50 hover:bg-zinc-100 text-zinc-700 text-[10px] font-semibold transition-colors flex items-center justify-center gap-1.5 border border-zinc-200 shadow-sm">
           <Compass className="w-3.5 h-3.5" /> Explorer
         </Link>
       </div>

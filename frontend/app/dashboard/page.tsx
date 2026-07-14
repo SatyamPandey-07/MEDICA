@@ -231,12 +231,12 @@ export default function ClinicalDashboardPage() {
       dynamicAvgConfidence, dynamicStatusDistribution,
       evidenceDist, fetchData, addToast
     }}>
-      <div className="flex flex-col h-full min-h-0 bg-zinc-950 relative">
+      <div className="flex flex-col h-full min-h-0 bg-zinc-50 relative">
 
         {/* Edit Layout Mode Overlay Indicator */}
         {isEditingLayout && (
           <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
-            <div className="px-4 py-1.5 rounded-full bg-rose-500/20 text-rose-300 text-xs font-mono font-bold tracking-widest border border-rose-500/30 flex items-center gap-2 backdrop-blur-xl">
+            <div className="px-4 py-1.5 rounded-full bg-rose-50 text-rose-700 text-xs font-mono font-bold tracking-widest border border-rose-200 flex items-center gap-2 shadow-md">
               <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
               EDITING LAYOUT
             </div>
@@ -246,10 +246,10 @@ export default function ClinicalDashboardPage() {
         {/* Toast Notifications */}
         <div className="fixed top-4 right-4 z-50 space-y-2 pointer-events-none">
           {toasts.map(t => (
-            <div key={t.id} className={`pointer-events-auto flex items-start gap-3 px-4 py-3 rounded-xl border backdrop-blur-xl shadow-xl animate-fade-in max-w-xs ${
-              t.type === "success" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
-              : t.type === "info"    ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-300"
-              : "bg-amber-500/10 border-amber-500/20 text-amber-300"
+            <div key={t.id} className={`pointer-events-auto flex items-start gap-3 px-4 py-3 rounded-xl border shadow-xl animate-fade-in max-w-xs ${
+              t.type === "success" ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+              : t.type === "info"    ? "bg-indigo-50 border-indigo-200 text-indigo-800"
+              : "bg-amber-50 border-amber-200 text-amber-800"
             }`}>
               <Bell className="w-4 h-4 mt-0.5 shrink-0" />
               <div>
@@ -261,20 +261,20 @@ export default function ClinicalDashboardPage() {
         </div>
 
         {/* Header */}
-        <header className="px-6 py-3.5 flex items-center justify-between border-b border-white/5 bg-zinc-950/60 backdrop-blur-xl sticky top-0 z-40 shrink-0">
+        <header className="px-6 py-3.5 flex items-center justify-between border-b border-zinc-200 bg-white/80 backdrop-blur-xl sticky top-0 z-40 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-rose-600 to-pink-600 shadow-lg shadow-rose-500/20">
+            <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 shadow-lg shadow-indigo-500/20">
               <HeartPulse className="w-4 h-4 text-white animate-pulse" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-sm sm:text-base font-extrabold text-zinc-100 tracking-wide">
+                <h1 className="text-sm sm:text-base font-extrabold text-zinc-800 tracking-wide">
                   {formatCancerName(selectedTopic)} Hub
                 </h1>
                 <select
                   value={selectedTopic}
                   onChange={e => changeSelectedTopic(e.target.value)}
-                  className="ml-2 px-2 py-1 rounded-lg border border-zinc-800 bg-zinc-900 text-[10px] font-mono text-zinc-300 focus:outline-none focus:ring-1 focus:ring-rose-500/40 cursor-pointer"
+                  className="ml-2 px-2 py-1 rounded-lg border border-zinc-200 bg-white text-[10px] font-mono text-zinc-700 focus:outline-none focus:ring-1 focus:ring-indigo-500/20 cursor-pointer"
                 >
                   {CANCER_TYPES.map(c => (
                     <option key={c} value={c}>
@@ -291,8 +291,8 @@ export default function ClinicalDashboardPage() {
 
           <div className="flex items-center gap-2">
             {runningJobs.length > 0 && (
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[9px] font-mono text-indigo-300 animate-pulse">
-                <CircleDot className="w-3 h-3" /> {runningJobs.length} LIVE
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-150 text-[9px] font-mono text-indigo-700 animate-pulse">
+                <CircleDot className="w-3 h-3 text-indigo-600" /> {runningJobs.length} LIVE
               </div>
             )}
 
@@ -304,7 +304,7 @@ export default function ClinicalDashboardPage() {
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-mono font-semibold transition-all border ${
                 isEditingLayout
                   ? "bg-rose-500 text-white border-rose-500 shadow-lg shadow-rose-500/20"
-                  : "bg-zinc-800/60 text-zinc-300 border-zinc-700/40 hover:bg-zinc-700"
+                  : "bg-white text-zinc-700 border-zinc-200 shadow-sm hover:bg-zinc-50"
               }`}>
               {isEditingLayout ? <X className="w-3.5 h-3.5" /> : <Edit3 className="w-3.5 h-3.5" />}
               {isEditingLayout ? "Done Editing" : "Edit Layout"}
@@ -314,8 +314,8 @@ export default function ClinicalDashboardPage() {
             <button onClick={toggleExpert}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-mono font-semibold transition-all border ${
                 isExpertMode
-                  ? "bg-rose-500/10 text-rose-300 border-rose-500/20"
-                  : "bg-zinc-800/60 text-zinc-400 border-zinc-700/40 hover:bg-zinc-800"
+                  ? "bg-indigo-50 text-indigo-600 border-indigo-200"
+                  : "bg-white text-zinc-500 border-zinc-200 shadow-sm hover:bg-zinc-50"
               }`}>
               {isExpertMode ? <UserCheck className="w-3.5 h-3.5" /> : <User className="w-3.5 h-3.5" />}
               {isExpertMode ? "Expert" : "General"}
@@ -325,21 +325,21 @@ export default function ClinicalDashboardPage() {
             <button onClick={() => setAutoRefresh(p => !p)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-mono transition-all border ${
                 autoRefresh
-                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                  : "bg-zinc-800/60 text-zinc-500 border-zinc-700/40"
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : "bg-white text-zinc-400 border-zinc-200 hover:bg-zinc-50"
               }`}>
               <RefreshCw className={`w-3 h-3 ${autoRefresh ? "animate-spin" : ""}`} style={{ animationDuration: "3s" }} />
               {autoRefresh ? `${countdown}s` : "Paused"}
             </button>
 
             {/* Manual refresh */}
-            <button onClick={() => fetchData()} className="p-1.5 rounded-lg bg-zinc-800/60 hover:bg-zinc-700 text-zinc-300 border border-white/5 transition-colors">
+            <button onClick={() => fetchData()} className="p-1.5 rounded-lg bg-white text-zinc-600 hover:bg-zinc-50 border border-zinc-200 shadow-sm transition-colors">
               <RefreshCw className="w-4 h-4" />
             </button>
 
             {/* Settings */}
             <button onClick={() => setShowSettings(p => !p)}
-              className={`p-1.5 rounded-lg border transition-colors ${showSettings ? "bg-rose-500/10 border-rose-500/20 text-rose-400" : "bg-zinc-800/60 border-white/5 text-zinc-300 hover:bg-zinc-700"}`}>
+              className={`p-1.5 rounded-lg border transition-colors ${showSettings ? "bg-indigo-50 border-indigo-200 text-indigo-600" : "bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50 shadow-sm"}`}>
               <Settings className="w-4 h-4" />
             </button>
           </div>
@@ -361,8 +361,8 @@ export default function ClinicalDashboardPage() {
 
             {loading && !layouts.lg ? (
               <div className="flex flex-col items-center justify-center py-40 gap-4">
-                <div className="w-10 h-10 rounded-full border-2 border-rose-500/30 border-t-rose-500 animate-spin" />
-                <div className="text-[11px] font-mono text-zinc-600 uppercase tracking-widest">Loading clinical intelligence…</div>
+                <div className="w-10 h-10 rounded-full border-2 border-indigo-200 border-t-indigo-600 animate-spin" />
+                <div className="text-[11px] font-mono text-zinc-400 uppercase tracking-widest">Loading clinical intelligence…</div>
               </div>
             ) : (
               <DashboardLayout
