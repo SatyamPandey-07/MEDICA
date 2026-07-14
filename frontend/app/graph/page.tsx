@@ -44,9 +44,10 @@ export default function CitationGraphPage() {
     try {
       const data = await getGraphNetwork();
 
-      // Initialize nodes with positions
-      const width = 800;
-      const height = 500;
+      const canvas = canvasRef.current;
+      const rect = canvas?.getBoundingClientRect();
+      const width = rect?.width && rect.width > 100 ? rect.width : 800;
+      const height = rect?.height && rect.height > 100 ? rect.height : 500;
       
       const initializedNodes = data.nodes.map((n, idx: number) => {
         // Place in a circle layout initially
@@ -118,12 +119,12 @@ export default function CitationGraphPage() {
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
-    // Color definitions — sleek dark mode palette
+    // Color definitions — sleek light mode palette
     const colors: Record<string, { fill: string; stroke: string; glow: string }> = {
-      cancer:    { fill: "#818cf8", stroke: "#c7d2fe", glow: "rgba(129,140,248,0.25)" }, // Indigo
-      drug:      { fill: "#38bdf8", stroke: "#bae6fd", glow: "rgba(56,189,248,0.25)" }, // Sky
-      biomarker: { fill: "#34d399", stroke: "#a7f3d0", glow: "rgba(52,211,153,0.25)" }, // Emerald
-      treatment: { fill: "#fbbf24", stroke: "#fde68a", glow: "rgba(251,191,36,0.25)" }, // Amber
+      cancer:    { fill: "#4f46e5", stroke: "#c7d2fe", glow: "rgba(79,70,229,0.15)" }, // Indigo
+      drug:      { fill: "#0284c7", stroke: "#bae6fd", glow: "rgba(2,132,199,0.15)" }, // Sky
+      biomarker: { fill: "#059669", stroke: "#a7f3d0", glow: "rgba(5,150,105,0.15)" }, // Emerald
+      treatment: { fill: "#d97706", stroke: "#fde68a", glow: "rgba(217,119,6,0.15)" }, // Amber
     };
 
     // Main Physics loop (simple Verlet force-directed)
@@ -219,12 +220,12 @@ export default function CitationGraphPage() {
       // 2. Drawing
       ctx.clearRect(0, 0, w, h);
 
-      // ── Background: sleek dark mode with subtle dot grid ──
-      ctx.fillStyle = "#09090b"; // zinc-950
+      // ── Background: clean light canvas with subtle dot grid ──
+      ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, w, h);
       // Dot grid pattern
       const gridSpacing = 28;
-      ctx.fillStyle = "rgba(255,255,255,0.03)";
+      ctx.fillStyle = "rgba(9,9,11,0.03)";
       for (let gx = 0; gx < w; gx += gridSpacing) {
         for (let gy = 0; gy < h; gy += gridSpacing) {
           ctx.beginPath();
@@ -244,10 +245,10 @@ export default function CitationGraphPage() {
         const isSelectedEdge = selectedNode && (selectedNode.id === n1.id || selectedNode.id === n2.id);
 
         if (isHoveredEdge || isSelectedEdge) {
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+          ctx.strokeStyle = "rgba(9, 9, 11, 0.25)";
           ctx.lineWidth = 2;
         } else {
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+          ctx.strokeStyle = "rgba(9, 9, 11, 0.05)";
           ctx.lineWidth = 1;
         }
 
@@ -274,7 +275,7 @@ export default function CitationGraphPage() {
 
         // Node circle
         ctx.fillStyle = c.fill;
-        ctx.strokeStyle = isHovered || isSelected ? "#ffffff" : c.stroke;
+        ctx.strokeStyle = isHovered || isSelected ? "#09090b" : c.stroke;
         ctx.lineWidth = isHovered || isSelected ? 2 : 1;
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
@@ -284,7 +285,7 @@ export default function CitationGraphPage() {
         ctx.shadowBlur = 0;
 
         // Label
-        ctx.fillStyle = isHovered || isSelected ? "#f4f4f5" : "#a1a1aa";
+        ctx.fillStyle = isHovered || isSelected ? "#09090b" : "#71717a";
         ctx.font = isHovered || isSelected ? "500 11px Inter" : "10px Inter";
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
@@ -355,18 +356,18 @@ export default function CitationGraphPage() {
   };
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-zinc-950">
+    <div className="flex flex-col h-full min-h-0 bg-zinc-50">
       {/* Header */}
-      <header className="px-6 py-4 flex items-center justify-between border-b border-white/5 bg-zinc-950/50 backdrop-blur-md sticky top-0 z-10 shrink-0">
+      <header className="px-6 py-4 flex items-center justify-between border-b border-zinc-200 bg-white/80 backdrop-blur-md sticky top-0 z-10 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-600">
             <GitBranch className="w-4 h-4" />
           </div>
           <div>
-            <div className="text-[13px] font-semibold text-zinc-100 tracking-wide">
+            <div className="text-[13px] font-semibold text-zinc-800 tracking-wide">
               Citation Graph Network
             </div>
-            <div className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+            <div className="text-[10px] font-mono tracking-widest text-zinc-450 uppercase">
               Oncology Entity Physics Map
             </div>
           </div>
@@ -377,7 +378,7 @@ export default function CitationGraphPage() {
           <button
             onClick={handleRebuild}
             disabled={rebuilding}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all border border-indigo-500/20 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all border border-indigo-200 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
             title="Rebuild graph from all indexed papers"
           >
             <Sparkles className={`w-3.5 h-3.5 ${rebuilding ? 'animate-spin' : ''}`} />
@@ -387,7 +388,7 @@ export default function CitationGraphPage() {
           {/* Reload button */}
           <button
             onClick={loadGraph}
-            className="flex items-center justify-center w-9 h-9 rounded-xl border border-white/5 bg-zinc-900/40 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-all"
+            className="flex items-center justify-center w-9 h-9 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-550 hover:text-zinc-800 transition-all shadow-sm"
             title="Reload Graph"
           >
             <RefreshCw className="w-4 h-4" />
@@ -399,7 +400,7 @@ export default function CitationGraphPage() {
       {rebuildMsg && (
         <div className="px-8 pt-6">
           <div className={`px-4 py-3 rounded-xl border font-mono text-xs font-semibold tracking-wide ${
-            rebuildMsg.ok ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-red-500/10 border-red-500/20 text-red-400"
+            rebuildMsg.ok ? "bg-emerald-50 border-emerald-250 text-emerald-800" : "bg-red-50 border-red-250 text-red-800"
           }`}>
             {rebuildMsg.text}
           </div>
@@ -411,7 +412,7 @@ export default function CitationGraphPage() {
         {loading ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center animate-fade-in">
-              <GitBranch className="w-8 h-8 text-indigo-400/50 mx-auto mb-4 animate-pulse" />
+              <GitBranch className="w-8 h-8 text-indigo-600/50 mx-auto mb-4 animate-pulse" />
               <p className="text-[11px] font-mono tracking-widest uppercase text-zinc-500 font-semibold">Mapping molecular graph nodes...</p>
             </div>
           </div>
@@ -419,21 +420,21 @@ export default function CitationGraphPage() {
           /* ── EMPTY STATE ── */
           <div className="flex-1 flex items-center justify-center p-8">
             <div className="text-center max-w-md animate-fade-in">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-6 bg-indigo-500/10 border border-indigo-500/20 shadow-[0_0_30px_rgba(99,102,241,0.2)]">
-                <Database className="w-6 h-6 text-indigo-400" />
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-6 bg-indigo-50 border border-indigo-200 shadow-sm">
+                <Database className="w-6 h-6 text-indigo-600" />
               </div>
-              <h2 className="text-xl font-bold tracking-tight mb-3 text-zinc-100">
+              <h2 className="text-xl font-bold tracking-tight mb-3 text-zinc-800">
                 Graph is Empty
               </h2>
-              <p className="text-[13px] text-zinc-400 leading-relaxed mb-8">
-                The knowledge graph has no nodes yet. Click <strong className="text-indigo-400">Rebuild Graph</strong> to extract
+              <p className="text-[13px] text-zinc-500 leading-relaxed mb-8">
+                The knowledge graph has no nodes yet. Click <strong className="text-indigo-600">Rebuild Graph</strong> to extract
                 cancer, drug, and biomarker entities from all papers already in your database.
-                Or go to <strong className="text-zinc-200">System Operator</strong> to ingest papers first.
+                Or go to <strong className="text-zinc-700">System Operator</strong> to ingest papers first.
               </p>
               <button
                 onClick={handleRebuild}
                 disabled={rebuilding}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-[13px] font-semibold transition-all shadow-lg shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[13px] font-semibold transition-all shadow-lg shadow-indigo-600/10 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Sparkles className={`w-4 h-4 ${rebuilding ? 'animate-spin' : ''}`} />
                 {rebuilding ? "Building graph..." : "Rebuild Graph Now"}
@@ -443,24 +444,24 @@ export default function CitationGraphPage() {
         ) : (
           <>
             {/* Physics canvas */}
-            <div className="flex-1 h-full relative overflow-hidden bg-zinc-950 border border-white/5 rounded-2xl m-6 shadow-2xl">
+            <div className="flex-1 h-full relative overflow-hidden bg-white border border-zinc-200 rounded-2xl m-6 shadow-sm">
               {/* Legend HUD */}
-              <div className="absolute top-6 left-6 z-10 px-5 py-4 rounded-xl bg-zinc-900/80 backdrop-blur border border-white/10 pointer-events-none shadow-xl">
-                <div className="text-[10px] font-mono font-semibold text-zinc-300 mb-3 flex items-center gap-2 tracking-widest uppercase">
-                  <Info className="w-3.5 h-3.5 text-indigo-400" />
+              <div className="absolute top-6 left-6 z-10 px-5 py-4 rounded-xl bg-white/95 backdrop-blur border border-zinc-200 pointer-events-none shadow-md">
+                <div className="text-[10px] font-mono font-semibold text-zinc-850 mb-3 flex items-center gap-2 tracking-widest uppercase">
+                  <Info className="w-3.5 h-3.5 text-indigo-650" />
                   Map Key
                 </div>
                 {[
-                  { label: "Cancer Types",      dot: "#818cf8" },
-                  { label: "Drugs / Inhibitors", dot: "#38bdf8" },
-                  { label: "Biomarkers / Genes", dot: "#34d399" },
+                  { label: "Cancer Types",      dot: "#4f46e5" },
+                  { label: "Drugs / Inhibitors", dot: "#0284c7" },
+                  { label: "Biomarkers / Genes", dot: "#059669" },
                 ].map((item) => (
-                  <div key={item.label} className="flex items-center gap-3 mb-2 text-[10px] font-mono text-zinc-400 font-medium tracking-wide">
+                  <div key={item.label} className="flex items-center gap-3 mb-2 text-[10px] font-mono text-zinc-555 font-medium tracking-wide">
                     <span className="w-2.5 h-2.5 rounded-full shrink-0 shadow-[0_0_8px_currentColor]" style={{ background: item.dot, color: item.dot }} />
                     {item.label}
                   </div>
                 ))}
-                <div className="text-[9px] text-zinc-500 font-mono border-t border-white/5 pt-3 mt-3 leading-relaxed">
+                <div className="text-[9px] text-zinc-400 font-mono border-t border-zinc-200 pt-3 mt-3 leading-relaxed">
                   * Drag nodes to adjust physics<br />* Click a node to inspect it
                 </div>
               </div>
@@ -477,32 +478,32 @@ export default function CitationGraphPage() {
 
             {/* Node detail drawer */}
             {selectedNode && (
-              <div className="w-80 shrink-0 z-10 bg-zinc-900/40 border border-white/5 rounded-2xl shadow-xl m-6 ml-0 overflow-y-auto p-6 animate-fade-in flex flex-col">
-                <div className="mb-6 pb-6 border-b border-white/5">
-                  <div className="text-[10px] font-mono tracking-widest text-indigo-400 uppercase mb-3 font-semibold">
+              <div className="w-80 shrink-0 z-10 bg-white border border-zinc-200 rounded-2xl shadow-sm m-6 ml-0 overflow-y-auto p-6 animate-fade-in flex flex-col">
+                <div className="mb-6 pb-6 border-b border-zinc-200">
+                  <div className="text-[10px] font-mono tracking-widest text-indigo-650 uppercase mb-3 font-semibold">
                     {typeLabels[selectedNode.type] || "Node Entity"}
                   </div>
-                  <h3 className="text-xl font-bold text-zinc-100 leading-snug mb-4 tracking-tight">
+                  <h3 className="text-xl font-bold text-zinc-800 leading-snug mb-4 tracking-tight">
                     {selectedNode.label}
                   </h3>
-                  <div className="flex items-center gap-2 text-[11px] text-zinc-400 font-medium">
-                    <Activity className="w-4 h-4 text-emerald-400" />
-                    Active in <strong className="text-zinc-200">{selectedNode.papers_count}</strong> clinical trials
+                  <div className="flex items-center gap-2 text-[11px] text-zinc-500 font-medium">
+                    <Activity className="w-4 h-4 text-emerald-600" />
+                    Active in <strong className="text-zinc-800">{selectedNode.papers_count}</strong> clinical trials
                   </div>
                 </div>
 
                 <div className="flex-1">
-                  <div className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase mb-4 font-semibold">
+                  <div className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase mb-4 font-semibold">
                     Associated Knowledge
                   </div>
-                  <div className="p-5 rounded-xl border border-white/5 bg-zinc-950/50">
-                    <div className="flex items-start gap-3 mb-5 text-[11px] text-zinc-400 leading-relaxed font-medium">
-                      <Info className="w-4 h-4 text-indigo-400 mt-0.5 shrink-0" />
+                  <div className="p-5 rounded-xl border border-zinc-200 bg-zinc-50">
+                    <div className="flex items-start gap-3 mb-5 text-[11px] text-zinc-500 leading-relaxed font-medium">
+                      <Info className="w-4 h-4 text-indigo-650 mt-0.5 shrink-0" />
                       Explore papers matching this node in the Knowledge Explorer.
                     </div>
                     <a
                       href={`/explorer?q=${encodeURIComponent(selectedNode.label)}`}
-                      className="block text-center py-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold tracking-wide uppercase hover:bg-indigo-500/20 transition-colors"
+                      className="block text-center py-2.5 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-650 text-xs font-semibold tracking-wide uppercase hover:bg-indigo-100 transition-all"
                     >
                       Open Explorer →
                     </a>
