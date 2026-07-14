@@ -55,63 +55,63 @@ export default function VerificationDashboardPage() {
       label: "Papers Audited",
       value: stats?.total_papers ?? 0,
       icon: FileBarChart,
-      iconColor: "text-zinc-400",
-      bg: "bg-zinc-800",
+      iconColor: "text-zinc-500",
+      bg: "bg-zinc-100 border border-zinc-200",
     },
     {
       label: "Avg Confidence",
       value: stats ? `${(stats.average_confidence_score * 100).toFixed(1)}%` : "—",
       icon: TrendingUp,
-      iconColor: "text-indigo-400",
-      bg: "bg-indigo-500/10",
+      iconColor: "text-indigo-600",
+      bg: "bg-indigo-50 border border-indigo-150",
     },
     {
       label: "Verified",
       value: stats?.status_distribution.verified ?? 0,
       icon: CheckCircle,
-      iconColor: "text-emerald-400",
-      bg: "bg-emerald-500/10",
+      iconColor: "text-emerald-600",
+      bg: "bg-emerald-50 border border-emerald-150",
     },
     {
       label: "Conflicts",
       value: stats?.status_distribution.disputed ?? 0,
       icon: AlertTriangle,
-      iconColor: "text-orange-400",
-      bg: "bg-orange-500/10",
+      iconColor: "text-amber-600",
+      bg: "bg-amber-50 border border-amber-150",
     },
   ];
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-zinc-950">
+    <div className="flex flex-col h-full min-h-0 bg-zinc-50">
       {/* Header */}
-      <header className="px-6 py-4 flex items-center justify-between border-b border-white/5 bg-zinc-950/50 backdrop-blur-md sticky top-0 z-10">
+      <header className="px-6 py-4 flex items-center justify-between border-b border-zinc-200 bg-white/80 backdrop-blur-md sticky top-0 z-10">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600">
             <ShieldCheck className="w-4 h-4" />
           </div>
           <div>
-            <div className="text-[13px] font-semibold text-zinc-100 tracking-wide">
+            <div className="text-[13px] font-semibold text-zinc-800 tracking-wide">
               Evidence Auditor
             </div>
-            <div className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+            <div className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
               Adversarial Audit Ledger
             </div>
           </div>
         </div>
-        <div className="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-400 font-semibold flex items-center gap-2 tracking-widest">
-          <ShieldCheck className="w-3 h-3" />
+        <div className="px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-mono text-emerald-750 font-semibold flex items-center gap-2 tracking-widest">
+          <ShieldCheck className="w-3 h-3 text-emerald-600" />
           GUARDED MODE
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto px-6 py-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden py-8 w-full min-w-0">
+        <div className="w-full px-4 md:px-8">
           {/* Hero heading */}
           <div className="mb-8 animate-fade-in">
-            <h1 className="text-2xl font-bold tracking-tight mb-2 text-white">
+            <h1 className="text-2xl font-bold tracking-tight mb-2 text-zinc-805">
               Clinical Trial Verification
             </h1>
-            <p className="text-[13px] text-zinc-400 leading-relaxed max-w-2xl">
+            <p className="text-[13px] text-zinc-500 leading-relaxed max-w-2xl font-medium">
               Adversarial auditing ledger &mdash; evaluates study sizes, guideline alignment, and conflicts of interest.
             </p>
           </div>
@@ -120,10 +120,10 @@ export default function VerificationDashboardPage() {
             <div className="flex flex-col gap-6 animate-pulse">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {[0, 1, 2, 3].map((i) => (
-                  <div key={i} className="h-28 rounded-2xl bg-zinc-900/40 border border-white/5" />
+                  <div key={i} className="h-28 rounded-2xl bg-white border border-zinc-200 shadow-sm" />
                 ))}
               </div>
-              <div className="h-[400px] rounded-2xl bg-zinc-900/40 border border-white/5" />
+              <div className="h-[400px] rounded-2xl bg-white border border-zinc-200 shadow-sm" />
             </div>
           ) : (
             <>
@@ -132,16 +132,16 @@ export default function VerificationDashboardPage() {
                 {statCards.map((c) => {
                   const IconComponent = c.icon;
                   return (
-                    <div key={c.label} className="p-6 rounded-2xl border border-white/5 bg-zinc-900/40">
+                    <div key={c.label} className="p-6 rounded-2xl border border-zinc-200 bg-white shadow-sm">
                       <div className="flex items-center justify-between mb-4">
-                        <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+                        <span className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase font-semibold">
                           {c.label}
                         </span>
                         <div className={`p-2 rounded-lg ${c.bg}`}>
                           <IconComponent className={`w-4 h-4 ${c.iconColor}`} />
                         </div>
                       </div>
-                      <div className="text-3xl font-bold tracking-tight text-white">
+                      <div className="text-3xl font-bold tracking-tight text-zinc-800">
                         {c.value}
                       </div>
                     </div>
@@ -150,12 +150,12 @@ export default function VerificationDashboardPage() {
               </div>
 
               {/* Audit Ledger */}
-              <div className="rounded-2xl border border-white/5 bg-zinc-900/40 overflow-hidden animate-fade-in" style={{ animationDelay: "100ms" }}>
+              <div className="rounded-2xl border border-zinc-200 bg-white shadow-sm overflow-hidden animate-fade-in" style={{ animationDelay: "100ms" }}>
                 {/* Toolbar */}
-                <div className="px-6 py-4 border-b border-white/5 bg-zinc-950/30 flex items-center justify-between gap-4 flex-wrap">
+                <div className="px-6 py-4 border-b border-zinc-200 bg-zinc-50/50 flex items-center justify-between gap-4 flex-wrap">
                   <div className="flex items-center gap-2">
-                    <ShieldAlert className="w-4 h-4 text-emerald-400" />
-                    <span className="text-[11px] font-mono tracking-widest text-zinc-300 uppercase font-semibold">
+                    <ShieldAlert className="w-4 h-4 text-emerald-600" />
+                    <span className="text-[11px] font-mono tracking-widest text-zinc-800 uppercase font-semibold">
                       Audit Data Ledger
                     </span>
                   </div>
@@ -166,10 +166,10 @@ export default function VerificationDashboardPage() {
                       <button
                         key={s}
                         onClick={() => handleStatusChange(s)}
-                        className={`px-3 py-1.5 rounded-lg text-[11px] font-mono capitalize transition-all ${
+                        className={`px-3 py-1.5 rounded-lg text-[11px] font-mono capitalize transition-all border ${
                           activeStatus === s
-                            ? "bg-zinc-800 text-zinc-200 border border-white/10"
-                            : "bg-transparent text-zinc-500 hover:text-zinc-300 border border-transparent"
+                            ? "bg-zinc-100 text-zinc-800 border-zinc-250 font-semibold shadow-sm"
+                            : "bg-transparent text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 border-transparent"
                         }`}
                       >
                         {s}
@@ -181,20 +181,20 @@ export default function VerificationDashboardPage() {
                 {/* Table */}
                 <div className="overflow-x-auto min-h-[300px]">
                   {loadingTable ? (
-                    <div className="flex items-center justify-center py-20 gap-2 text-[12px] text-zinc-500">
-                      <RefreshCw className="w-4 h-4 animate-spin" />
+                    <div className="flex items-center justify-center py-20 gap-2 text-[12px] text-zinc-555 font-medium font-mono">
+                      <RefreshCw className="w-4 h-4 animate-spin text-zinc-400" />
                       Fetching audits...
                     </div>
                   ) : papers.length === 0 ? (
-                    <div className="text-center py-16 text-[12px] text-zinc-500 italic">
+                    <div className="text-center py-16 text-[12px] text-zinc-400 italic">
                       No clinical studies match this filter.
                     </div>
                   ) : (
                     <table className="w-full border-collapse">
                       <thead>
-                        <tr className="border-b border-white/5 bg-zinc-950/20">
+                        <tr className="border-b border-zinc-200 bg-zinc-50/30">
                           {["Trial ID / PMID", "Clinical Study", "Evidence Level", "Confidence", "Quality Flags", ""].map((h) => (
-                            <th key={h} className="px-5 py-4 text-left text-[10px] font-mono tracking-widest text-zinc-500 uppercase font-semibold">
+                            <th key={h} className="px-5 py-4 text-left text-[10px] font-mono tracking-widest text-zinc-450 uppercase font-bold whitespace-nowrap">
                               {h}
                             </th>
                           ))}
@@ -207,7 +207,7 @@ export default function VerificationDashboardPage() {
                           return (
                             <tr
                               key={p.id}
-                              className="border-b border-white/5 hover:bg-white/[0.02] transition-colors"
+                              className="border-b border-zinc-150 hover:bg-zinc-50/40 transition-colors"
                             >
                               {/* PMID */}
                               <td className="px-5 py-4">
@@ -215,12 +215,12 @@ export default function VerificationDashboardPage() {
                                   <a
                                     href={`https://pubmed.ncbi.nlm.nih.gov/${p.pmid}/`}
                                     target="_blank" rel="noopener noreferrer"
-                                    className="font-mono text-[11px] font-medium text-indigo-400 hover:text-indigo-300 border-b border-indigo-400/30 hover:border-indigo-300 transition-colors"
+                                    className="font-mono text-[11px] font-semibold text-indigo-600 hover:text-indigo-850 border-b border-indigo-200 hover:border-indigo-650 transition-all"
                                   >
                                     pmid:{p.pmid}
                                   </a>
                                 ) : (
-                                  <span className="font-mono text-[11px] text-zinc-500 font-medium">
+                                  <span className="font-mono text-[11px] text-zinc-400 font-medium">
                                     {`doi:${(p.doi || "").substring(0, 10)}…`}
                                   </span>
                                 )}
@@ -228,14 +228,14 @@ export default function VerificationDashboardPage() {
 
                               {/* Title */}
                               <td className="px-5 py-4 max-w-[280px]">
-                                <div className="text-[13px] font-medium text-zinc-200 truncate" title={p.title}>
+                                <div className="text-[13px] font-medium text-zinc-800 truncate" title={p.title}>
                                   {p.title}
                                 </div>
                               </td>
 
                               {/* Level */}
                               <td className="px-5 py-4 whitespace-nowrap">
-                                <span className="inline-flex px-2 py-1 rounded-md font-mono text-[10px] font-medium tracking-widest uppercase bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                                <span className="inline-flex px-2 py-1 rounded-md font-mono text-[10px] font-medium tracking-widest uppercase bg-indigo-50 text-indigo-700 border border-indigo-250">
                                   {(p.evidence_level || "").replace(/_/g, " ").toUpperCase()}
                                 </span>
                               </td>
@@ -243,13 +243,13 @@ export default function VerificationDashboardPage() {
                               {/* Confidence */}
                               <td className="px-5 py-4">
                                 <div className="flex items-center gap-3">
-                                  <span className="font-mono text-[11px] font-medium text-zinc-300">
+                                  <span className="font-mono text-[11px] font-semibold text-zinc-700">
                                     {scorePct}%
                                   </span>
-                                  <div className="w-16 h-1.5 rounded-full bg-zinc-800 overflow-hidden shrink-0">
+                                  <div className="w-16 h-1.5 rounded-full bg-zinc-100 overflow-hidden shrink-0">
                                     <div 
                                       className={`h-full ${
-                                        p.confidence_score >= 0.75 ? "bg-emerald-500" : p.confidence_score >= 0.40 ? "bg-blue-500" : "bg-red-500"
+                                        p.confidence_score >= 0.75 ? "bg-emerald-500" : p.confidence_score >= 0.40 ? "bg-indigo-550" : "bg-rose-500"
                                       }`}
                                       style={{ width: `${scorePct}%` }}
                                     />
@@ -260,18 +260,18 @@ export default function VerificationDashboardPage() {
                               {/* Flags */}
                               <td className="px-5 py-4">
                                 {flags.length === 0 ? (
-                                  <span className="inline-flex px-2 py-1 rounded-md font-mono text-[10px] font-medium tracking-widest uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                  <span className="inline-flex px-2 py-1 rounded-md font-mono text-[10px] font-medium tracking-widest uppercase bg-emerald-50 text-emerald-700 border border-emerald-250">
                                     ✓ CLEAR
                                   </span>
                                 ) : (
                                   <div className="flex flex-wrap gap-1.5">
                                     {flags.map((f: string) => (
-                                      <span key={f} className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md font-mono text-[10px] font-medium tracking-widest uppercase bg-red-500/10 text-red-400 border border-red-500/20">
+                                      <span key={f} className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md font-mono text-[10px] font-medium tracking-widest uppercase bg-rose-50 text-rose-700 border border-rose-250">
                                         ⚠️ {f.replace(/_/g, " ")}
                                       </span>
                                     ))}
                                     {p.tags?.evidence?.map((e: string) => (
-                                      <span key={e} className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md font-mono text-[10px] font-medium tracking-widest uppercase bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                                      <span key={e} className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md font-mono text-[10px] font-medium tracking-widest uppercase bg-amber-50 text-amber-700 border border-amber-250">
                                         🛡️ {e.replace(/_/g, " ")}
                                       </span>
                                     ))}
@@ -283,7 +283,7 @@ export default function VerificationDashboardPage() {
                               <td className="px-5 py-4 text-right">
                                 <Link
                                   href={`/papers/${p.id}`}
-                                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] font-medium transition-colors"
+                                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-50 hover:bg-zinc-100 text-zinc-700 text-[11px] font-medium border border-zinc-200 shadow-sm transition-all"
                                 >
                                   <Eye className="w-3.5 h-3.5" />
                                   Inspect
