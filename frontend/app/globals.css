@@ -3,33 +3,33 @@
 @import "react-resizable/css/styles.css";
 
 @theme {
-  --color-background: #09090b; /* Zinc 950 */
-  --color-foreground: #fafafa; /* Zinc 50 */
+  --color-background: #fcfcfd; /* Light off-white */
+  --color-foreground: #09090b; /* Zinc 950 */
   
-  --color-surface-50: #18181b; /* Zinc 900 */
-  --color-surface-100: #27272a; /* Zinc 800 */
-  --color-surface-200: #3f3f46; /* Zinc 700 */
+  --color-surface-50: #ffffff; /* Pure white content blocks */
+  --color-surface-100: #f4f4f5; /* Zinc 100 */
+  --color-surface-200: #e4e4e7; /* Zinc 200 */
   
-  --color-border-subtle: #27272a;
-  --color-border-normal: #3f3f46;
+  --color-border-subtle: #f4f4f5;
+  --color-border-normal: #e4e4e7;
   
-  --color-primary-500: #3b82f6; /* Blue 500 */
-  --color-primary-600: #2563eb; /* Blue 600 */
+  --color-primary-500: #4f46e5; /* Indigo 600 */
+  --color-primary-600: #4338ca; /* Indigo 700 */
   
-  --color-accent-teal: #14b8a6;
-  --color-accent-indigo: #6366f1;
-  --color-accent-purple: #a855f7;
+  --color-accent-teal: #0f766e; /* Teal 700 */
+  --color-accent-indigo: #4f46e5;
+  --color-accent-purple: #7c3aed;
   
   /* Status Colors */
-  --color-status-verified: #10b981; /* Emerald 500 */
-  --color-status-disputed: #ef4444; /* Red 500 */
-  --color-status-unverified: #f59e0b; /* Amber 500 */
-  --color-status-pending: #64748b; /* Slate 500 */
+  --color-status-verified: #059669; /* Emerald 600 */
+  --color-status-disputed: #dc2626; /* Red 600 */
+  --color-status-unverified: #d97706; /* Amber 600 */
+  --color-status-pending: #4b5563; /* Gray 600 */
 }
 
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light;
   }
   
   *, *::before, *::after {

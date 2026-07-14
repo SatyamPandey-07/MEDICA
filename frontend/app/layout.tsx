@@ -113,23 +113,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           content="Production-grade AI-native oncology research intelligence. Continuously ingests, verifies, indexes and links cancer research knowledge."
         />
       </head>
-      <body className="antialiased bg-zinc-950 text-zinc-50 font-sans h-screen overflow-hidden flex">
+      <body className="antialiased bg-zinc-50 text-zinc-900 font-sans h-screen overflow-hidden flex">
         <div className="flex w-full h-full">
           {/* ============================================================
               SIDEBAR
              ============================================================ */}
-          <aside className="relative z-10 flex flex-col shrink-0 w-72 bg-zinc-900/50 border-r border-white/5 backdrop-blur-xl">
+          <aside className="relative z-10 flex flex-col shrink-0 w-72 bg-white border-r border-zinc-200">
             {/* ── Logo ── */}
-            <div className="px-6 py-6 border-b border-white/5">
+            <div className="px-6 py-6 border-b border-zinc-200">
               <div className="flex items-center gap-4">
-                <div className="relative flex items-center justify-center shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg shadow-blue-500/20">
+                <div className="relative flex items-center justify-center shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 shadow-lg shadow-indigo-500/20">
                   <Dna className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <div className="font-bold text-base tracking-wide text-zinc-100">
+                  <div className="font-bold text-base tracking-wide text-zinc-900">
                     MEDICA
                   </div>
-                  <div className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
+                  <div className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
                     Oncology OS v1.0
                   </div>
                 </div>
@@ -148,8 +148,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       href={link.href}
                       className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
                         isActive
-                          ? "bg-indigo-500/10 text-indigo-400 font-semibold border border-indigo-500/20 shadow-sm"
-                          : "text-zinc-400 hover:bg-white/[0.02] hover:text-zinc-200 border border-transparent"
+                          ? "bg-indigo-50 text-indigo-600 font-semibold border border-indigo-100 shadow-sm"
+                          : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800 border border-transparent"
                       }`}
                     >
                       <Icon className="w-4 h-4 shrink-0" />
@@ -163,19 +163,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {isExpertMode && (
                 <div className="mt-4">
                 <div className="flex items-center justify-between px-3 mb-3">
-                  <div className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase font-semibold">
+                  <div className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase font-semibold">
                     Recent Sessions
                   </div>
                   <button
                     onClick={() => router.push("/")}
-                    className="p-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 transition-colors border border-indigo-500/20"
+                    className="p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition-colors border border-indigo-100"
                     title="New Research Session"
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>
                 </div>
                 {sessions.length === 0 ? (
-                  <div className="px-3 py-4 text-[11px] text-zinc-600 italic">
+                  <div className="px-3 py-4 text-[11px] text-zinc-400 italic">
                     No active sessions
                   </div>
                 ) : (
@@ -188,9 +188,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                           onClick={() => router.push(`/?session_id=${s.id}`)}
                           className="group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all"
                           style={{
-                            background: isActive ? "hsl(262 50% 20% / 0.4)" : "transparent",
-                            border: `1px solid ${isActive ? "hsl(262 50% 35% / 0.25)" : "transparent"}`,
-                            color: isActive ? "hsl(262 83% 75%)" : "hsl(220 8% 45%)",
+                            background: isActive ? "hsl(240 4.8% 95.9%)" : "transparent",
+                            border: `1px solid ${isActive ? "hsl(240 5.9% 90%)" : "transparent"}`,
+                            color: isActive ? "hsl(240 5.9% 10%)" : "hsl(240 3.8% 46.1%)",
                             fontSize: 12,
                             overflow: "hidden",
                             minWidth: 0,
@@ -198,7 +198,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         >
                           <Circle
                             className="w-1.5 h-1.5 shrink-0"
-                            style={{ color: isActive ? "hsl(262 83% 70%)" : "hsl(220 8% 30%)", fill: "currentColor" }}
+                            style={{ color: isActive ? "hsl(262 83% 60%)" : "hsl(240 3.8% 80%)", fill: "currentColor" }}
                           />
                           <span
                             style={{
@@ -217,7 +217,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                             onClick={(e) => handleDeleteSession(e, s.id)}
                             className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                             style={{
-                              color: "hsl(0 70% 55%)",
+                              color: "hsl(0 72% 51%)",
                               background: "transparent",
                               border: "none",
                               padding: "2px",
@@ -247,16 +247,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div
               className="px-5 py-3"
               style={{
-                borderTop: "1px solid hsl(240 8% 8%)",
-                background: "hsl(240 10% 2%)",
+                borderTop: "1px solid #e4e4e7",
+                background: "#fafafa",
               }}
             >
               <div className="flex items-center justify-between">
                 <div
                   className="flex items-center gap-2"
-                  style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "hsl(220 8% 30%)", letterSpacing: "0.1em" }}
+                  style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: "hsl(240 3.8% 46.1%)", letterSpacing: "0.1em" }}
                 >
-                  <Activity className="w-3 h-3" style={{ color: "hsl(262 83% 60%)" }} />
+                  <Activity className="w-3 h-3 text-indigo-600" />
                   NODE STATE
                 </div>
                 <div className="flex items-center gap-2">
@@ -266,10 +266,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       width: 6, height: 6,
                       borderRadius: "50%",
                       background: systemHealth === "healthy"
-                        ? "hsl(150 76% 50%)"
+                        ? "hsl(150 76% 40%)"
                         : systemHealth === "unhealthy"
-                        ? "hsl(0 70% 55%)"
-                        : "hsl(220 8% 40%)",
+                        ? "hsl(0 70% 50%)"
+                        : "hsl(240 3.8% 60%)",
                       boxShadow: systemHealth === "healthy"
                         ? "0 0 6px hsl(150 76% 50%)"
                         : "none",
@@ -282,10 +282,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       letterSpacing: "0.1em",
                       textTransform: "uppercase",
                       color: systemHealth === "healthy"
-                        ? "hsl(150 76% 55%)"
+                        ? "hsl(150 76% 40%)"
                         : systemHealth === "unhealthy"
-                        ? "hsl(0 70% 55%)"
-                        : "hsl(220 8% 40%)",
+                        ? "hsl(0 70% 50%)"
+                        : "hsl(240 3.8% 60%)",
                       fontWeight: 600,
                     }}
                   >
@@ -301,7 +301,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
              ============================================================ */}
           <main
             className="flex-1 flex flex-col min-w-0 overflow-hidden relative"
-            style={{ background: "hsl(240 12% 2%)", zIndex: 0 }}
+            style={{ background: "#f9fafb", zIndex: 0 }}
           >
             {children}
           </main>
