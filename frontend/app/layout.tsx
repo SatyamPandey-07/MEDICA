@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     };
   }, []);
 
-  const loadSessionsList = async () => {
+  const loadSessionsList = useCallback(async () => {
     try {
       const [list, health] = await Promise.all([
         listSessions(),
@@ -65,15 +65,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       console.error("Failed loading system state:", e);
       setSystemHealth("unhealthy");
     }
-  };
+  }, []);
 
+  // Mount once: fire immediately and then poll every 10s.
+  // Using a ref-based interval avoids re-creating the timer on every pathname change
+  // (which previously stacked up multiple concurrent intervals).
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   useEffect(() => {
-    queueMicrotask(() => {
-      void loadSessionsList();
-    });
-    const interval = setInterval(() => { loadSessionsList(); }, 10000);
-    return () => clearInterval(interval);
-  }, [pathname]);
+    void loadSessionsList();
+    if (!intervalRef.current) {
+      intervalRef.current = setInterval(() => { void loadSessionsList(); }, 10_000);
+    }
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleDeleteSession = async (e: React.MouseEvent, id: string) => {
     e.preventDefault();

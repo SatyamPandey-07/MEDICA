@@ -23,23 +23,68 @@ function toError(error: unknown): Error {
   return error instanceof Error ? error : new Error(String(error));
 }
 
-// Generic fetch wrapper
+const DEFAULT_TIMEOUT_MS = 10_000; // 10 seconds — prevents UI hanging on slow/dead backends
+
+/**
+ * Generic fetch wrapper with:
+ * - Automatic 10-second timeout via AbortController
+ * - Structured error messages including HTTP status
+ */
 async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = `${API_BASE}${endpoint}`;
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(options?.headers || {}),
-    },
-  });
 
-  if (!response.ok) {
-    const errorText = await response.text().catch(() => response.statusText);
-    throw new Error(`API Error [${response.status}]: ${errorText}`);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+        ...(options?.headers || {}),
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => response.statusText);
+      throw new Error(`API Error [${response.status}]: ${errorText}`);
+    }
+
+    return response.json() as Promise<T>;
+  } catch (err) {
+    if ((err as Error).name === "AbortError") {
+      throw new Error(`API request timed out after ${DEFAULT_TIMEOUT_MS / 1000}s: ${endpoint}`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
   }
+}
 
-  return response.json() as Promise<T>;
+/**
+ * Retry wrapper with exponential backoff for transient failures.
+ * Retries on network errors or 5xx responses, up to `maxRetries` additional attempts.
+ */
+async function withRetry<T>(fn: () => Promise<T>, maxRetries = 2, baseDelayMs = 500): Promise<T> {
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      const msg = (err as Error)?.message ?? "";
+      // Only retry on network / timeout / 5xx errors — not 4xx client errors
+      const isRetryable =
+        msg.includes("timed out") ||
+        msg.includes("Failed to fetch") ||
+        msg.includes("NetworkError") ||
+        /API Error \[5\d\d\]/.test(msg);
+      if (!isRetryable || attempt === maxRetries) break;
+      await new Promise((res) => setTimeout(res, baseDelayMs * 2 ** attempt));
+    }
+  }
+  throw lastErr;
 }
 
 // ============================================================
@@ -47,7 +92,7 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> 
 // ============================================================
 
 export async function listSessions(): Promise<ChatSession[]> {
-  return apiFetch<ChatSession[]>("/chat/sessions");
+  return withRetry(() => apiFetch<ChatSession[]>("/chat/sessions"));
 }
 
 export async function getSession(sessionId: string): Promise<{
@@ -147,7 +192,7 @@ export async function search(
   strategy: string = "hybrid"
 ): Promise<RetrievalResult[]> {
   const params = new URLSearchParams({ q: query, limit: String(limit), strategy });
-  return apiFetch<RetrievalResult[]>(`/search?${params}`);
+  return withRetry(() => apiFetch<RetrievalResult[]>(`/search?${params}`));
 }
 
 export async function getPaper(paperId: string): Promise<PaperMetadata> {
@@ -224,12 +269,14 @@ export async function getHealth(): Promise<{
   embedding_provider: string;
   knowledge_graph: GraphStats;
 }> {
-  return apiFetch<{
-    status: string;
-    environment: string;
-    database: string;
-    llm_provider: string;
-    embedding_provider: string;
-    knowledge_graph: GraphStats;
-  }>("/health");
+  return withRetry(() =>
+    apiFetch<{
+      status: string;
+      environment: string;
+      database: string;
+      llm_provider: string;
+      embedding_provider: string;
+      knowledge_graph: GraphStats;
+    }>("/health")
+  );
 }

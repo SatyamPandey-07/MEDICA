@@ -32,6 +32,7 @@ function ChatPageContent() {
 
   const lastLoadedSessionId = useRef<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const suggestions = [
     "Review pembrolizumab efficacy in mismatch repair-deficient (dMMR) colorectal cancer.",
@@ -68,6 +69,14 @@ function ChatPageContent() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, currentAnswer, currentReasoning]);
+
+  // Auto-resize textarea as content grows
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto"; // reset first so shrink works
+    el.style.height = `${el.scrollHeight}px`;
+  }, [input]);
 
   const handleSend = async (textToSend: string) => {
     if (!textToSend.trim() || isStreaming) return;
@@ -313,6 +322,7 @@ function ChatPageContent() {
       <footer className="p-4 md:p-6 shrink-0 bg-white border-t border-zinc-200 shadow-sm">
         <div className="max-w-3xl mx-auto relative">
           <textarea
+            ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
@@ -324,7 +334,7 @@ function ChatPageContent() {
             placeholder="Query clinical evidence, run trial searches, or verify oncological claims..."
             disabled={isStreaming}
             rows={1}
-            className="w-full pl-5 pr-14 py-4 bg-white border border-zinc-200 rounded-2xl text-[14px] text-zinc-800 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-indigo-500/20 focus:border-indigo-500/20 resize-none min-h-[56px] transition-all"
+            className="w-full pl-5 pr-14 py-4 bg-white border border-zinc-200 rounded-2xl text-[14px] text-zinc-800 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-indigo-500/20 focus:border-indigo-500/20 resize-none min-h-[56px] max-h-[200px] overflow-y-auto transition-all"
           />
           <button
             onClick={() => handleSend(input)}
