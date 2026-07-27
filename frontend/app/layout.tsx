@@ -17,6 +17,7 @@ import {
   Circle,
   LayoutDashboard,
   Newspaper,
+  GitCompare,
 } from "lucide-react";
 
 import { listSessions, deleteSession, getHealth } from "@/lib/api";
@@ -107,6 +108,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     { name: "Citation Graph", href: "/graph", icon: GitBranch, color: "text-cyan-400" },
     { name: "Research Timeline", href: "/timeline", icon: Clock, color: "text-indigo-400" },
     { name: "Evidence Auditor", href: "/verification", icon: ShieldCheck, color: "text-emerald-400" },
+    { name: "Paper Comparator", href: "/compare", icon: GitCompare, color: "text-violet-500" },
     { name: "System Operator", href: "/admin", icon: Cpu, color: "text-purple-400" },
   ];
 

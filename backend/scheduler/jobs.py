@@ -17,13 +17,13 @@ from ingestion.pipeline import IngestionPipeline
 from processing.normalizer import Normalizer
 from processing.tagger import Tagger
 from processing.linker import EntityLinker
-from verification.adversarial import AdversarialVerifier
+from verification.multi_layer_verifier import MultiLayerVerifier
 from knowledge.store import KnowledgeStore
 from knowledge.graph import graph
 from indexing.vector import VectorIndex
 from indexing.metadata import MetadataIndex
 from shared.database import get_session
-from shared.models import PaperRecord, IngestionJobRecord
+from shared.models import ClaimRecord, PaperRecord, IngestionJobRecord
 
 logger = get_logger(__name__)
 
@@ -47,7 +47,7 @@ async def daily_fetch_job() -> None:
     normalizer = Normalizer()
     tagger = Tagger()
     linker = EntityLinker()
-    verifier = AdversarialVerifier()
+    verifier = MultiLayerVerifier()
     store = KnowledgeStore()
     vector = VectorIndex()
     metadata = MetadataIndex()
@@ -150,6 +150,10 @@ async def weekly_optimize_job() -> None:
 
         # 2. Semantic Cross-Linking (controversies and relationship mapping)
         logger.info("scheduler_computing_cross_links")
+        # Local import to avoid circular / keep the Vercel-deployed backend import-safe
+        # (backend.analysis lazy-imports its own heavy deps, but this keeps the pattern explicit).
+        from analysis import claim_layer  # noqa: PLC0415
+
         for record in records:
             if not record.abstract:
                 continue
@@ -163,31 +167,40 @@ async def weekly_optimize_job() -> None:
 
             related_ids = []
             contradictory_ids = []
+            record_claims: list[str] | None = None
 
             for other_id, score in similar:
                 if other_id == record.id:
                     continue  # Self-match
+                if score < 0.70:
+                    continue
 
-                if score >= 0.70:
-                    related_ids.append(str(other_id))
+                related_ids.append(str(other_id))
 
-                    # Contradiction heuristic: matching drug/biomarker/cancer tag, but opposing results
-                    # (For a real system, we'd use LLM claims verification or check opposing efficacy findings.
-                    # As a heuristic, we flag disputed findings or papers that have significant score differences.)
+                # Real contradiction detection: classify the relationship between each
+                # paper's extracted claims (Supports/Contradicts/Extends/Similar/Neutral)
+                # via the multi-layer pipeline's claim layer, replacing the previous
+                # "papers share a disputed tag" heuristic.
+                if record_claims is None:
                     async with get_session() as session:
-                        other_res = await session.execute(
-                            select(PaperRecord).where(PaperRecord.id == other_id)
+                        record_claims_res = await session.execute(
+                            select(ClaimRecord.claim_text).where(ClaimRecord.paper_id == record.id)
                         )
-                        other_record = other_res.scalar_one_or_none()
+                        record_claims = [row[0] for row in record_claims_res.all()]
 
-                    if other_record:
-                        # If one paper has high evidence, another disputed, or they have opposite evidence quality flags
-                        record_flags = record.tags.get("evidence", []) if record.tags else []
-                        other_flags = other_record.tags.get("evidence", []) if other_record.tags else []
-                        
-                        has_dispute = "disputed" in record_flags or "disputed" in other_flags
-                        if has_dispute:
-                            contradictory_ids.append(str(other_id))
+                async with get_session() as session:
+                    other_claims_res = await session.execute(
+                        select(ClaimRecord.claim_text).where(ClaimRecord.paper_id == other_id)
+                    )
+                    other_claims = [row[0] for row in other_claims_res.all()]
+
+                if record_claims and other_claims:
+                    relation_counts, _ = await claim_layer.compare_claims(record_claims, other_claims)
+                    dominant_contradicts = relation_counts["Contradicts"] > 0 and relation_counts["Contradicts"] >= max(
+                        relation_counts["Supports"], relation_counts["Extends"], relation_counts["Similar"]
+                    )
+                    if dominant_contradicts:
+                        contradictory_ids.append(str(other_id))
 
             # Update DB record
             async with get_session() as session:

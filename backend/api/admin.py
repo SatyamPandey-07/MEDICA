@@ -19,7 +19,7 @@ from ingestion.pipeline import IngestionPipeline
 from processing.normalizer import Normalizer
 from processing.tagger import Tagger
 from processing.linker import EntityLinker
-from verification.adversarial import AdversarialVerifier
+from verification.multi_layer_verifier import MultiLayerVerifier
 from knowledge.store import KnowledgeStore
 from indexing.vector import VectorIndex
 from indexing.metadata import MetadataIndex
@@ -43,7 +43,7 @@ async def _bg_run_pipeline(
     normalizer = Normalizer()
     tagger = Tagger()
     linker = EntityLinker()
-    verifier = AdversarialVerifier()
+    verifier = MultiLayerVerifier()
     store = KnowledgeStore()
     vector = VectorIndex()
     metadata = MetadataIndex()

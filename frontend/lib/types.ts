@@ -172,3 +172,48 @@ export interface GraphRebuildResult extends GraphStats {
   nodes: number;
   edges: number;
 }
+
+// ============================================================
+// Multi-Layer Paper Comparison
+// ============================================================
+
+export interface RelationCounts {
+  supports: number;
+  contradicts: number;
+  extends: number;
+  similar: number;
+  neutral: number;
+}
+
+export interface LayerScores {
+  keyword_jaccard: number;
+  embedding_similarity: number;
+  topic_similarity: number;
+  entity_similarity: number;
+  claim_similarity: number;
+}
+
+export interface ComparisonCandidateResult {
+  candidate_id: string;
+  title: string;
+  scores: LayerScores;
+  overall_score: number;
+  relation_counts: RelationCounts;
+  shared_keywords: string[];
+  shared_entities: string[];
+  new_paper_claims: string[];
+  candidate_claims: string[];
+}
+
+export interface PaperComparisonResponse {
+  new_paper_title: string;
+  new_paper_keywords: string[];
+  new_paper_entities: string[];
+  new_paper_claims: string[];
+  candidates: ComparisonCandidateResult[];
+  weights: Record<string, number>;
+  ocr_used: boolean;
+  num_pages: number | null;
+  candidate_pool_size: number;
+  cancer_type_filter: string | null;
+}

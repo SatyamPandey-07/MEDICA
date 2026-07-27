@@ -145,6 +145,7 @@ class IngestionPipeline:
                 paper.confidence_score = verification.confidence_score
                 paper.evidence_level = verification.evidence_level
                 paper.adversarial_review = verification.adversarial_review
+                paper.contradictory_papers = verification.contradictions
 
                 # 5. STORE to knowledge filesystem
                 knowledge_path = await self.knowledge_store.store(paper, adversarial_review=verification.adversarial_review)

@@ -19,7 +19,7 @@ from ingestion.pipeline import IngestionPipeline
 from processing.normalizer import Normalizer
 from processing.tagger import Tagger
 from processing.linker import EntityLinker
-from verification.adversarial import AdversarialVerifier
+from verification.multi_layer_verifier import MultiLayerVerifier
 from verification.scorer import EvidenceScorer
 from knowledge.store import KnowledgeStore
 from indexing.vector import VectorIndex
@@ -35,7 +35,7 @@ _pubmed_adapter = PubMedAdapter()
 _normalizer = Normalizer()
 _tagger = Tagger()
 _linker = EntityLinker()
-_verifier = AdversarialVerifier()
+_verifier = MultiLayerVerifier()
 _knowledge_store = KnowledgeStore()
 _vector_index = VectorIndex()
 _metadata_index = MetadataIndex()

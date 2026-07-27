@@ -16,7 +16,7 @@ from ingestion.semantic_scholar import SemanticScholarAdapter
 from processing.linker import EntityLinker
 from processing.normalizer import Normalizer
 from processing.tagger import Tagger
-from verification.adversarial import AdversarialVerifier
+from verification.multi_layer_verifier import MultiLayerVerifier
 
 logger = get_logger(__name__)
 
@@ -127,7 +127,7 @@ async def run_seeder(
     normalizer = Normalizer()
     tagger = Tagger()
     linker = EntityLinker()
-    verifier = AdversarialVerifier()
+    verifier = MultiLayerVerifier()
     knowledge_store = KnowledgeStore()
     vector_index = VectorIndex()
     metadata_index = MetadataIndex()

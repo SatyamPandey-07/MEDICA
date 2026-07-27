@@ -17,6 +17,7 @@ from scheduler.runner import scheduler_runner
 from api.chat import router as chat_router
 from api.search import router as search_router
 from api.admin import router as admin_router
+from api.analysis import router as analysis_router
 from knowledge.graph import graph
 
 configure_logging()
@@ -72,6 +73,7 @@ def create_app() -> FastAPI:
     app.include_router(chat_router, prefix="/api")
     app.include_router(search_router, prefix="/api")
     app.include_router(admin_router, prefix="/api")
+    app.include_router(analysis_router, prefix="/api")
 
     @app.get("/api/health")
     async def health_check(db: AsyncSession = Depends(get_db)):

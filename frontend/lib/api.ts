@@ -15,6 +15,7 @@ import {
   GraphNetwork,
   GraphStats,
   GraphRebuildResult,
+  PaperComparisonResponse,
 } from "./types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
@@ -259,6 +260,57 @@ export async function triggerOptimization(): Promise<{ status: string; message: 
 
 export async function rebuildKnowledgeGraph(): Promise<GraphRebuildResult> {
   return apiFetch<GraphRebuildResult>("/admin/graph/rebuild", { method: "POST" });
+}
+
+// ============================================================
+// Multi-Layer Paper Comparison API
+// ============================================================
+
+// Runs many sequential LLM calls (claim extraction + pairwise relation
+// classification per candidate), so this needs a much longer budget than
+// the default 10s JSON timeout.
+const COMPARE_TIMEOUT_MS = 180_000;
+
+export async function comparePaper(params: {
+  file?: File | null;
+  title?: string;
+  abstract?: string;
+  cancerType?: string;
+  candidateLimit?: number;
+}): Promise<PaperComparisonResponse> {
+  const formData = new FormData();
+  if (params.file) formData.append("file", params.file);
+  if (params.title) formData.append("title", params.title);
+  if (params.abstract) formData.append("abstract", params.abstract);
+  if (params.cancerType) formData.append("cancer_type", params.cancerType);
+  if (params.candidateLimit) formData.append("candidate_limit", String(params.candidateLimit));
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), COMPARE_TIMEOUT_MS);
+
+  try {
+    // Note: no Content-Type header — the browser sets the multipart
+    // boundary automatically when the body is a FormData instance.
+    const response = await fetch(`${API_BASE}/analysis/compare`, {
+      method: "POST",
+      body: formData,
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => response.statusText);
+      throw new Error(`API Error [${response.status}]: ${errorText}`);
+    }
+
+    return response.json() as Promise<PaperComparisonResponse>;
+  } catch (err) {
+    if ((err as Error).name === "AbortError") {
+      throw new Error(`Comparison request timed out after ${COMPARE_TIMEOUT_MS / 1000}s.`);
+    }
+    throw toError(err);
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 export async function getHealth(): Promise<{
