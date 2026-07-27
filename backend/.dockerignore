@@ -9,5 +9,9 @@ venv
 *.egg-info
 .pytest_cache
 tests/
-knowledge/
+# Only the markdown knowledge-base data is excluded (docker-compose bind-mounts
+# it at runtime) — knowledge/*.py (graph.py, store.py, seeder.py) is source code
+# and must ship in the image.
+knowledge/cancers/
+knowledge/entities/
 **/.DS_Store

@@ -25,6 +25,7 @@ nltk>=3.8.1
 # Topic classification + entity/keyword NLP
 torch>=2.0.0
 transformers>=4.35.0
+accelerate>=0.26.0
 spacy>=3.7.0
 pytextrank>=3.3.0
 

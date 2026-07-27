@@ -107,6 +107,11 @@ class Normalizer:
             except (ValueError, TypeError):
                 sample_size = None
 
+        pmid = normalize_pmid(raw.pmid) if raw.pmid else None
+        doi = normalize_doi(raw.doi) if raw.doi else None
+        published = parse_date(raw.published_date)
+        keywords = self._normalize_keywords(raw.keywords) if raw.keywords else []
+
         paper = PaperMetadata(
             id=uuid4(),
             title=title,

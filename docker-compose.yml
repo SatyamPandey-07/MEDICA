@@ -37,7 +37,12 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./knowledge:/app/knowledge
+      # Bind-mount only the markdown data subdirectories for persistence —
+      # mounting the whole ./knowledge:/app/knowledge would shadow the
+      # backend.knowledge Python package (__init__.py, graph.py, store.py,
+      # seeder.py) that also lives at /app/knowledge inside the image.
+      - ./knowledge/cancers:/app/knowledge/cancers
+      - ./knowledge/entities:/app/knowledge/entities
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
       interval: 10s

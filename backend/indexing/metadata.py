@@ -8,7 +8,8 @@ from __future__ import annotations
 from uuid import UUID
 from datetime import datetime
 
-from sqlalchemy import select, and_, or_, func, cast, String
+from sqlalchemy import select, and_, or_, func, cast
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from core.logging import get_logger
@@ -64,6 +65,7 @@ class MetadataIndex:
             "related_papers": paper.related_papers,
             "contradictory_papers": paper.contradictory_papers,
             "citation_count": paper.citation_count,
+            "adversarial_review": paper.adversarial_review,
             "knowledge_path": paper.knowledge_path,
         }
 
@@ -171,7 +173,7 @@ class MetadataIndex:
                 for tag in cancer_tags:
                     conditions.append(
                         func.jsonb_exists(
-                            cast(PaperRecord.tags["cancer"], String),
+                            cast(PaperRecord.tags["cancer"], JSONB),
                             tag
                         )
                     )

@@ -12,12 +12,12 @@ from core.logging import get_logger
 
 logger = get_logger(__name__)
 
-_GEMINI_EMBEDDING_MODEL = "models/text-embedding-004"
-_GEMINI_EMBEDDING_DIMENSIONS = 768
+_GEMINI_EMBEDDING_MODEL = "models/gemini-embedding-001"
+_GEMINI_EMBEDDING_DIMENSIONS = 3072
 
 
 async def get_gemini_embedding(text: str, cache: dict[str, list[float]] | None = None) -> list[float]:
-    """Embed `text` with Gemini's text-embedding-004, with optional in-memory caching."""
+    """Embed `text` with Gemini's embedding model, with optional in-memory caching."""
     if cache is not None and text in cache:
         return cache[text]
 
@@ -38,7 +38,9 @@ async def get_gemini_embedding(text: str, cache: dict[str, list[float]] | None =
     except Exception as e:
         logger.warning("gemini_embedding_failed", error=str(e))
         # Fallback keeps the pipeline running if the embedding API is unavailable.
-        vector = [random.random() for _ in range(_GEMINI_EMBEDDING_DIMENSIONS)]
+        # Zero-centered so fallback vectors don't read as spuriously similar to
+        # each other (random.random() is [0,1) and biases cosine similarity high).
+        vector = [random.uniform(-1.0, 1.0) for _ in range(_GEMINI_EMBEDDING_DIMENSIONS)]
 
     if cache is not None:
         cache[text] = vector
