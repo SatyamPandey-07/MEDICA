@@ -50,6 +50,7 @@ def _record_to_metadata(record: PaperRecord) -> PaperMetadata:
         doi=record.doi,
         journal=record.journal,
         published=record.published,
+        published_precision=record.published_precision,
         authors=record.authors or [],
         source=DataSource(record.source),
         verification_status=VerificationStatus(record.verification_status),

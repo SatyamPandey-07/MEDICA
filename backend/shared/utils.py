@@ -122,25 +122,42 @@ def paper_fingerprint(title: str, pmid: str | None = None, doi: str | None = Non
 # Date Parsing
 # ============================================================
 
-_DATE_FORMATS = [
-    "%Y-%m-%d",
-    "%Y/%m/%d",
-    "%Y %b %d",
-    "%Y %B %d",
-    "%b %Y",
-    "%B %Y",
-    "%Y",
+# Ordered (format, precision) — day-precision formats first so a string that
+# happens to also satisfy a looser format still resolves to its best precision.
+_DATE_FORMATS: list[tuple[str, str]] = [
+    ("%Y-%m-%d", "day"),
+    ("%Y/%m/%d", "day"),
+    ("%Y %b %d", "day"),
+    ("%Y %B %d", "day"),
+    ("%Y %b", "month"),   # PubMed's common "2019 Sep" (year + month, no day)
+    ("%Y %B", "month"),
+    ("%b %Y", "month"),
+    ("%B %Y", "month"),
+    ("%Y", "year"),
 ]
 
 
 def parse_date(date_str: str | None) -> datetime | None:
     """Try to parse a date string in multiple formats."""
+    parsed = parse_date_with_precision(date_str)
+    return parsed[0] if parsed else None
+
+
+def parse_date_with_precision(date_str: str | None) -> tuple[datetime, str] | None:
+    """
+    Parse a date string, returning (datetime, precision) where precision is
+    "day", "month", or "year" — whichever the source string actually specified.
+    Missing month/day fields are defaulted to 1 by strptime for sortability,
+    but callers must consult precision before displaying month/day to avoid
+    presenting a fabricated value (e.g. PubMed's year-only "2018" must not be
+    shown as "Jan 1, 2018").
+    """
     if not date_str:
         return None
     date_str = date_str.strip()
-    for fmt in _DATE_FORMATS:
+    for fmt, precision in _DATE_FORMATS:
         try:
-            return datetime.strptime(date_str, fmt)
+            return datetime.strptime(date_str, fmt), precision
         except ValueError:
             continue
     return None

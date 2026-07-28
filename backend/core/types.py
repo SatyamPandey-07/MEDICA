@@ -91,6 +91,7 @@ class PaperMetadata(BaseModel):
     doi: str | None = None
     journal: str | None = None
     published: datetime | None = None
+    published_precision: str | None = None  # "day" | "month" | "year" — how much of `published` is real
     authors: list[str] = Field(default_factory=list)
     source: DataSource = DataSource.PUBMED
     verification_status: VerificationStatus = VerificationStatus.PENDING

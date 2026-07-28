@@ -50,6 +50,7 @@ export interface PaperMetadata {
   doi?: string | null;
   journal?: string | null;
   published?: string | null; // ISO Date String
+  published_precision?: "day" | "month" | "year" | null; // how much of `published` is real vs. defaulted
   authors: string[];
   source: DataSource;
   verification_status: VerificationStatus;

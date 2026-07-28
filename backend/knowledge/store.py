@@ -104,6 +104,7 @@ class KnowledgeStore:
             "doi": paper.doi,
             "journal": paper.journal,
             "published": paper.published.isoformat() if paper.published else None,
+            "published_precision": paper.published_precision,
             "authors": paper.authors[:10],  # Cap at 10
             "source": paper.source.value,
             "verification_status": paper.verification_status.value,

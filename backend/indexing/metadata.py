@@ -41,6 +41,7 @@ class MetadataIndex:
             "doi": paper.doi,
             "journal": paper.journal,
             "published": paper.published,
+            "published_precision": paper.published_precision,
             "authors": paper.authors,
             "source": paper.source.value,
             "abstract": paper.abstract,

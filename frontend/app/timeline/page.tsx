@@ -151,7 +151,15 @@ export default function ResearchTimelinePage() {
                   <div className="pl-4 md:pl-8 flex flex-col gap-6">
                     {byYear[year].map((p, idx) => {
                       const pubDate = new Date(p.published);
-                      const monthDay = pubDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+                      // Only render the level of date precision PubMed actually provided —
+                      // showing a specific day for a year-only record would be fabricated data.
+                      const precision = p.published_precision;
+                      const dateLabel =
+                        precision === "day"
+                          ? pubDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                          : precision === "month"
+                          ? pubDate.toLocaleDateString("en-US", { month: "short" })
+                          : null;
                       const evidStyle = getEvidenceStyle(p.evidence_level);
                       const statusStyle = getStatusColor(p.verification_status);
 
@@ -167,12 +175,14 @@ export default function ResearchTimelinePage() {
                           >
                             {/* Top row */}
                             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
-                              {/* Date chip */}
-                              <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-mono font-semibold text-zinc-650 bg-zinc-50 px-2.5 py-1 rounded-lg border border-zinc-200">
-                                  {monthDay}
-                                </span>
-                              </div>
+                              {/* Date chip — only shown when we have real month/day precision */}
+                              {dateLabel && (
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] font-mono font-semibold text-zinc-650 bg-zinc-50 px-2.5 py-1 rounded-lg border border-zinc-200">
+                                    {dateLabel}
+                                  </span>
+                                </div>
+                              )}
 
                               {/* Badges */}
                               <div className="flex items-center gap-2 flex-wrap">

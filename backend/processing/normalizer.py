@@ -10,7 +10,7 @@ from uuid import uuid4
 
 from core.logging import get_logger
 from core.types import DataSource, EvidenceLevel, PaperMetadata, RawPaper, StudyType, VerificationStatus
-from shared.utils import normalize_doi, normalize_pmid, parse_date, resolve_alias, truncate
+from shared.utils import normalize_doi, normalize_pmid, parse_date_with_precision, resolve_alias, truncate
 
 logger = get_logger(__name__)
 
@@ -109,7 +109,9 @@ class Normalizer:
 
         pmid = normalize_pmid(raw.pmid) if raw.pmid else None
         doi = normalize_doi(raw.doi) if raw.doi else None
-        published = parse_date(raw.published_date)
+        parsed_date = parse_date_with_precision(raw.published_date)
+        published = parsed_date[0] if parsed_date else None
+        published_precision = parsed_date[1] if parsed_date else None
         keywords = self._normalize_keywords(raw.keywords) if raw.keywords else []
 
         paper = PaperMetadata(
@@ -119,6 +121,7 @@ class Normalizer:
             doi=doi,
             journal=self._clean_text(raw.journal),
             published=published,
+            published_precision=published_precision,
             authors=raw.authors,
             source=raw.source,
             verification_status=VerificationStatus.PENDING,

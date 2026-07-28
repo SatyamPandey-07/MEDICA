@@ -40,6 +40,7 @@ class PaperRecord(Base):
     doi: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
     journal: Mapped[str | None] = mapped_column(String(500), nullable=True)
     published: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    published_precision: Mapped[str | None] = mapped_column(String(10), nullable=True)
     authors: Mapped[list] = mapped_column(JSON, default=list)
     source: Mapped[str] = mapped_column(String(50), nullable=False)
     abstract: Mapped[str | None] = mapped_column(Text, nullable=True)

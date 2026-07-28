@@ -42,6 +42,7 @@ async def migrate():
             ("biomarkers",     "JSONB NOT NULL DEFAULT '[]'"),
             ("is_open_access", "BOOLEAN NOT NULL DEFAULT FALSE"),
             ("adversarial_review", "TEXT"),
+            ("published_precision", "VARCHAR(10)"),
         ]
         for col, typedef in migrations:
             if col not in paper_cols:
