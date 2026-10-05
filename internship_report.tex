@@ -1,0 +1,297 @@
+\documentclass[11pt,a4paper]{article}
+
+% =========================================================================
+% CLEAN, ACCESSIBLE 5-PAGE ACADEMIC INTERNSHIP REPORT
+% =========================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.75in,top=0.75in,bottom=0.75in]{geometry}
+\usepackage{times}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+
+% --- Color Palette ---
+\definecolor{MedicaNavy}{HTML}{0F172A}
+\definecolor{MedicaTeal}{HTML}{0D9488}
+\definecolor{MedicaSlate}{HTML}{334155}
+\definecolor{MedicaBorder}{HTML}{CBD5E1}
+
+% --- Hyperlink Setup ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=MedicaNavy,
+    citecolor=MedicaTeal,
+    urlcolor=MedicaTeal
+}
+
+% --- Typography & Spacing ---
+\setstretch{1.1}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2.5pt}
+
+% Section Headers
+\titleformat{\section}
+  {\normalsize\bfseries\color{MedicaNavy}}
+  {\thesection}{0.5em}
+  {}[\vspace{-0.3em}\color{MedicaBorder}\rule{\linewidth}{0.5pt}]
+
+\titleformat{\subsection}
+  {\small\bfseries\color{MedicaSlate}}
+  {\thesubsection}{0.4em}{}
+
+\titlespacing*{\section}{0pt}{4pt}{2pt}
+\titlespacing*{\subsection}{0pt}{3pt}{1pt}
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\scriptsize\textit{MEDICA: Oncology Research Operating System}}
+\lhead{\scriptsize\textbf{Augenblick Consulting LLP} $\cdot$ \textbf{TSEC AI\&DS}}
+\cfoot{\small Page \thepage\ of 5}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0.3pt}
+
+\begin{document}
+
+% =========================================================================
+% PAGE 1: COVER PAGE
+% =========================================================================
+\begin{titlepage}
+    \centering
+    \vspace*{0.2cm}
+    
+    {\Large \textbf{THADOMAL SHAHANI ENGINEERING COLLEGE}}\\[0.2cm]
+    {\large \textbf{DEPARTMENT OF ARTIFICIAL INTELLIGENCE \& DATA SCIENCE}}\\[0.1cm]
+    {\normalsize \textbf{AI\&DS DEPT., TSEC}}\\[0.1cm]
+    {\small Adv. Nari Gursahani Marg, TPS III, Bandra (West), Mumbai --- 400 050, Maharashtra, India}\\[1.5cm]
+    
+    \rule{\linewidth}{1.0pt}\\[0.3cm]
+    {\Large \textbf{INTERNSHIP REPORT}}\\[0.15cm]
+    {\normalsize Submitted in partial fulfilment of the requirements for the degree of}\\[0.15cm]
+    {\large \textbf{Bachelor of Engineering in Artificial Intelligence \& Data Science}}\\[0.1cm]
+    {\normalsize \textbf{University of Mumbai $\cdot$ Academic Year 2026--2027}}\\[0.3cm]
+    \rule{\linewidth}{1.0pt}\\[1.5cm]
+    
+    {\large \textbf{FORWARD DEPLOYED ENGINEER INTERNSHIP}}\\[0.2cm]
+    {\normalsize \textbf{Project Title:} \textbf{MEDICA --- Autonomous Oncology Research Operating System}}\\[1.5cm]
+    
+    \begin{minipage}{0.48\textwidth}
+        \textbf{Submitted By:}\\[0.15cm]
+        \textbf{Name:} Satyam Pandey\\
+        \textbf{Roll No:} 2401074\\
+        \textbf{Semester:} 5\\
+        \textbf{Branch:} AI \& Data Science
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \begin{flushright}
+            \textbf{Host Organization:}\\[0.15cm]
+            \textbf{Augenblick Consulting LLP}\\
+            Andheri (East), Mumbai\\
+            \textbf{Industry Mentor:}\\
+            \textbf{Mr. Kapil Nichani} (Founder)
+        \end{flushright}
+    \end{minipage}
+
+    \vfill
+    {\normalsize \textbf{Department of Artificial Intelligence \& Data Science}}\\
+    {\normalsize \textbf{Thadomal Shahani Engineering College, University of Mumbai}}\\
+    {\small \textbf{September 2026}}
+\end{titlepage}
+
+% =========================================================================
+% PAGE 2: CERTIFICATE & ACKNOWLEDGEMENTS
+% =========================================================================
+\thispagestyle{plain}
+\begin{center}
+    {\Large \textbf{THADOMAL SHAHANI ENGINEERING COLLEGE}}\\[0.15cm]
+    {\large \textbf{DEPARTMENT OF ARTIFICIAL INTELLIGENCE \& DATA SCIENCE}}\\[0.2cm]
+    {\large \textbf{CERTIFICATE OF INTERNSHIP WORK}}\\[0.4cm]
+\end{center}
+
+This is to certify that the internship program entitled \textbf{``FORWARD DEPLOYED ENGINEER INTERNSHIP (MEDICA: ONCOLOGY RESEARCH OPERATING SYSTEM)''} carried out at \textbf{Augenblick Consulting LLP} from \textbf{21st May, 2026 to 31st July, 2026}, is a bonafide record of technical work completed
+
+\begin{center}
+    \textbf{By:}\\[0.1cm]
+    \textbf{\large ROLL NO: 2401074} \quad $\vert$ \quad \textbf{\Large NAME: SATYAM PANDEY}
+\end{center}
+
+Submitted in fulfilment of the academic requirements for the \textbf{Internship Program in SEM 4 / SEM 5 Artificial Intelligence \& Data Science} at \textbf{Thadomal Shahani Engineering College, University of Mumbai} on \textbf{30th September, 2026}.
+
+\vspace{1.8cm}
+
+\noindent
+\begin{tabularx}{\textwidth}{X X}
+    \rule{6.2cm}{0.4pt} & \rule{6.2cm}{0.4pt}\\
+    \textbf{Mr. Kapil Nichani} & \textbf{Dr. Madhuri Rao}\\
+    Industry Mentor \& Founder, & Head of Department,\\
+    Augenblick Consulting LLP & Dept. of AI \& DS, TSEC\\
+\end{tabularx}
+
+\vspace{0.8cm}
+\begin{center}
+    \rule{0.8\linewidth}{0.4pt}
+\end{center}
+\vspace{0.2cm}
+
+\section*{Acknowledgements}
+I express my deepest gratitude to my industry mentor, \textbf{Mr. Kapil Nichani} (\href{https://www.linkedin.com/in/kapilnichani/}{LinkedIn Profile}), Founder and Engineering Leader at \textbf{Augenblick Consulting LLP}. His technical guidance, architectural reviews, and continuous mentorship were instrumental in shaping the MEDICA Oncology Research Operating System into a reliable, production-ready platform. Under his direction, I gained invaluable experience in forward-deployed engineering, resilient backend systems, and biomedical data analytics.
+
+I also extend my sincere appreciation to \textbf{Augenblick Consulting LLP} for providing me with this opportunity to work on authentic industry challenges in artificial intelligence. I convey my heartfelt thanks to \textbf{Dr. Madhuri Rao}, Head of the Department of Artificial Intelligence \& Data Science, for her encouragement, continuous vision, and support throughout the internship program. Finally, I thank the faculty members of Thadomal Shahani Engineering College for their academic guidance.
+
+\vspace{0.4cm}
+\noindent
+\textbf{Satyam Pandey}\\
+Roll No: 2401074 $\cdot$ Semester 5, Department of AI \& DS\\
+Thadomal Shahani Engineering College, University of Mumbai
+
+\clearpage
+
+% =========================================================================
+% PAGE 3: COMPANY OVERVIEW, PROJECT REPORT & LEARNING OUTCOMES
+% =========================================================================
+\section{Introduction to the Company \& Internship Framework}
+
+\textbf{Augenblick Consulting LLP} is a technology consulting and engineering firm (LLP Identity No: \textbf{ACB-5718}; Registered Office: 2101, Petunia, Vasant Oasis, Andheri East, Mumbai -- 400 059, India; Website: \href{https://www.augenblick.consulting}{www.augenblick.consulting}). The firm specializes in delivering custom software platforms across artificial intelligence, enterprise data analytics, and cloud engineering.
+
+As outlined in the official offer letter dated \textbf{20th May, 2026} and accepted on \textbf{23rd May, 2026}, I was appointed as a \textbf{Forward Deployed Engineer Intern} for a full-time, 10-week tenure from \textbf{21st May, 2026 to 31st July, 2026} in a remote format, receiving a monthly stipend of \textbf{INR 6,000/-} (with performance reviews up to \textbf{INR 20,000/-}). My work strictly complied with the terms of Annexure A regarding confidentiality, responsible AI utilization, intellectual property ownership, and professional exclusivity.
+
+\section{Project Report: MEDICA --- Autonomous Oncology Research OS}
+
+\subsection{Project Introduction \& Objectives}
+The internship focused on the engineering of \textbf{MEDICA} (\href{https://medica-ictf.vercel.app}{Live Demo}, \href{https://github.com/SatyamPandey-07/MEDICA}{Source Code}), an autonomous clinical intelligence platform that assists oncologists and researchers in navigating vast volumes of cancer literature. In oncology, thousands of clinical trials, genomic studies, and drug reports are published monthly across sources like PubMed, Europe PMC, and ClinicalTrials.gov. Traditional search tools lack semantic synthesis, while commercial LLMs frequently hallucinate fabricated endpoints and non-existent citations.
+
+MEDICA resolves this problem through three core functional components:
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item \textbf{Autonomous ReAct Copilot:} An AI research agent that reasons, breaks down complex medical questions, queries literature tools, and provides answers strictly grounded in peer-reviewed PubMed citations.
+    \item \textbf{Hybrid Search Engine:} A dual-retrieval system combining dense semantic vector search (via PostgreSQL with pgvector) and full-text keyword search with clinical evidence-level reranking.
+    \item \textbf{Multi-Source Ingestion \& Evidence Auditing:} Automated pipelines that ingest, parse, and verify papers from PubMed, Europe PMC, and ClinicalTrials.gov, checking for methodology rigor and clinical trial consensus.
+\end{itemize}
+
+\subsection{Learning Outcomes}
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item Gained practical experience in architecting full-stack AI applications with Next.js 16, FastAPI, and PostgreSQL.
+    \item Developed autonomous ReAct agents capable of multi-step tool execution and verifiable citation generation.
+    \item Learned how to configure and optimize vector similarity search using PostgreSQL and the pgvector extension.
+    \item Built hybrid information retrieval systems fusing dense embeddings with full-text keyword indices.
+    \item Implemented automated ETL connectors consuming scientific APIs (NCBI PubMed, Europe PMC, CrossRef).
+    \item Developed asynchronous microservices in Python using FastAPI, SQLAlchemy 2.0 (async), and structured logging.
+    \item Gained practical knowledge of clinical evidence tiers (Meta-Analyses, RCTs, Phase I--IV clinical trials).
+    \item Enhanced frontend engineering skills in building interactive diagnostic dashboards with TypeScript and Tailwind CSS.
+\end{itemize}
+
+\clearpage
+
+% =========================================================================
+% PAGE 4: WEEKLY PROGRESS (WEEKS 1 TO 7)
+% =========================================================================
+\section{Weekly Progress / Overview of Internship Activities (Weeks 1 to 7)}
+
+\subsection*{Week 1: Orientation, Requirements \& System Architecture (21 May -- 27 May 2026)}
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item Onboarded at Augenblick Consulting LLP; reviewed development workflows and signed confidentiality agreements.
+    \item Met with industry mentor \textbf{Mr. Kapil Nichani} to establish project goals, user requirements, and technical stack.
+    \item Evaluated biomedical data sources including NCBI PubMed, Europe PMC, and ClinicalTrials.gov API constraints.
+    \item Modeled the initial database schema for papers, vector embeddings, chat sessions, and ingestion audit logs.
+\end{itemize}
+
+\subsection*{Week 2: Core Repository Setup, Medical Neobrutalism UI \& LLM Engine (28 May -- 03 June 2026)}
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item Initialized the MEDICA repository and implemented robust paper lookup by UUID, PMID, and title slugs.
+    \item Designed and rolled out the high-contrast Medical Neobrutalism interface across navigation and search explorer views.
+    \item Implemented the Swappable LLM Factory supporting Google Gemini, Groq, OpenAI, and Anthropic APIs.
+    \item Integrated initial ReAct agent tool bindings for PubMed ingestion and local paper retrieval.
+\end{itemize}
+
+\subsection*{Week 3: Containerization, Deployment Configuration \& Ingestion Engine (04 June -- 10 June 2026)}
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item Built multi-container Docker Compose configurations orchestrating PostgreSQL 15, FastAPI, and Next.js.
+    \item Configured Vercel deployment schemas for cloud routing, FastAPI execution runtimes, and security headers.
+    \item Implemented automated NCBI PubMed API connectors with XML parsing, MeSH extraction, and rate-limiting.
+    \item Connected background ingestion jobs with the frontend chat interface for live literature retrieval.
+\end{itemize}
+
+\subsection*{Week 4: Clinical Intelligence Dashboard v2 \& Oncology Hub (11 June -- 17 June 2026)}
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item Released Dashboard v2, eliminating circular import issues in background job runners.
+    \item Implemented role-based sidebar views allowing clinicians to switch between General and Expert exploration modes.
+    \item Redesigned the main dashboard into a Community Oncology Hub with dynamic topic filters and Widget Studio.
+    \item Created analytical widgets displaying survival outcomes, trial distributions, and biomarker frequencies.
+\end{itemize}
+
+\subsection*{Week 5: PostgreSQL Hybrid Search \& Backend Async Optimization (18 June -- 24 June 2026)}
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item Implemented the PostgreSQL full-text search KeywordStrategy to complement dense vector embeddings.
+    \item Built hybrid retrieval merging semantic similarity with keyword lexemes using evidence-weighted reranking.
+    \item Configured enterprise structured logging via structlog and refactored core LLM calls to non-blocking async APIs.
+    \item Preserved sample sizes and trial phase metadata in normalizers and enabled drag-and-drop dashboard editing.
+\end{itemize}
+
+\subsection*{Week 6: Clinical Evidence Auditor \& Adversarial Verification (25 June -- 01 July 2026)}
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item Built the Evidence Auditor engine to score papers based on study methodology, sample size, and trial phase.
+    \item Implemented claim verification classifying statements into supported, contradicted, or neutral categories.
+    \item Categorized studies into formal evidence tiers (Meta-Analyses, RCTs, Phase I--IV clinical trials).
+    \item Optimized knowledge graph write frequencies to prevent database locking during high-throughput ingestion runs.
+\end{itemize}
+
+\subsection*{Week 7: Interactive Citation Graph \& Knowledge Explorer (02 July -- 08 July 2026)}
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item Implemented the Citation Graph Canvas, displaying interactive visual networks between tumors, drugs, and papers.
+    \item Added dynamic graph filtering by biomarker target, publication year, and clinical evidence tier.
+    \item Developed the Knowledge Explorer directory with multi-facet tabular filtering and abstract preview modals.
+    \item Created the Research Timeline for longitudinal tracking of cancer therapies and milestone approvals.
+\end{itemize}
+
+\subsection*{Week 8: Corporate Theme Migration \& Dynamic Grid Restructuring (09 July -- 15 July 2026)}
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item Migrated all 9 clinical dashboard widgets, citation canvas elements, and directory views to a corporate light theme.
+    \item Standardized typography scales, colors, and navigation elements for enhanced readability on medical displays.
+    \item Restructured the News Timeline Auditor and Admin Operator pages into full-width dynamic responsive grids.
+    \item Refactored Trial Profile Auditor views to display clinical survival endpoints and hazard ratios cleanly.
+\end{itemize}
+
+\clearpage
+
+% =========================================================================
+% PAGE 5: WEEKS 9 & 10 + CONCLUSION
+% =========================================================================
+
+\subsection*{Week 9: Production API Resilience, Polling Optimization \& Chat UX (16 July -- 22 July 2026)}
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item Hardened frontend API resilience by adding 10-second request timeouts and exponential backoff retry wrappers.
+    \item Resolved layout polling race conditions by adopting a ref-based mount-once pattern to eliminate timer leaks.
+    \item Upgraded the chat input textarea to automatically expand with content, improving multi-line query usability.
+    \item Performed cross-browser testing across Chrome, Firefox, and Safari on high-DPI displays.
+\end{itemize}
+
+\subsection*{Week 10: Ingestion Pipeline Overhaul, Real Data Validation \& Handover (23 July -- 31 July 2026)}
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item Deployed the next-generation ingestion pipeline, maximizing parallel throughput across PubMed and Europe PMC.
+    \item Validated data integrity and retrieval rankings against real-world ingested oncology trials and survival statistics.
+    \item Finalized comprehensive technical documentation, OpenAPI specifications, Docker guides, and test suites.
+    \item Successfully completed final project demonstration and handover review with industry mentor \textbf{Mr. Kapil Nichani}.
+\end{itemize}
+
+\vspace{0.3cm}
+
+\section{Conclusion}
+
+The 10-week internship as a \textbf{Forward Deployed Engineer Intern} at \textbf{Augenblick Consulting LLP} from \textbf{21st May, 2026 to 31st July, 2026} provided a comprehensive, practical learning experience in applied artificial intelligence and full-stack software development. Working on \textbf{MEDICA --- Autonomous Oncology Research Operating System} provided the opportunity to solve challenging problems at the intersection of healthcare research, large language models, and scalable database architectures.
+
+Throughout the project, I developed practical skills in building autonomous ReAct agents, configuring pgvector vector databases, creating hybrid information retrieval pipelines, and engineering accessible, real-time user interfaces with Next.js 16. The project emphasized the importance of data verification, anti-hallucination guardrails, and evidence-grounding when deploying AI in mission-critical biomedical domains.
+
+I express my sincere gratitude to my mentor, \textbf{Mr. Kapil Nichani}, for his continuous guidance, technical reviews, and mentorship throughout the internship. I also thank \textbf{Augenblick Consulting LLP} for the opportunity to work on authentic industry challenges. Finally, I thank \textbf{Dr. Madhuri Rao}, Head of Department, and the faculty of the Department of Artificial Intelligence \& Data Science at Thadomal Shahani Engineering College for their academic support. The competencies gained during this internship will serve as a strong foundation for my future academic and professional endeavors in Artificial Intelligence and Data Science.
+
+\vspace{0.8cm}
+\begin{center}
+    \rule{0.6\linewidth}{0.4pt}\\[0.2cm]
+    \textbf{--- End of Internship Report ---}
+\end{center}
+
+\end{document}
